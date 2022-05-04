@@ -119,7 +119,7 @@ public abstract class GameEntity {
         this.velX = velX;
     }
 
-    public void setVelY(double velY) {
+    public void setVelV(double velY) {
         this.velY = velY;
     }
 

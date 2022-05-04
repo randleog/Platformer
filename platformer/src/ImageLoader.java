@@ -21,6 +21,9 @@ public class ImageLoader {
     public static Image wallTile = loadImage("wallTile.png", 64);
     public static Image defaultTile = loadImage("default.png", 64);
     public static Image sky1 = loadImage("sky1.png", 1024);
+    public static Image particle = loadImage("particle.png", 64);
+
+    public static Image speed = loadImage("speed.png", 64);
 
     /**
      * Create an input stream to read images.

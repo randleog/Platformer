@@ -1,4 +1,5 @@
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 
 import java.util.ArrayList;
 
@@ -7,10 +8,17 @@ public class Map {
     private ArrayList<GameEntity> entities = new ArrayList<>();
     private ArrayList<GameEntity> nextEntities = new ArrayList<>();
 
+    private ArrayList<GameEntity> particles = new ArrayList<>();
+    private ArrayList<GameEntity> nextParticles = new ArrayList<>();
+
     public static final double GRAVITY = 15;
 
     public static final double AIR_DRAG= 0.007;
     public static final double GROUND_DRAG= 0.05;
+
+    private static final int CRASH_PARTICLE_COUNT = 10;
+
+
     public static final double BASE_DRAG_Y = 0.5;
 
 
@@ -28,6 +36,12 @@ public class Map {
         entity.setFlagRemoval();
         removeFlagged();
     }
+
+    public void removeParticle(GameEntity entity) {
+        entity.setFlagRemoval();
+        removeFlagged();
+    }
+
     private void removeFlagged() {
         ArrayList<GameEntity> bufferEntities = new ArrayList<>();
         bufferEntities.addAll(entities);
@@ -35,6 +49,16 @@ public class Map {
         for (GameEntity entity : bufferEntities) {
             if (!entity.isFlagRemoval()) {
                 entities.add(entity);
+            }
+        }
+
+
+        bufferEntities = new ArrayList<>();
+        bufferEntities.addAll(particles);
+        particles = new ArrayList<>();
+        for (GameEntity entity : bufferEntities) {
+            if (!entity.isFlagRemoval()) {
+                particles.add(entity);
             }
         }
 
@@ -61,22 +85,37 @@ public class Map {
     }
 
 
+    public void addParticleLive(GameEntity entity) {
+        nextParticles.add(entity);
+    }
+
     public void tick() {
         for (GameEntity entity : entities) {
+            entity.tick();
+        }
+
+        for (GameEntity entity : particles) {
             entity.tick();
         }
 
         entities.addAll(nextEntities);
         nextEntities = new ArrayList<>();
 
+        particles.addAll(nextParticles);
+        nextParticles = new ArrayList<>();
 
     }
 
 
     public void render(GraphicsContext g) {
+        for (GameEntity entity : particles) {
+            entity.render(g);
+        }
         for (GameEntity entity : entities) {
             entity.render(g);
         }
+
+
     }
 
 
@@ -107,11 +146,14 @@ public class Map {
 
 
     public void crashParticle(double x, double y) {
-        addEntityLive(new Particle(x,y,this,10,10,InputAction.Default,1));
-        addEntityLive(new Particle(x,y,this,10,10,InputAction.Default,1));
-        addEntityLive(new Particle(x,y,this,10,10,InputAction.Default,1));
-        addEntityLive(new Particle(x,y,this,10,10,InputAction.Default,1));
-        addEntityLive(new Particle(x,y,this,10,10,InputAction.Default,1));
+        for (int i = 0; i < CRASH_PARTICLE_COUNT; i++) {
+            Particle particle = new Particle(x,y,this,10,10, ImageLoader.particle, true, 1);
+            particle.setVelX(Main.random.nextDouble(Particle.PARTICLE_SPEED)-Particle.PARTICLE_SPEED/2);
+            particle.setVelV(Main.random.nextDouble(Particle.PARTICLE_SPEED)-Particle.PARTICLE_SPEED);
+
+            addParticleLive(particle);
+        }
+
     }
 
 
