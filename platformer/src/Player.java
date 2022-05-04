@@ -4,12 +4,12 @@ import javafx.scene.paint.Color;
 public class Player extends GameEntity {
 
 
-    private static final double AIR_ACCELERATION = 15.0;
-    private static final double GROUND_ACCELERATION = 15.0;
+    private static final double AIR_ACCELERATION = 5.0;
+    private static final double GROUND_ACCELERATION = 40.0;
 
     private static final double RUNNING_BOOST = 1.4;
 
-    private static final double SIDE_BOOST = 1.3;
+    private static final double SIDE_BOOST = 1;
 
     private static final double JUMP_SPEED = 800.0;
 
@@ -60,7 +60,7 @@ public class Player extends GameEntity {
             accel = AIR_ACCELERATION;
         }
 
-
+        currentDrag = Map.AIR_DRAG;
         if (canJump) {
             currentDrag = Map.GROUND_DRAG;
             if (Main.isKeyDown(InputAction.Up)) {

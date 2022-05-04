@@ -13,8 +13,8 @@ public class Map {
 
     public static final double GRAVITY = 15;
 
-    public static final double AIR_DRAG= 0.007;
-    public static final double GROUND_DRAG= 0.05;
+    public static final double AIR_DRAG= 0.90;
+    public static final double GROUND_DRAG= 0.0001;
 
     private static final int CRASH_PARTICLE_COUNT = 10;
 
