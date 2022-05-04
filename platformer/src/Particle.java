@@ -13,11 +13,14 @@ public class Particle extends GameEntity {
 
     private double time;
 
-    public Particle(double x, double y, Map map, double sizeX, double sizeY, Image image, boolean gravity, double time) {
+    private double start;
+
+    public Particle(double x, double y, Map map, double sizeX, double sizeY, Image image, boolean gravity, double time, double start) {
         super(x,y,map,InputAction.Default, FillType.Image, 1);
 
         this.time = time;
 
+        this.start = start;
         this.gravity=  gravity;
         this.image = image;
         this.sizeX = sizeX;
@@ -45,7 +48,7 @@ public class Particle extends GameEntity {
     public void render(GraphicsContext g) {
 
         g.save();
-        g.setGlobalAlpha(Main.interpolate(0.2,0,Main.FPS,currentTick));
+        g.setGlobalAlpha(Main.interpolate(start,0,Main.FPS,currentTick));
         renderSquare(g);
         g.restore();
     }

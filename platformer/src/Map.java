@@ -147,7 +147,7 @@ public class Map {
 
     public void crashParticle(double x, double y) {
         for (int i = 0; i < CRASH_PARTICLE_COUNT; i++) {
-            Particle particle = new Particle(x,y,this,10,10, ImageLoader.particle, true, 1);
+            Particle particle = new Particle(x,y,this,10,10, ImageLoader.particle, true, 1, 1);
             particle.setVelX(Main.random.nextDouble(Particle.PARTICLE_SPEED)-Particle.PARTICLE_SPEED/2);
             particle.setVelV(Main.random.nextDouble(Particle.PARTICLE_SPEED)-Particle.PARTICLE_SPEED);
 
