@@ -24,6 +24,21 @@ public class Map {
         this.cameraMap = cameraMap;
     }
 
+    public void removeEntity(GameEntity entity) {
+        entity.setFlagRemoval();
+        removeFlagged();
+    }
+    private void removeFlagged() {
+        ArrayList<GameEntity> bufferEntities = new ArrayList<>();
+        bufferEntities.addAll(entities);
+        entities = new ArrayList<>();
+        for (GameEntity entity : bufferEntities) {
+            if (!entity.isFlagRemoval()) {
+                entities.add(entity);
+            }
+        }
+
+    }
 
     public double correctUnit(double input) {
         return input/Main.gameUnit;
@@ -50,8 +65,11 @@ public class Map {
         for (GameEntity entity : entities) {
             entity.tick();
         }
+
         entities.addAll(nextEntities);
         nextEntities = new ArrayList<>();
+
+
     }
 
 
@@ -87,13 +105,23 @@ public class Map {
 
 
 
-    public void addWall(int x, int y, int sizeX, int sizeY) {
-        Wall wallUp = new Wall(x+10,y, this, sizeX-20, 1, InputAction.Up);
 
-        Wall wallRight = new Wall(x+sizeX,y+10, this, 1, sizeY-20, InputAction.Right );
-        Wall wallLeft = new Wall(x,y+10, this, 1, sizeY-20, InputAction.Left );
-        Wall wallDown = new Wall(x+10,y+sizeY-1, this, sizeX-20, 1, InputAction.Down );
-        Wall wallImage = new Wall(x,y, this, sizeX, sizeY, InputAction.Default );
+    public void crashParticle(double x, double y) {
+        addEntityLive(new Particle(x,y,this,10,10,InputAction.Default,1));
+        addEntityLive(new Particle(x,y,this,10,10,InputAction.Default,1));
+        addEntityLive(new Particle(x,y,this,10,10,InputAction.Default,1));
+        addEntityLive(new Particle(x,y,this,10,10,InputAction.Default,1));
+        addEntityLive(new Particle(x,y,this,10,10,InputAction.Default,1));
+    }
+
+
+    public void addWall(int x, int y, int sizeX, int sizeY, double parallax) {
+        Wall wallUp = new Wall(x+10,y, this, sizeX-20, 1, InputAction.Up, parallax);
+
+        Wall wallRight = new Wall(x+sizeX,y+10, this, 1, sizeY-20, InputAction.Right, parallax);
+        Wall wallLeft = new Wall(x,y+10, this, 1, sizeY-20, InputAction.Left,parallax);
+        Wall wallDown = new Wall(x+10,y+sizeY-1, this, sizeX-20, 1, InputAction.Down, parallax );
+        Wall wallImage = new Wall(x,y, this, sizeX, sizeY, InputAction.Default, parallax );
 
         addEntity(wallUp);
         addEntity(wallRight);
@@ -107,6 +135,7 @@ public class Map {
     public GameEntity intersectAction(GameEntity entity) {
         GameEntity returnEntity = entity;
         for (GameEntity currentEntity : entities) {
+            if (currentEntity.getParallax() == 1) {
             if (!entity.equals(currentEntity)) {
                 if (currentEntity.intersect(entity)) {
                     if (!InputAction.isXType(currentEntity.getAction())) {
@@ -115,6 +144,7 @@ public class Map {
                         returnEntity = currentEntity;
                     }
                 }
+            }
 
 
             }

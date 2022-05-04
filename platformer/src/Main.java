@@ -16,9 +16,12 @@ import javafx.util.Duration;
 
 import java.awt.*;
 import java.util.HashMap;
+import java.util.Random;
 
 public class Main extends Application {
 
+
+    public static Random random = new Random();
 
     private static Canvas canvas;
 
@@ -87,10 +90,12 @@ public class Main extends Application {
 
 
         currentMap = new Map(true);
-        currentMap.addWall(0,1000,1000,50);
-        currentMap.addWall(1000,500,100,1000);
-        currentMap.addWall(700,0,100,800);
-        currentMap.addWall(0,800,100,1000);
+        currentMap.addWall(0,1000,1000,500, 0.6);
+     //   currentMap.addEntity(new BackgroundObject(0,500,currentMap,300,200,0.3));
+        currentMap.addWall(0,1000,1000,50, 1);
+        currentMap.addWall(1000,500,100,1000, 1);
+        currentMap.addWall(700,0,100,800, 1);
+        currentMap.addWall(0,800,100,1000, 1);
       //  currentMap.addEntity(new Wall(0, 995, currentMap, 1000, 500, InputAction.Up));
         currentMap.addEntity(new Player(700, 500, currentMap));
     }
@@ -106,6 +111,16 @@ public class Main extends Application {
 
     }
 
+    /**
+     * Interpolate between two values.
+     * @param x1 Double floor value.
+     * @param x2 Double ceiling value.
+     * @return Double a value between the two parsed values.
+     */
+    public static double interpolate(double x1, double x2, double max, double current) {
+        return x1 + ((x2 - x1) / max) * current;
+    }
+
     public static Integer getKey(InputAction action) {
         return hashMap.get(action);
 
@@ -113,8 +128,8 @@ public class Main extends Application {
     }
 
     private static void render(GraphicsContext g){
-        canvas.getGraphicsContext2D().setFill(Color.color(0,0,0));
-        g.fillRect(0,0,canvas.getWidth(),canvas.getHeight());
+
+        g.drawImage(ImageLoader.sky1,0,0,canvas.getWidth(),canvas.getHeight());
         currentMap.render(g);
     }
 

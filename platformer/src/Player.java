@@ -9,19 +9,16 @@ public class Player extends GameEntity {
 
     private static final double RUNNING_BOOST = 1.4;
 
+    private static final double SIDE_BOOST = 1.3;
+
     private static final double JUMP_SPEED = 800.0;
 
-    private boolean canJump;
-
-    private boolean canLeftJump;
-
-    private boolean canRightJump;
 
     private double startX;
     private double startY;
 
     public Player(double x, double y, Map map) {
-        super(x, y, map, InputAction.Default, FillType.Tile);
+        super(x, y, map, InputAction.Default, FillType.Tile, 1);
         this.sizeX = 50;
         this.sizeY = 50;
         startX = x;
@@ -48,48 +45,6 @@ public class Player extends GameEntity {
 
     }
 
-    private void collision() {
-        InputAction action = map.isIntersect(this);
-        canJump = false;
-        canLeftJump = false;
-        canRightJump = false;
-
-        while (!(action == InputAction.Default)) {
-            if (action == InputAction.Left) {
-                canLeftJump = true;
-                GameEntity collider = map.intersectAction(this);
-                while (collider.intersect(this)) {
-                    x -= 0.1;
-                }
-                velX = 0;
-            } else if (action == InputAction.Right) {
-                canRightJump = true;
-                GameEntity collider = map.intersectAction(this);
-                while (collider.intersect(this)) {
-                    x += 0.1;
-                }
-                velX = 0;
-            } else if (action == InputAction.Up) {
-                canJump = true;
-                GameEntity collider = map.intersectAction(this);
-                while (collider.intersect(this)) {
-                    y -= 0.1;
-                    velY = 0;
-                }
-
-            } else if (action == InputAction.Down) {
-                canJump = true;
-                GameEntity collider = map.intersectAction(this);
-                while (collider.intersect(this)) {
-                    y += 0.1;
-                    velY = 0;
-                }
-
-                velY = -velY * 0.01;
-            }
-            action = map.isIntersect(this);
-        }
-    }
 
     private void inputActions() {
 
@@ -116,13 +71,13 @@ public class Player extends GameEntity {
         } else if (canLeftJump) {
             if (Main.isKeyDown(InputAction.Up)) {
                 velY = -JUMP_SPEED / Main.FPS;
-                velX = -JUMP_SPEED*2 / Main.FPS;
+                velX = -JUMP_SPEED*SIDE_BOOST*baseAccel / Main.FPS;
                 Main.deactivateKey(InputAction.Up);
             }
         } else if (canRightJump) {
             if (Main.isKeyDown(InputAction.Up)) {
                 velY = -JUMP_SPEED / Main.FPS;
-                velX = JUMP_SPEED*2 / Main.FPS;
+                velX = JUMP_SPEED*SIDE_BOOST*baseAccel / Main.FPS;
                 Main.deactivateKey(InputAction.Up);
 
             }

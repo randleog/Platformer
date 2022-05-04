@@ -20,7 +20,7 @@ public class ImageLoader {
 
     public static Image wallTile = loadImage("wallTile.png", 64);
     public static Image defaultTile = loadImage("default.png", 64);
-
+    public static Image sky1 = loadImage("sky1.png", 1024);
 
     /**
      * Create an input stream to read images.

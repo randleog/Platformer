@@ -5,6 +5,9 @@ import javafx.scene.paint.ImagePattern;
 
 public abstract class GameEntity {
 
+
+    private static final double CRASH_SPEED = 8;
+
     protected double x;
     protected double y;
 
@@ -17,6 +20,7 @@ public abstract class GameEntity {
     protected double accelX;
     protected double accelY;
 
+    protected  double parallax;
     private static final double DEFAULT_TILE_SIZE = 50;
 
     protected boolean running;
@@ -33,14 +37,23 @@ public abstract class GameEntity {
     protected Image image;
 
 
+    protected boolean canJump;
+
+    protected boolean canLeftJump;
+
+    protected boolean canRightJump;
 
     protected Map map;
 
     protected double tileSize;
 
-    GameEntity(double x, double y, Map map, InputAction action, FillType fillType) {
+    private boolean flagRemoval;
+
+    GameEntity(double x, double y, Map map, InputAction action, FillType fillType, double parallax) {
+        flagRemoval = false;
         this.fillType = fillType;
         currentDrag = Map.AIR_DRAG;
+        this.parallax = parallax;
         running = false;
         this.x = x;
         this.y = y;
@@ -54,10 +67,22 @@ public abstract class GameEntity {
 
     }
 
+    public double getParallax() {
+        return parallax;
+    }
+
     protected void gravity() {
 
         velY+=Map.GRAVITY/Main.FPS;
 
+    }
+
+    public void setFlagRemoval() {
+        flagRemoval = true;
+    }
+
+    public boolean isFlagRemoval() {
+        return flagRemoval;
     }
 
 
@@ -119,10 +144,60 @@ public abstract class GameEntity {
     }
 
 
+    protected void collision() {
+        InputAction action = map.isIntersect(this);
+        canJump = false;
+        canLeftJump = false;
+        canRightJump = false;
+
+        while (!(action == InputAction.Default)) {
+            if (action == InputAction.Left) {
+                canLeftJump = true;
+                GameEntity collider = map.intersectAction(this);
+                while (collider.intersect(this)) {
+                    x -= 0.1;
+                }
+                velX = 0;
+            } else if (action == InputAction.Right) {
+                canRightJump = true;
+                GameEntity collider = map.intersectAction(this);
+                while (collider.intersect(this)) {
+                    x += 0.1;
+                }
+                velX = 0;
+            } else if (action == InputAction.Up) {
+                if (this instanceof Player) {
+
+                    if (velY > CRASH_SPEED ) {
+                        map.crashParticle(this.x+sizeX/2,this.y+sizeY/2);
+                    }
+                    canJump = true;
+                    GameEntity collider = map.intersectAction(this);
+                    while (collider.intersect(this)) {
+                        y -= 0.1;
+                        velY = 0;
+                    }
+                }
+
+            } else if (action == InputAction.Down) {
+                canJump = true;
+                GameEntity collider = map.intersectAction(this);
+                while (collider.intersect(this)) {
+                    y += 0.1;
+                    velY = 0;
+                }
+
+                velY = -velY * 0.01;
+            }
+            action = map.isIntersect(this);
+        }
+    }
+
+
     protected void renderSquare(GraphicsContext g) {
 
-            double x = map.correctUnitX(this.x);
-            double y = map.correctUnitY(this.y);
+            double x = map.correctUnit(this.x)-map.correctUnit(map.cameraX*parallax);
+            double y = map.correctUnit(this.y)-map.correctUnit(map.cameraY*parallax);
             double sizeX = map.correctUnit(this.sizeX);
             double sizeY = map.correctUnit(this.sizeY);
 
@@ -133,12 +208,13 @@ public abstract class GameEntity {
                 if (fillType == FillType.Color) {
                     g.setFill(this.color);
                 } else if (fillType == FillType.Tile) {
-                    g.setFill(new ImagePattern(image, x, y, tileSize,tileSize, false));
+                    g.setFill(new ImagePattern(image, x, y, tileSize*parallax,tileSize*parallax, false));
                 }
                 g.fillRect(x, y, sizeX, sizeY);
             }
 
     }
+
 
     public boolean intersect(GameEntity entity) {
 
