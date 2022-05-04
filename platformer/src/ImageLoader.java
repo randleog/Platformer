@@ -18,8 +18,8 @@ import java.io.IOException;
  */
 public class ImageLoader {
 
-    public static Image wallTile = loadImage("flower2.png", 64);
-
+    public static Image wallTile = loadImage("wallTile.png", 64);
+    public static Image defaultTile = loadImage("default.png", 64);
 
 
     /**

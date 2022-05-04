@@ -1,5 +1,7 @@
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 
 public abstract class GameEntity {
 
@@ -15,6 +17,8 @@ public abstract class GameEntity {
     protected double accelX;
     protected double accelY;
 
+    private static final double DEFAULT_TILE_SIZE = 50;
+
     protected boolean running;
 
     protected Color color;
@@ -24,20 +28,29 @@ public abstract class GameEntity {
 
     protected double currentDrag;
 
+    protected FillType fillType;
+
+    protected Image image;
+
 
 
     protected Map map;
 
-    GameEntity(double x, double y, Map map, InputAction action) {
+    protected double tileSize;
+
+    GameEntity(double x, double y, Map map, InputAction action, FillType fillType) {
+        this.fillType = fillType;
         currentDrag = Map.AIR_DRAG;
         running = false;
         this.x = x;
         this.y = y;
         sizeX = 100;
         sizeY = 100;
+        tileSize = map.correctUnit(DEFAULT_TILE_SIZE);
         this.map = map;
         this.action = action;
         this.color = Color.color(1,0,0);
+        this.image = ImageLoader.defaultTile;
 
     }
 
@@ -114,8 +127,16 @@ public abstract class GameEntity {
             double sizeY = map.correctUnit(this.sizeY);
 
 
-            g.setFill(this.color);
-            g.fillRect(x , y, sizeX, sizeY);
+            if (fillType == FillType.Image) {
+                g.drawImage(image, x,y,sizeX,sizeY);
+            } else {
+                if (fillType == FillType.Color) {
+                    g.setFill(this.color);
+                } else if (fillType == FillType.Tile) {
+                    g.setFill(new ImagePattern(image, x, y, tileSize,tileSize, false));
+                }
+                g.fillRect(x, y, sizeX, sizeY);
+            }
 
     }
 

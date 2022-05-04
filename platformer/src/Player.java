@@ -7,7 +7,7 @@ public class Player extends GameEntity {
     private static final double AIR_ACCELERATION = 15.0;
     private static final double GROUND_ACCELERATION = 15.0;
 
-    private static final double RUNNING_BOOST = 1.7;
+    private static final double RUNNING_BOOST = 1.4;
 
     private static final double JUMP_SPEED = 800.0;
 
@@ -21,7 +21,7 @@ public class Player extends GameEntity {
     private double startY;
 
     public Player(double x, double y, Map map) {
-        super(x, y, map, InputAction.Default);
+        super(x, y, map, InputAction.Default, FillType.Tile);
         this.sizeX = 50;
         this.sizeY = 50;
         startX = x;
