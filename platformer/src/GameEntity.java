@@ -195,23 +195,25 @@ public abstract class GameEntity {
 
 
     protected void renderSquare(GraphicsContext g) {
+        if (!(fillType == FillType.Nothing)) {
 
-            double x = map.correctUnit(this.x)-map.correctUnit(map.cameraX*parallax);
-            double y = map.correctUnit(this.y)-map.correctUnit(map.cameraY*parallax);
+            double x = map.correctUnit(this.x) - map.correctUnit(map.cameraX * parallax);
+            double y = map.correctUnit(this.y) - map.correctUnit(map.cameraY * parallax);
             double sizeX = map.correctUnit(this.sizeX);
             double sizeY = map.correctUnit(this.sizeY);
 
 
             if (fillType == FillType.Image) {
-                g.drawImage(image, x,y,sizeX,sizeY);
+                g.drawImage(image, x, y, sizeX, sizeY);
             } else {
                 if (fillType == FillType.Color) {
                     g.setFill(this.color);
                 } else if (fillType == FillType.Tile) {
-                    g.setFill(new ImagePattern(image, x, y, tileSize*parallax,tileSize*parallax, false));
+                    g.setFill(new ImagePattern(image, x, y, tileSize * parallax, tileSize * parallax, false));
                 }
                 g.fillRect(x, y, sizeX, sizeY);
             }
+        }
 
     }
 

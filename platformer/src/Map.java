@@ -158,12 +158,12 @@ public class Map {
 
 
     public void addWall(int x, int y, int sizeX, int sizeY, double parallax) {
-        Wall wallUp = new Wall(x+10,y, this, sizeX-20, 1, InputAction.Up, parallax);
+        Wall wallUp = new Wall(x+10,y, this, sizeX-20, 1, InputAction.Up, FillType.Nothing, parallax);
 
-        Wall wallRight = new Wall(x+sizeX,y+10, this, 1, sizeY-20, InputAction.Right, parallax);
-        Wall wallLeft = new Wall(x,y+10, this, 1, sizeY-20, InputAction.Left,parallax);
-        Wall wallDown = new Wall(x+10,y+sizeY-1, this, sizeX-20, 1, InputAction.Down, parallax );
-        Wall wallImage = new Wall(x,y, this, sizeX, sizeY, InputAction.Default, parallax );
+        Wall wallRight = new Wall(x+sizeX,y+10, this, 1, sizeY-20, InputAction.Right, FillType.Nothing, parallax);
+        Wall wallLeft = new Wall(x,y+10, this, 1, sizeY-20, InputAction.Left, FillType.Nothing,parallax);
+        Wall wallDown = new Wall(x+10,y+sizeY-1, this, sizeX-20, 1, InputAction.Down, FillType.Nothing, parallax );
+        Wall wallImage = new Wall(x,y, this, sizeX, sizeY, InputAction.Default, FillType.Tile, parallax );
 
         addEntity(wallUp);
         addEntity(wallRight);
