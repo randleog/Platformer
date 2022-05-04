@@ -42,7 +42,7 @@ public class Player extends GameEntity {
             map.cameraY = y-startY ;
             //  x = startX;
         }
-        map.addParticleLive(new Particle(x,y,map,sizeX,sizeY,ImageLoader.speed, false, 0.04, 0.2));
+        map.addParticleLive(new Particle(x,y,map,sizeX,sizeY,image, false, 0.04, 0.2));
     }
 
 

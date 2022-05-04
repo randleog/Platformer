@@ -5,7 +5,7 @@ import javafx.scene.paint.ImagePattern;
 
 public class Particle extends GameEntity {
 
-    public static final double PARTICLE_SPEED = 10.0;
+    public static final double PARTICLE_SPEED = 5.0;
 
     private int currentTick;
 
