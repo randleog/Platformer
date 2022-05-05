@@ -78,7 +78,9 @@ public abstract class GameEntity {
     }
 
     public void die() {
-        Main.deaths++;
+        if (this instanceof Player) {
+            Main.deaths++;
+        }
         this.x = startX;
         this.y = startY;
         this.velY =0;
@@ -208,11 +210,12 @@ public abstract class GameEntity {
                     }
                     velX = 0;
                 } else if (action == InputAction.Up) {
-                    if (this instanceof Player) {
+                    if (this instanceof Player || this instanceof BasicEnemy) {
 
                         if (velY > CRASH_SPEED) {
                             map.crashParticle(this.x + sizeX / 2, this.y + sizeY / 2);
                         }
+                    }
                         canJump = true;
 
                         while (entity.intersect(this)) {
@@ -220,7 +223,7 @@ public abstract class GameEntity {
 
                         }
                         velY = 0;
-                    }
+
 
                 } else if (action == InputAction.Down) {
                     if (runningBefore)
@@ -230,7 +233,7 @@ public abstract class GameEntity {
                         y += 0.1;
 
                     }
-                    velY = 0;
+                    velY = -velY*0.1;
 
                 }
                 entity = map.intersectionEntity(this);

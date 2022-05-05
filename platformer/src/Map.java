@@ -32,6 +32,9 @@ public class Map {
 
     protected boolean cameraMap;
 
+    public double playerX = 0;
+    public double playerY = 0;
+
     private int sizeX;
     private int sizeY;
 
@@ -39,6 +42,10 @@ public class Map {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.cameraMap = cameraMap;
+    }
+
+    public boolean isRadius(double x, double y, double x2, double y2, double radius) {
+        return (Math.sqrt(Math.pow(Math.abs(x2 - x), 2) + Math.pow(Math.abs(y2 - y), 2)) < radius);
     }
 
     public boolean isOutOfBounds(double x, double y) {

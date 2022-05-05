@@ -65,6 +65,8 @@ public class Player extends GameEntity {
 
         }
 
+        map.playerX = x;
+        map.playerY = y;
     }
 
     @Override

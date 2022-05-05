@@ -49,7 +49,7 @@ public class Hookable extends GameEntity {
 
             for (GameEntity entity : map.getEntities()) {
                 if (entity instanceof Player) {
-                    if (Math.sqrt(Math.pow(Math.abs(entity.getX() - getX()), 2) + Math.pow(Math.abs(entity.getY() - getY()), 2)) < hookRadius) {
+                    if (map.isRadius(this.x,this.y,map.playerX,map.playerY,hookRadius)) {
                         g.setFill(color);
                         g.fillOval(getRenderX(), getRenderY(), getSizeX(), getSizeY());
 

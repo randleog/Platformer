@@ -46,6 +46,8 @@ public class Main extends Application {
     private static Map currentMap;
 
 
+
+
     /**
      * Load the menus for navigation, and launch the user selection menu.
      *
@@ -111,6 +113,8 @@ public class Main extends Application {
         currentMap.addMovingWall(1100,500,100,50,0,1);
 
         currentMap.addEntity(new Player(700, 500, currentMap));
+        currentMap.addEntity(new BasicEnemy(500, 500, currentMap, false));
+        currentMap.addEntity(new BasicEnemy(1700, 500, currentMap, true));
         currentMap.addEntity(new Hookable(700, 500, currentMap, 400));
     }
 
