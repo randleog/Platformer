@@ -1,5 +1,6 @@
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
@@ -140,11 +141,43 @@ public class Map {
             g.fillRect(0,0,g.getCanvas().getWidth(),g.getCanvas().getHeight());
 
             g.setFill(Color.color(1,1,1));
-            g.setFont(new Font(25));
+            g.setFont(new Font(40));
             g.fillText("Paused", 100, 200);
+            g.setFont(new Font(25));
+            String currentAction = "";
+            currentAction = currentAction + getStringKey(InputAction.Up);
+            currentAction = currentAction + getStringKey(InputAction.Sprint);
+            currentAction = currentAction + getStringKey(InputAction.Hook);
+            currentAction = currentAction + getStringKey(InputAction.Left);
+            currentAction = currentAction + getStringKey(InputAction.Right);
+            currentAction = currentAction + getStringKey(InputAction.Down);
+            g.fillText(currentAction, 100, 400);
         }
 
 
+    }
+
+    public ArrayList<GameEntity> getEntities() {
+        return entities;
+    }
+
+
+
+    private String getStringKey(InputAction action) {
+        String currentAction = "";
+        int current = 0;
+        ArrayList<KeyCode> codes = Main.getDisplayOptions(action);
+
+        for (KeyCode code : codes) {
+            currentAction = currentAction + code.getName();
+            if (current < codes.size()-1) {
+                currentAction = currentAction + " | ";
+            }
+            current++;
+        }
+        currentAction = currentAction+" to: " + action + "\n";
+
+        return currentAction;
     }
 
 
@@ -177,7 +210,7 @@ public class Map {
         for (int i = 0; i < CRASH_PARTICLE_COUNT; i++) {
             Particle particle = new Particle(x, y, this, 10, 10, ImageLoader.particle, true, 1, 1);
             particle.setVelX(Main.random.nextDouble(Particle.PARTICLE_SPEED) - Particle.PARTICLE_SPEED / 2);
-            particle.setVelV(Main.random.nextDouble(Particle.PARTICLE_SPEED) - Particle.PARTICLE_SPEED);
+            particle.setVelY(Main.random.nextDouble(Particle.PARTICLE_SPEED) - Particle.PARTICLE_SPEED);
 
             addParticleLive(particle);
         }

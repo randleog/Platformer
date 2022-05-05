@@ -127,7 +127,15 @@ public abstract class GameEntity {
         this.velX = velX;
     }
 
-    public void setVelV(double velY) {
+    public double getVelX() {
+        return velX;
+    }
+
+    public double getVelY() {
+        return velY;
+    }
+
+    public void setVelY(double velY) {
         this.velY = velY;
     }
 

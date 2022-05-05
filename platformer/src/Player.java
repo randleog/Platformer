@@ -13,7 +13,7 @@ public class Player extends GameEntity {
 
     private static final double JUMP_SPEED = 800.0;
 
-    private static final double HOOK_FACTOR = 1000;
+
 
 
 
@@ -41,7 +41,7 @@ public class Player extends GameEntity {
 
 
         inputActions();
-        hook();
+
         gravity();
 
         physics();
@@ -64,15 +64,10 @@ public class Player extends GameEntity {
     }
 
 
-    private void hook() {
 
-        if (hooking) {
-            Hookable hookable = map.getHookable();
-            if (!(hookable == null)) {
-                velY += (hookable.getY() - y) / HOOK_FACTOR;
-                velX += (hookable.getY() - x) / HOOK_FACTOR;
-            }
-        }
+
+    public boolean isHooking() {
+        return hooking;
     }
 
 
@@ -136,18 +131,7 @@ public class Player extends GameEntity {
     public void render(GraphicsContext g) {
 
 
-        if (hooking) {
-            Hookable hookable = map.getHookable();
-            if (!(hookable == null)) {
-                g.setStroke(Color.color(0.5, 0.5, 0.5));
-                double x = map.correctUnit(this.x) - map.correctUnit(map.cameraX * parallax);
-                double y = map.correctUnit(this.y) - map.correctUnit(map.cameraY * parallax);
-                double hookX = map.correctUnit(hookable.getX()) - map.correctUnit(map.cameraX * parallax);
-                double hookY = map.correctUnit(hookable.getY()) - map.correctUnit(map.cameraY * parallax);
 
-                g.strokeLine(x, y, hookX, hookY);
-            }
-        }
 
 
         renderSquare(g);

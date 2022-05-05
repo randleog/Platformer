@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -34,6 +35,8 @@ public class Main extends Application {
     public static HashMap<InputAction, Integer> hashMap = new HashMap<>();
 
     private static HashMap<KeyCode, InputAction> inputMap = new HashMap<>();
+
+    private static HashMap<InputAction, ArrayList<KeyCode>> readInput = new HashMap<>();
 
     private static Timeline loop;
 
@@ -102,7 +105,7 @@ public class Main extends Application {
         currentMap.addWall(0,800,100,1000, 1);
 
         currentMap.addEntity(new Player(700, 500, currentMap));
-        currentMap.addEntity(new Hookable(700, 500, currentMap));
+        currentMap.addEntity(new Hookable(700, 500, currentMap, 400));
     }
 
     private static void tick(){
@@ -174,6 +177,30 @@ public class Main extends Application {
         hashMap.put(InputAction.Default, 0);
         hashMap.put(InputAction.Hook, 0);
 
+
+        readDisplayInputs();
+    }
+
+    public static ArrayList<KeyCode> getDisplayOptions(InputAction action) {
+        return readInput.get(action);
+    }
+
+
+    private static void readDisplayInputs() {
+
+
+        for (KeyCode keyCode : inputMap.keySet()) {
+            if (readInput.get(inputMap.get(keyCode)) == null) {
+                ArrayList<KeyCode> keys = new ArrayList<>();
+                keys.add(keyCode);
+                readInput.put(inputMap.get(keyCode), keys);
+            } else {
+                ArrayList<KeyCode> keys = readInput.get(inputMap.get(keyCode));
+                keys.add(keyCode);
+                readInput.put(inputMap.get(keyCode), keys);
+            }
+
+        }
     }
 
 
