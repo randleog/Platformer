@@ -23,7 +23,7 @@ public class Player extends GameEntity {
     private double startY;
 
     public Player(double x, double y, Map map) {
-        super(x, y, map, InputAction.Default, FillType.Tile, 1);
+        super(x, y, map, InputAction.Default, FillType.Image, 1);
         this.sizeX = 50;
         this.sizeY = 50;
         startX = x;
@@ -32,6 +32,8 @@ public class Player extends GameEntity {
         canLeftJump = false;
         canRightJump = false;
     }
+
+
 
     public void tick() {
 
@@ -49,11 +51,19 @@ public class Player extends GameEntity {
             map.cameraY = y - startY;
             //  x = startX;
         }
-        map.addParticleLive(new Particle(x, y, map, sizeX, sizeY, image, false, 0.04, 0.2));
+        if (running) {
+            map.addParticleLive(new Particle(x - getVelStretchX()
+                    , y - getVelStretchY(), map, sizeX + getVelStretchX() * 2
+                    , getSizeY() + getVelStretchY() * 2, image, false
+                    , 0.04, 0.2));
+
+        }
+
     }
 
 
     private void hook() {
+
         if (hooking) {
             Hookable hookable = map.getHookable();
             if (!(hookable == null)) {

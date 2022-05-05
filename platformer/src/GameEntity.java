@@ -20,8 +20,11 @@ public abstract class GameEntity {
     protected double accelX;
     protected double accelY;
 
+
     protected  double parallax;
     private static final double DEFAULT_TILE_SIZE = 50;
+
+    private static final double SPRINT_HEIGHT_FACTOR = 0.7;
 
     protected boolean running;
 
@@ -99,10 +102,12 @@ public abstract class GameEntity {
     }
 
     public double getX() {
+
         return x;
     }
 
     public double getY() {
+
         return y;
     }
 
@@ -116,6 +121,7 @@ public abstract class GameEntity {
     }
 
     public void setVelX(double velX) {
+
         this.velX = velX;
     }
 
@@ -132,7 +138,11 @@ public abstract class GameEntity {
     }
 
     public double getSizeY() {
-        return sizeY;
+        double sizeBuff = 1;
+        if (running) {
+            sizeBuff = SPRINT_HEIGHT_FACTOR;
+        }
+        return sizeY*sizeBuff;
     }
 
     public abstract void tick();
@@ -193,14 +203,46 @@ public abstract class GameEntity {
         }
     }
 
+    public double getVelStretchX() {
+
+        return (Math.sqrt(Math.abs(velX))-Math.sqrt(Math.abs(velY)))*2;
+    }
+
+    public double getVelStretchY() {
+
+        return (Math.sqrt(Math.abs(velY))-Math.sqrt(Math.abs(velX)))*2;
+    }
+
+    public double getRenderX() {
+        double x = map.correctUnit(this.x) - map.correctUnit(map.cameraX * parallax)-map.correctUnit(getVelStretchX());
+        return x;
+
+    }
+
+
+    public double getRenderY() {
+        double y = map.correctUnit(this.y) - map.correctUnit(map.cameraY * parallax)-map.correctUnit(getVelStretchY());
+        return y;
+
+    }
+
+    public double getRenderSizeX() {
+        double sizeX = map.correctUnit(this.sizeX)+map.correctUnit(getVelStretchX()*2);
+        return sizeX;
+    }
+
+    public double getRenderSizeY() {
+        double sizeY = map.correctUnit(getSizeY())+map.correctUnit(getVelStretchY()*2);
+        return sizeY;
+    }
 
     protected void renderSquare(GraphicsContext g) {
         if (!(fillType == FillType.Nothing)) {
 
-            double x = map.correctUnit(this.x) - map.correctUnit(map.cameraX * parallax);
-            double y = map.correctUnit(this.y) - map.correctUnit(map.cameraY * parallax);
-            double sizeX = map.correctUnit(this.sizeX);
-            double sizeY = map.correctUnit(this.sizeY);
+            double x = getRenderX();
+            double y = getRenderY();
+            double sizeX = getRenderSizeX();
+            double sizeY = getRenderSizeY();
 
 
             if (fillType == FillType.Image) {
@@ -225,8 +267,8 @@ public abstract class GameEntity {
         double y = entity.getY();
         double sizeX = entity.getSizeX();
         double sizeY = entity.getSizeY();
-        return x+sizeX > this.x && x< this.x + this.sizeX
-                && y+sizeY > this.y && y < this.y + this.sizeY;
+        return x+sizeX > getX() && x< getX() + getSizeX()
+                && y+sizeY >getY() && y < getY() + getSizeY();
     }
 
 
