@@ -32,6 +32,9 @@ public class Main extends Application {
     public static final int FPS = 144;
 
 
+    public static final double DEFAULT_WIDTH_MAP = 1900;
+    public static final double DEFAULT_HEIGHT_MAP = 1100;
+
     private static final int GAME_UNIT_SETTING = 1000;
     public static double gameUnit = 1;
 
@@ -114,7 +117,7 @@ public class Main extends Application {
 
         currentMap.addEntity(new Player(700, 500, currentMap));
         currentMap.addEntity(new BasicEnemy(100, 700, currentMap, false));
-        currentMap.addEntity(new BasicEnemy(1700, 500, currentMap, true));
+      //  currentMap.addEntity(new BasicEnemy(1700, 500, currentMap, true));
         currentMap.addEntity(new Hookable(700, 500, currentMap, 400));
     }
 

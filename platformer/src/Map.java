@@ -151,6 +151,10 @@ public class Map {
             nextParticles = new ArrayList<>();
 
         }
+        cameraX = Math.min(cameraX, sizeX-Main.gameUnit* Main.DEFAULT_WIDTH_MAP);
+        cameraX = Math.max(cameraX, -sizeX+Main.gameUnit* Main.DEFAULT_WIDTH_MAP);
+        cameraY = Math.min(cameraY, sizeY-Main.gameUnit* Main.DEFAULT_HEIGHT_MAP);
+        cameraY = Math.max(cameraY, -sizeY+Main.gameUnit* Main.DEFAULT_HEIGHT_MAP);
     }
 
 
