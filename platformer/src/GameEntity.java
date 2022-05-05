@@ -26,7 +26,7 @@ public abstract class GameEntity {
 
     private static final double SQUASH_FACTOR = 1;
 
-    private static final double SPRINT_HEIGHT_FACTOR = 0.7;
+
 
     protected boolean running;
 
@@ -148,11 +148,8 @@ public abstract class GameEntity {
     }
 
     public double getSizeY() {
-        double sizeBuff = 1;
-        if (running) {
-            sizeBuff = SPRINT_HEIGHT_FACTOR;
-        }
-        return sizeY*sizeBuff;
+
+        return sizeY;
     }
 
     public abstract void tick();

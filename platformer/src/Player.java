@@ -16,7 +16,7 @@ public class Player extends GameEntity {
 
 
 
-
+    private static final double SPRINT_HEIGHT_FACTOR = 0.7;
 
     private boolean hooking = false;
 
@@ -61,6 +61,15 @@ public class Player extends GameEntity {
 
         }
 
+    }
+
+    @Override
+    public double getSizeY() {
+        double sizeBuff = 1;
+        if (Main.isKeyDown(InputAction.Down)) {
+            sizeBuff = SPRINT_HEIGHT_FACTOR;
+        }
+        return sizeY*sizeBuff;
     }
 
 
