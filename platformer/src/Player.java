@@ -5,9 +5,9 @@ public class Player extends GameEntity {
 
 
     private static final double AIR_ACCELERATION = 5.0;
-    private static final double GROUND_ACCELERATION = 35.0;
+    private static final double GROUND_ACCELERATION = 25.0;
 
-    private static final double RUNNING_BOOST = 1.5;
+    private static final double RUNNING_BOOST = 1.85;
 
     private static final double SIDE_BOOST = 1;
 
