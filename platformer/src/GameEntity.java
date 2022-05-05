@@ -26,7 +26,7 @@ public abstract class GameEntity {
     protected double parallax;
     private static final double DEFAULT_TILE_SIZE = 50;
 
-    private static final double SQUASH_FACTOR = 1;
+    private static final double SQUASH_FACTOR = 1.5;
 
 
     protected boolean running;
@@ -250,8 +250,7 @@ public abstract class GameEntity {
 
 
                 } else if (action == InputAction.Down) {
-                    if (runningBefore)
-                        canJump = true;
+
 
                     while (entity.intersect(this)) {
                         y += Map.WALL_CORNER_SIZE;

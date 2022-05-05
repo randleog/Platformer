@@ -42,8 +42,9 @@ public class BasicEnemy extends GameEntity {
         if (map.player.intersect(this)) {
             map.player.die();
         }
-        if (map.isOutOfBounds(this.x, this.y, this.x, this.y)) {
+        if (map.isOutOfBounds(this.x, this.y, this.sizeX, this.sizeY)) {
             die();
+            System.out.println("me");
         }
 
         inputActions();
