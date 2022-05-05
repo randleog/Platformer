@@ -106,7 +106,7 @@ public class Main extends Application {
         currentMap.addWall(0,1000,3000,50, 1);
         currentMap.addWall(1000,500,100,1000, 1);
         currentMap.addWall(700,0,100,800, 1);
-        currentMap.addWallCloseDown(1400,-1000,100,1960, 1);
+        currentMap.addWall(1400,-1000,100,1960, 1);
         currentMap.addWall(0,800,100,1000, 1);
         currentMap.addWall(1100,0,1000,100, 1);
         currentMap.addMovingWall(1100,500,100,50,1,0);

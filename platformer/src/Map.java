@@ -213,56 +213,8 @@ public class Map {
         return currentAction;
     }
 
-    public InputAction isIntersectMovingWall(GameEntity entity) {
-
-        InputAction actualAction = InputAction.Default;
-        for (GameEntity currentEntity : entities) {
-            if (!(currentEntity instanceof MovingWall)) {
-                if (currentEntity.getParallax() == entity.getParallax()) {
-                    if (!entity.equals(currentEntity)) {
-                        if (currentEntity.intersect(entity)) {
-                            if (InputAction.isYType(currentEntity.getAction())) {
-                                return currentEntity.getAction();
-                            } else {
-                                if (InputAction.isXType(currentEntity.getAction())) {
-                                    actualAction = currentEntity.getAction();
-                                }
-                            }
-                        }
-                    }
 
 
-                }
-            }
-        }
-
-        return actualAction;
-    }
-
-
-    public InputAction isIntersect(GameEntity entity) {
-
-        InputAction actualAction = InputAction.Default;
-        for (GameEntity currentEntity : entities) {
-            if (currentEntity.getParallax() == entity.getParallax()) {
-                if (!entity.equals(currentEntity)) {
-                    if (currentEntity.intersect(entity)) {
-                        if (InputAction.isYType(currentEntity.getAction())) {
-                            return currentEntity.getAction();
-                        } else {
-                            if (InputAction.isXType(currentEntity.getAction())) {
-                                actualAction = currentEntity.getAction();
-                            }
-                        }
-                    }
-                }
-
-
-            }
-        }
-
-        return actualAction;
-    }
 
 
     public void crashParticle(double x, double y) {
@@ -276,22 +228,7 @@ public class Map {
 
     }
 
-    public void addWallCloseDown(int x, int y, int sizeX, int sizeY, double parallax) {
 
-        addStandardWallSegments(x, y, sizeX, sizeY, parallax);
-
-        //downward wall
-        Wall wallDownLeft = new Wall(x + WALL_CORNER_SIZE, y + sizeY - 1
-                , this, sizeX / 2.0 - WALL_CORNER_SIZE * 2, 1, InputAction.Left, FillType.Nothing, parallax);
-        //downward wall
-        Wall wallDownRight = new Wall(x + WALL_CORNER_SIZE + sizeX / 2.0, y + sizeY - 1
-                , this, sizeX / 2.0 - WALL_CORNER_SIZE * 2, 1, InputAction.Right, FillType.Nothing, parallax);
-
-
-        addEntity(wallDownLeft);
-        addEntity(wallDownRight);
-
-    }
 
     private void addStandardWallSegments(int x, int y, int sizeX, int sizeY, double parallax) {
         Wall wallUp = new Wall(x + WALL_CORNER_SIZE, y, this, sizeX - WALL_CORNER_SIZE * 2, 1, InputAction.Up, FillType.Nothing, parallax);
