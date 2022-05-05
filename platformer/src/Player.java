@@ -28,6 +28,7 @@ public class Player extends GameEntity {
         this.sizeX = 50;
         this.sizeY = 50;
 
+        map.player = this;
         canJump = false;
         canLeftJump = false;
         canRightJump = false;

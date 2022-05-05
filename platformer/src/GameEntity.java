@@ -57,6 +57,9 @@ public abstract class GameEntity {
     protected double startX;
     protected double startY;
 
+    protected double startVelX;
+    protected double startVelY;
+
     GameEntity(double x, double y, Map map, InputAction action, FillType fillType, double parallax) {
         flagRemoval = false;
         this.fillType = fillType;
@@ -65,6 +68,8 @@ public abstract class GameEntity {
         running = false;
         this.x = x;
         this.y = y;
+        this.startVelX = 0;
+        this.startVelY = 0;
         startX = x;
         startY = y;
         sizeX = 100;
@@ -77,9 +82,26 @@ public abstract class GameEntity {
 
     }
 
+    public double getStartVelX() {
+        return startVelX;
+    }
+
+    public double getStartVelY() {
+        return startVelY;
+    }
+
+    public double getStartY() {
+        return startY;
+    }
+
+    public double getStartX() {
+        return startX;
+    }
+
     public void die() {
         if (this instanceof Player) {
             Main.deaths++;
+            map.reset();
         }
         this.x = startX;
         this.y = startY;
@@ -184,10 +206,12 @@ public abstract class GameEntity {
 
         if (!(entity == null)) {
 
+
             int numberOfCollisions = 0;
 
 
             while (!(entity.getAction() == InputAction.Default)) {
+
                 numberOfCollisions++;
                 if (numberOfCollisions > MAX_COLLISIONS) {
                     die();

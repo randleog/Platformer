@@ -14,6 +14,8 @@ public class MovingWall extends GameEntity {
         this.isMainWall = true;
         this.velX = velX;
         this.velY = velY;
+        this.startVelX = velX;
+        this.startVelY = velY;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.color = Color.color(1, 0.5, 0);
@@ -30,6 +32,8 @@ public class MovingWall extends GameEntity {
         this.startX = x - mainWall.getX();
         this.startY = y - mainWall.getY();
         this.isMainWall = false;
+        this.startVelX = velX;
+        this.startVelY = velY;
         this.velX = velX;
         this.velY = velY;
         this.sizeX = sizeX;

@@ -35,6 +35,8 @@ public class Map {
     public double playerX = 0;
     public double playerY = 0;
 
+    GameEntity player = null;
+
     private int sizeX;
     private int sizeY;
 
@@ -55,6 +57,15 @@ public class Map {
     public void removeEntity(GameEntity entity) {
         entity.setFlagRemoval();
         removeFlagged();
+    }
+
+    public void reset() {
+        for (GameEntity entity : entities) {
+            entity.setX(entity.getStartX());
+            entity.setY(entity.getStartY());
+            entity.setVelY(entity.getStartVelY());
+            entity.setVelX(entity.getStartVelX());
+        }
     }
 
 
