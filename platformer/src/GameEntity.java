@@ -20,7 +20,7 @@ public abstract class GameEntity {
     protected double accelX;
     protected double accelY;
 
-    private final int MAX_COLLISIONS = 10;
+    private final int MAX_COLLISIONS = 100;
 
 
     protected double parallax;
@@ -176,7 +176,7 @@ public abstract class GameEntity {
             while (!(entity.getAction() == InputAction.Default)) {
                 numberOfCollisions++;
                 if (numberOfCollisions > MAX_COLLISIONS) {
-                    y = y - 1;
+                    y = y + this.sizeY;
                 }
                 InputAction action = entity.getAction();
                 if (action == InputAction.Left) {
