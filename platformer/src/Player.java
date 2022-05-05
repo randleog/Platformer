@@ -5,15 +5,17 @@ public class Player extends GameEntity {
 
 
     private static final double AIR_ACCELERATION = 5.0;
-    private static final double GROUND_ACCELERATION = 40.0;
+    private static final double GROUND_ACCELERATION = 35.0;
 
-    private static final double RUNNING_BOOST = 1.4;
+    private static final double RUNNING_BOOST = 1.5;
 
     private static final double SIDE_BOOST = 1;
 
     private static final double JUMP_SPEED = 800.0;
 
     private static final double HOOK_FACTOR = 1000;
+
+
 
 
     private boolean hooking = false;
@@ -78,6 +80,7 @@ public class Player extends GameEntity {
 
         hooking = Main.isKeyDown(InputAction.Hook);
 
+        runningBefore = running;
         running = Main.isKeyDown(InputAction.Sprint);
 
         double baseAccel = 1;

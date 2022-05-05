@@ -90,13 +90,17 @@ public class Main extends Application {
 
 
         currentMap = new Map(true);
-        currentMap.addWall(0,1000,1000,500, 0.6);
-     //   currentMap.addEntity(new BackgroundObject(0,500,currentMap,300,200,0.3));
-        currentMap.addWall(0,1000,1000,50, 1);
+        currentMap.addParticle(new Wall(0, 700, currentMap, 1000, 600, InputAction.Default, FillType.Tile, 0.4));
+        currentMap.addParticle(new Wall(0, 1000, currentMap, 1000, 200, InputAction.Default, FillType.Tile, 0.6));
+
+
+
+        currentMap.addWall(0,1000,2000,50, 1);
         currentMap.addWall(1000,500,100,1000, 1);
         currentMap.addWall(700,0,100,800, 1);
+        currentMap.addWallCloseDown(1400,-1000,100,1960, 1);
         currentMap.addWall(0,800,100,1000, 1);
-      //  currentMap.addEntity(new Wall(0, 995, currentMap, 1000, 500, InputAction.Up));
+
         currentMap.addEntity(new Player(700, 500, currentMap));
         currentMap.addEntity(new Hookable(700, 500, currentMap));
     }

@@ -24,6 +24,8 @@ public abstract class GameEntity {
     protected  double parallax;
     private static final double DEFAULT_TILE_SIZE = 50;
 
+    private static final double SQUASH_FACTOR = 1;
+
     private static final double SPRINT_HEIGHT_FACTOR = 0.7;
 
     protected boolean running;
@@ -39,7 +41,7 @@ public abstract class GameEntity {
 
     protected Image image;
 
-
+    protected boolean runningBefore = false;
     protected boolean canJump;
 
     protected boolean canLeftJump;
@@ -190,6 +192,7 @@ public abstract class GameEntity {
                 }
 
             } else if (action == InputAction.Down) {
+                if (runningBefore)
                 canJump = true;
                 GameEntity collider = map.intersectAction(this);
                 while (collider.intersect(this)) {
@@ -205,12 +208,12 @@ public abstract class GameEntity {
 
     public double getVelStretchX() {
 
-        return (Math.sqrt(Math.abs(velX))-Math.sqrt(Math.abs(velY)))*2;
+        return (Math.sqrt(Math.abs(velX))-Math.sqrt(Math.abs(velY)))*SQUASH_FACTOR;
     }
 
     public double getVelStretchY() {
 
-        return (Math.sqrt(Math.abs(velY))-Math.sqrt(Math.abs(velX)))*2;
+        return (Math.sqrt(Math.abs(velY))-Math.sqrt(Math.abs(velX)))*SQUASH_FACTOR;
     }
 
     public double getRenderX() {
