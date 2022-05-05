@@ -51,6 +51,7 @@ public class Player extends GameEntity {
 
         physics();
         collision();
+        jumpCollision();
 
 
         if (map.cameraMap) {

@@ -4,6 +4,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Map {
@@ -312,6 +313,24 @@ public class Map {
         }
 
         return returnEntity;
+    }
+
+    public ArrayList<InputAction> getActions(GameEntity entity) {
+        ArrayList<InputAction> actions = new ArrayList<>();
+
+        for (GameEntity currentEntity : entities) {
+            if (currentEntity.getParallax() == entity.getParallax()) {
+                if (!entity.equals(currentEntity)) {
+                    if (currentEntity.intersect(entity)) {
+                        actions.add(currentEntity.getAction());
+                    }
+                }
+
+
+            }
+        }
+
+        return actions;
     }
 
     public GameEntity intersectionEntity(GameEntity entity) {

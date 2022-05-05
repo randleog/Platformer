@@ -198,6 +198,22 @@ public abstract class GameEntity {
     }
 
 
+    protected void jumpCollision() {
+        x++;
+        if (map.getActions(this).contains(InputAction.Left)) {
+            canLeftJump = true;
+        }
+        x-=2;
+        if (map.getActions(this).contains(InputAction.Right)) {
+            canRightJump = true;
+        }
+        x++;
+    }
+
+
+
+
+
     protected void collision() {
         GameEntity entity = map.intersectionEntity(this);
         canJump = false;
@@ -267,6 +283,8 @@ public abstract class GameEntity {
             }
         }
     }
+
+
 
 
 
