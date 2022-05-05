@@ -11,7 +11,7 @@ public class Hookable extends GameEntity {
         this.hookRadius = hookRadius;
         this.sizeX = 10;
         this.sizeY = 10;
-        this.color = Color.color(1,0.5,0);
+        this.color = Color.color(0.65,0,0.7);
         this.image = ImageLoader.wallTile;
     }
 
@@ -53,7 +53,7 @@ public class Hookable extends GameEntity {
                         g.setFill(color);
                         g.fillOval(getRenderX(), getRenderY(), getSizeX(), getSizeY());
 
-                        if (Main.isKeyDown(InputAction.Menu)) {
+                        if (Main.isKeyDown(InputAction.Hook)) {
                             g.setStroke(Color.color(0.5, 0.5, 0.5));
                             double x = getRenderX();
                             double y = getRenderY();
