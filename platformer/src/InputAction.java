@@ -28,6 +28,11 @@ public enum InputAction {
         public String toString() {
             return "Sprint";
         }
+    },
+    Hook() {
+        public String toString() {
+            return "Hook";
+        }
     };
 
     public static boolean isXType(InputAction action) {

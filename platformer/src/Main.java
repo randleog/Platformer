@@ -98,6 +98,7 @@ public class Main extends Application {
         currentMap.addWall(0,800,100,1000, 1);
       //  currentMap.addEntity(new Wall(0, 995, currentMap, 1000, 500, InputAction.Up));
         currentMap.addEntity(new Player(700, 500, currentMap));
+        currentMap.addEntity(new Hookable(700, 500, currentMap));
     }
 
     private static void tick(){
@@ -151,6 +152,8 @@ public class Main extends Application {
         inputMap.put(KeyCode.SPACE, InputAction.Up);
         inputMap.put(KeyCode.SHIFT, InputAction.Sprint);
 
+        inputMap.put(KeyCode.R, InputAction.Hook);
+
         inputMap.put(KeyCode.UP, InputAction.Up);
         inputMap.put(KeyCode.LEFT, InputAction.Left);
         inputMap.put(KeyCode.DOWN, InputAction.Down);
@@ -162,6 +165,7 @@ public class Main extends Application {
         hashMap.put(InputAction.Right, 0);
         hashMap.put(InputAction.Sprint, 0);
         hashMap.put(InputAction.Default, 0);
+        hashMap.put(InputAction.Hook, 0);
 
     }
 

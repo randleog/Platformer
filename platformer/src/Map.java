@@ -37,6 +37,17 @@ public class Map {
         removeFlagged();
     }
 
+
+
+    public Hookable getHookable() {
+        for (GameEntity entity : entities) {
+            if (entity instanceof Hookable) {
+                return (Hookable) entity;
+            }
+        }
+        return null;
+    }
+
     public void removeParticle(GameEntity entity) {
         entity.setFlagRemoval();
         removeFlagged();
