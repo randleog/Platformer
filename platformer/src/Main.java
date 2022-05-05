@@ -95,7 +95,7 @@ public class Main extends Application {
         loop.play();
 
 
-        currentMap = new Map(true);
+        currentMap = new Map(true, 3000,2000);
         currentMap.addParticle(new Wall(0, 700, currentMap, 1000, 600, InputAction.Default, FillType.Tile, 0.4));
         currentMap.addParticle(new Wall(0, 1000, currentMap, 1000, 200, InputAction.Default, FillType.Tile, 0.6));
 

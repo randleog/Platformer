@@ -31,6 +31,7 @@ public class Player extends GameEntity {
         canJump = false;
         canLeftJump = false;
         canRightJump = false;
+
     }
 
 
@@ -39,7 +40,9 @@ public class Player extends GameEntity {
 
 
     public void tick() {
-
+        if (map.isOutOfBounds(this.x, this.y)) {
+            die();
+        }
 
         inputActions();
 

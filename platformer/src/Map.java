@@ -32,9 +32,17 @@ public class Map {
 
     protected boolean cameraMap;
 
+    private int sizeX;
+    private int sizeY;
 
-    public Map(boolean cameraMap) {
+    public Map(boolean cameraMap, int sizeX, int sizeY) {
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
         this.cameraMap = cameraMap;
+    }
+
+    public boolean isOutOfBounds(double x, double y) {
+        return (x > sizeX || x < -sizeX || y > sizeY || y < -sizeY);
     }
 
     public void removeEntity(GameEntity entity) {
@@ -129,12 +137,17 @@ public class Map {
 
 
     public void render(GraphicsContext g) {
+
+
         for (GameEntity entity : particles) {
             entity.render(g);
         }
         for (GameEntity entity : entities) {
             entity.render(g);
         }
+        g.setStroke(Color.color(1,0,0));
+        g.setLineWidth(10);
+        g.strokeRect(correctUnit(-sizeX-cameraX),correctUnit(-sizeY-cameraY),correctUnit(sizeX*2),correctUnit(sizeY*2));
         g.setFont(new Font(25));
         g.setFill(Color.color(1, 1, 1));
         g.fillText("deaths: " + Main.deaths, 50, 50);

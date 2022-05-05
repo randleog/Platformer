@@ -190,7 +190,7 @@ public abstract class GameEntity {
                 if (numberOfCollisions > MAX_COLLISIONS) {
                     die();
                     numberOfCollisions =0;
-                
+
                 }
                 InputAction action = entity.getAction();
                 if (action == InputAction.Left) {
