@@ -16,7 +16,7 @@ public class Map {
 
     public static final double GRAVITY = 15;
 
-    private static final double WALL_CORNER_SIZE = 10.0;
+    public static final double WALL_CORNER_SIZE = 10.0;
 
     public static final double AIR_DRAG = 0.4;
     public static final double GROUND_DRAG = 0.0001;
@@ -275,7 +275,7 @@ public class Map {
     public void addWall(int x, int y, int sizeX, int sizeY, double parallax) {
 
         addStandardWallSegments(x, y, sizeX, sizeY, parallax);
-        Wall wallDown = new Wall(x + WALL_CORNER_SIZE, y + sizeY - 1, this, sizeX - WALL_CORNER_SIZE * 2, 1, InputAction.Down, FillType.Nothing, parallax);
+        Wall wallDown = new Wall(x + WALL_CORNER_SIZE, y + sizeY - WALL_CORNER_SIZE-1, this, sizeX - WALL_CORNER_SIZE * 2, 1, InputAction.Down, FillType.Nothing, parallax);
 
 
         addEntity(wallDown);

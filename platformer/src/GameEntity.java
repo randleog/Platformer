@@ -254,10 +254,10 @@ public abstract class GameEntity {
                         canJump = true;
 
                     while (entity.intersect(this)) {
-                        y += 11;
+                        y += Map.WALL_CORNER_SIZE;
 
                     }
-                    velY = -velY*0.1;
+                    velY = 0;
 
                 }
                 entity = map.intersectionEntity(this);
