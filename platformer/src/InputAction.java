@@ -38,6 +38,11 @@ public enum InputAction {
         public String toString() {
             return "Menu";
         }
+    },
+    FullScreen() {
+        public String toString() {
+            return "FullScreen";
+        }
     };
 
     public static boolean isXType(InputAction action) {

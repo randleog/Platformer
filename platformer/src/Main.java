@@ -6,9 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.InputMethodTextRun;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -74,14 +72,25 @@ public class Main extends Application {
             keyDown(key.getCode());
         });
 
+
+        primaryStage.setScene(scene);
+
         scene.addEventHandler(KeyEvent.KEY_RELEASED, (key) -> {
 
-            keyReleased(key.getCode());
+            if (key.getCode() == KeyCode.F11) {
+                primaryStage.setFullScreen(!primaryStage.isFullScreen());
+            } else {
+                keyReleased(key.getCode());
+            }
         });
 
 
-        primaryStage.setScene(scene);
+
+
+
         primaryStage.setFullScreen(true);
+        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+
 
 
         primaryStage.show();
@@ -126,6 +135,8 @@ public class Main extends Application {
         currentMap.addEntity(new Hookable(700, 500, currentMap, 400));
 
         currentMap.addEntity(new Hookable(1400, 500, currentMap, 400));
+
+
     }
 
     private static void tick(){
@@ -180,6 +191,7 @@ public class Main extends Application {
         inputMap.put(KeyCode.SPACE, InputAction.Up);
         inputMap.put(KeyCode.SHIFT, InputAction.Sprint);
         inputMap.put(KeyCode.ESCAPE, InputAction.Menu);
+        inputMap.put(KeyCode.F11, InputAction.FullScreen);
 
         inputMap.put(KeyCode.R, InputAction.Hook);
 
@@ -188,7 +200,8 @@ public class Main extends Application {
         inputMap.put(KeyCode.DOWN, InputAction.Down);
         inputMap.put(KeyCode.RIGHT, InputAction.Right);
 
-        hashMap.put(InputAction.Menu, 1);
+        hashMap.put(InputAction.FullScreen, 0);
+        hashMap.put(InputAction.Menu, 0);
         hashMap.put(InputAction.Up, 0);
         hashMap.put(InputAction.Left, 0);
         hashMap.put(InputAction.Down, 0);
