@@ -124,6 +124,8 @@ public class Main extends Application {
         currentMap.addEntity(new BasicEnemy(100, 700, currentMap, false));
       //  currentMap.addEntity(new BasicEnemy(1700, 500, currentMap, true));
         currentMap.addEntity(new Hookable(700, 500, currentMap, 400));
+
+        currentMap.addEntity(new Hookable(1400, 500, currentMap, 400));
     }
 
     private static void tick(){
