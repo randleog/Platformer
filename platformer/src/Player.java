@@ -41,7 +41,7 @@ public class Player extends GameEntity {
 
 
     public void tick() {
-        if (map.isOutOfBounds(this.x, this.y)) {
+        if (map.isOutOfBounds(this.x, this.y, this.sizeX, this.sizeY)) {
             die();
         }
 

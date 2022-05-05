@@ -50,8 +50,8 @@ public class Map {
         return (Math.sqrt(Math.pow(Math.abs(x2 - x), 2) + Math.pow(Math.abs(y2 - y), 2)) < radius);
     }
 
-    public boolean isOutOfBounds(double x, double y) {
-        return (x > sizeX || x < -sizeX || y > sizeY || y < -sizeY);
+    public boolean isOutOfBounds(double x, double y, double sizeX, double sizeY) {
+        return (x+sizeX > this.sizeX || x < -this.sizeX || y+sizeY > this.sizeY || y < -this.sizeY);
     }
 
     public void removeEntity(GameEntity entity) {
@@ -151,6 +151,8 @@ public class Map {
             nextParticles = new ArrayList<>();
 
         }
+
+        //camera bounds
         cameraX = Math.min(cameraX, sizeX-Main.gameUnit* Main.DEFAULT_WIDTH_MAP);
         cameraX = Math.max(cameraX, -sizeX+Main.gameUnit* Main.DEFAULT_WIDTH_MAP);
         cameraY = Math.min(cameraY, sizeY-Main.gameUnit* Main.DEFAULT_HEIGHT_MAP);
@@ -167,9 +169,14 @@ public class Map {
         for (GameEntity entity : entities) {
             entity.render(g);
         }
+
+        //bounds
         g.setStroke(Color.color(1,0,0));
         g.setLineWidth(10);
         g.strokeRect(correctUnit(-sizeX-cameraX),correctUnit(-sizeY-cameraY),correctUnit(sizeX*2),correctUnit(sizeY*2));
+
+
+
         g.setFont(new Font(25));
         g.setFill(Color.color(1, 1, 1));
         g.fillText("deaths: " + Main.deaths, 50, 50);
