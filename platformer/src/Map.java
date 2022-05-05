@@ -174,7 +174,7 @@ public class Map {
             g.setFill(Color.color(0, 0, 0, 0.4));
             g.fillRect(0, 0, g.getCanvas().getWidth(), g.getCanvas().getHeight());
 
-
+            g.setFill(Color.color(1, 1, 1));
             g.setFont(new Font(40));
             g.fillText("Paused", 100, 200);
             g.setFont(new Font(25));
