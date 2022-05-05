@@ -47,6 +47,20 @@ public class Main extends Application {
     private static Map currentMap;
 
 
+    public static boolean mouseDown = false;
+
+    public static double mouseX = 0;
+    public static double mouseY = 0;
+
+
+
+    private static ArrayList<MenuButton> mainButtons = new ArrayList<>();
+
+
+    private static ArrayList<MenuButton> currentMenu = new ArrayList<>();
+
+
+
 
 
     /**
@@ -85,8 +99,26 @@ public class Main extends Application {
         });
 
 
+        canvas.setOnMouseMoved(event -> {
+           mouseX = event.getX();
+            mouseY = event.getY();
 
+        });
 
+        canvas.setOnMouseDragged(event -> {
+            mouseX = event.getX();
+            mouseY = event.getY();
+        });
+
+        canvas.setOnMousePressed(event -> {
+            mouseDown = true;
+
+        });
+
+        canvas.setOnMouseReleased(event -> {
+            mouseDown = false;
+
+        });
 
         primaryStage.setFullScreen(true);
         primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
@@ -115,7 +147,7 @@ public class Main extends Application {
 
 
 
-        currentMap.addWall(0,1000,3000,50, 1);
+        currentMap.addWall(-500,1000,3500,50, 1);
 
         currentMap.addWall(1000,500,100,1000, 1);
         currentMap.addWall(700,0,100,900, 1);
@@ -132,17 +164,41 @@ public class Main extends Application {
         currentMap.addEntity(new Player(700, 500, currentMap));
         currentMap.addEntity(new BasicEnemy(100, 700, currentMap, false));
         currentMap.addEntity(new BasicEnemy(1700, 900, currentMap, true));
-        currentMap.addEntity(new Hookable(750, 0, currentMap, 400));
+        currentMap.addEntity(new Hookable(750, 0, currentMap, 600));
 
 
+        addbuttons();
+
+        switchMenu(mainButtons);
 
 
     }
+
+
+    private static void addbuttons() {
+        mainButtons.add(new LevelsMenuButton(100,100,500,100));
+    }
+
 
     private static void tick(){
 
+
+
         currentMap.tick();
+
+
+
+
     }
+
+
+    public static void switchMenu(ArrayList<MenuButton> newMenu) {
+        currentMenu = newMenu;
+    }
+
+
+
+
 
 
     public static void deactivateKey(InputAction action) {
@@ -171,6 +227,13 @@ public class Main extends Application {
 
         g.drawImage(ImageLoader.sky1,0,0,canvas.getWidth(),canvas.getHeight());
         currentMap.render(g);
+
+        for (MenuButton button : currentMenu) {
+         //   button.tick();
+
+
+          //  button.render(canvas.getGraphicsContext2D());
+        }
     }
 
 
