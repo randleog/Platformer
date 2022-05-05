@@ -20,12 +20,13 @@ public abstract class GameEntity {
     protected double accelX;
     protected double accelY;
 
+    private final int MAX_COLLISIONS = 10;
 
-    protected  double parallax;
+
+    protected double parallax;
     private static final double DEFAULT_TILE_SIZE = 50;
 
     private static final double SQUASH_FACTOR = 1;
-
 
 
     protected boolean running;
@@ -67,7 +68,7 @@ public abstract class GameEntity {
         tileSize = map.correctUnit(DEFAULT_TILE_SIZE);
         this.map = map;
         this.action = action;
-        this.color = Color.color(1,0,0);
+        this.color = Color.color(1, 0, 0);
         this.image = ImageLoader.defaultTile;
 
     }
@@ -78,7 +79,7 @@ public abstract class GameEntity {
 
     protected void gravity() {
 
-        velY+=Map.GRAVITY/Main.FPS;
+        velY += Map.GRAVITY / Main.FPS;
 
     }
 
@@ -92,11 +93,10 @@ public abstract class GameEntity {
 
 
     protected void physics() {
-        velX = velX+accelX;
-        velY = velY+accelY;
-        velX = velX*Math.pow(currentDrag, 1.0/Main.FPS);
-        velY = velY*Math.pow(Map.BASE_DRAG_Y, 1.0/Main.FPS);
-
+        velX = velX + accelX;
+        velY = velY + accelY;
+        velX = velX * Math.pow(currentDrag, 1.0 / Main.FPS);
+        velY = velY * Math.pow(Map.BASE_DRAG_Y, 1.0 / Main.FPS);
 
 
         x += velX;
@@ -153,6 +153,7 @@ public abstract class GameEntity {
     }
 
     public abstract void tick();
+
     public abstract void render(GraphicsContext g);
 
 
@@ -162,85 +163,103 @@ public abstract class GameEntity {
 
 
     protected void collision() {
-        InputAction action = map.isIntersect(this);
+        GameEntity entity = map.intersectionEntity(this);
         canJump = false;
         canLeftJump = false;
         canRightJump = false;
 
-        while (!(action == InputAction.Default)) {
-            if (action == InputAction.Left) {
-                canLeftJump = true;
-                GameEntity collider = map.intersectAction(this);
-                while (collider.intersect(this)) {
-                    x -= 0.1;
-                }
-                velX = 0;
-            } else if (action == InputAction.Right) {
-                canRightJump = true;
-                GameEntity collider = map.intersectAction(this);
-                while (collider.intersect(this)) {
-                    x += 0.1;
-                }
-                velX = 0;
-            } else if (action == InputAction.Up) {
-                if (this instanceof Player) {
+        if (!(entity == null)) {
 
-                    if (velY > CRASH_SPEED ) {
-                        map.crashParticle(this.x+sizeX/2,this.y+sizeY/2);
+            int numberOfCollisions = 0;
+
+
+            while (!(entity.getAction() == InputAction.Default)) {
+                numberOfCollisions++;
+                if (numberOfCollisions > MAX_COLLISIONS) {
+                    y = y - 1;
+                }
+                InputAction action = entity.getAction();
+                if (action == InputAction.Left) {
+                    canLeftJump = true;
+
+                    while (entity.intersect(this)) {
+                        x -= 0.1;
                     }
-                    canJump = true;
-                    GameEntity collider = map.intersectAction(this);
-                    while (collider.intersect(this)) {
-                        y -= 0.1;
+                    velX = 0;
+                } else if (action == InputAction.Right) {
+                    canRightJump = true;
+
+                    while (entity.intersect(this)) {
+                        x += 0.1;
+                    }
+                    velX = 0;
+                } else if (action == InputAction.Up) {
+                    if (this instanceof Player) {
+
+                        if (velY > CRASH_SPEED) {
+                            map.crashParticle(this.x + sizeX / 2, this.y + sizeY / 2);
+                        }
+                        canJump = true;
+
+                        while (entity.intersect(this)) {
+                            y -= 0.1;
+
+                        }
                         velY = 0;
                     }
-                }
 
-            } else if (action == InputAction.Down) {
-                if (runningBefore)
-                canJump = true;
-                GameEntity collider = map.intersectAction(this);
-                while (collider.intersect(this)) {
-                    y += 0.1;
+                } else if (action == InputAction.Down) {
+                    if (runningBefore)
+                        canJump = true;
+
+                    while (entity.intersect(this)) {
+                        y += 0.1;
+
+                    }
                     velY = 0;
+
+                }
+                entity = map.intersectionEntity(this);
+                if (entity == null) {
+                    entity = new Wall(0, 0, map, 1, 1, InputAction.Default, FillType.Nothing, 1);
                 }
 
-                velY = -velY * 0.01;
             }
-            action = map.isIntersect(this);
         }
     }
 
+
+
     public double getVelStretchX() {
 
-        return (Math.sqrt(Math.abs(velX))-Math.sqrt(Math.abs(velY)))*SQUASH_FACTOR;
+        return (Math.sqrt(Math.abs(velX)) - Math.sqrt(Math.abs(velY))) * SQUASH_FACTOR;
     }
 
     public double getVelStretchY() {
 
-        return (Math.sqrt(Math.abs(velY))-Math.sqrt(Math.abs(velX)))*SQUASH_FACTOR;
+        return (Math.sqrt(Math.abs(velY)) - Math.sqrt(Math.abs(velX))) * SQUASH_FACTOR;
     }
 
     public double getRenderX() {
-        double x = map.correctUnit(this.x) - map.correctUnit(map.cameraX * parallax)-map.correctUnit(getVelStretchX());
+        double x = map.correctUnit(this.x) - map.correctUnit(map.cameraX * parallax) - map.correctUnit(getVelStretchX());
         return x;
 
     }
 
 
     public double getRenderY() {
-        double y = map.correctUnit(this.y) - map.correctUnit(map.cameraY * parallax)-map.correctUnit(getVelStretchY());
+        double y = map.correctUnit(this.y) - map.correctUnit(map.cameraY * parallax) - map.correctUnit(getVelStretchY());
         return y;
 
     }
 
     public double getRenderSizeX() {
-        double sizeX = map.correctUnit(this.sizeX)+map.correctUnit(getVelStretchX()*2);
+        double sizeX = map.correctUnit(this.sizeX) + map.correctUnit(getVelStretchX() * 2);
         return sizeX;
     }
 
     public double getRenderSizeY() {
-        double sizeY = map.correctUnit(getSizeY())+map.correctUnit(getVelStretchY()*2);
+        double sizeY = map.correctUnit(getSizeY()) + map.correctUnit(getVelStretchY() * 2);
         return sizeY;
     }
 
@@ -275,10 +294,9 @@ public abstract class GameEntity {
         double y = entity.getY();
         double sizeX = entity.getSizeX();
         double sizeY = entity.getSizeY();
-        return x+sizeX > getX() && x< getX() + getSizeX()
-                && y+sizeY >getY() && y < getY() + getSizeY();
+        return x + sizeX > getX() && x < getX() + getSizeX()
+                && y + sizeY > getY() && y < getY() + getSizeY();
     }
-
 
 
 }

@@ -137,10 +137,10 @@ public class Map {
         }
 
         if (!(Main.getKey(InputAction.Menu) > 0)) {
-            g.setFill(Color.color(0,0,0,0.4));
-            g.fillRect(0,0,g.getCanvas().getWidth(),g.getCanvas().getHeight());
+            g.setFill(Color.color(0, 0, 0, 0.4));
+            g.fillRect(0, 0, g.getCanvas().getWidth(), g.getCanvas().getHeight());
 
-            g.setFill(Color.color(1,1,1));
+            g.setFill(Color.color(1, 1, 1));
             g.setFont(new Font(40));
             g.fillText("Paused", 100, 200);
             g.setFont(new Font(25));
@@ -162,7 +162,6 @@ public class Map {
     }
 
 
-
     private String getStringKey(InputAction action) {
         String currentAction = "";
         int current = 0;
@@ -170,14 +169,40 @@ public class Map {
 
         for (KeyCode code : codes) {
             currentAction = currentAction + code.getName();
-            if (current < codes.size()-1) {
+            if (current < codes.size() - 1) {
                 currentAction = currentAction + " | ";
             }
             current++;
         }
-        currentAction = currentAction+" to: " + action + "\n";
+        currentAction = currentAction + " to: " + action + "\n";
 
         return currentAction;
+    }
+
+    public InputAction isIntersectMovingWall(GameEntity entity) {
+
+        InputAction actualAction = InputAction.Default;
+        for (GameEntity currentEntity : entities) {
+            if (!(currentEntity instanceof MovingWall)) {
+                if (currentEntity.getParallax() == entity.getParallax()) {
+                    if (!entity.equals(currentEntity)) {
+                        if (currentEntity.intersect(entity)) {
+                            if (InputAction.isYType(currentEntity.getAction())) {
+                                return currentEntity.getAction();
+                            } else {
+                                if (InputAction.isXType(currentEntity.getAction())) {
+                                    actualAction = currentEntity.getAction();
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+            }
+        }
+
+        return actualAction;
     }
 
 
@@ -219,14 +244,14 @@ public class Map {
 
     public void addWallCloseDown(int x, int y, int sizeX, int sizeY, double parallax) {
 
-        addStandardWallSegments(x,y,sizeX,sizeY,parallax);
+        addStandardWallSegments(x, y, sizeX, sizeY, parallax);
 
         //downward wall
         Wall wallDownLeft = new Wall(x + WALL_CORNER_SIZE, y + sizeY - 1
-                , this, sizeX/2.0 - WALL_CORNER_SIZE * 2, 1, InputAction.Left, FillType.Nothing, parallax);
+                , this, sizeX / 2.0 - WALL_CORNER_SIZE * 2, 1, InputAction.Left, FillType.Nothing, parallax);
         //downward wall
-        Wall wallDownRight = new Wall(x + WALL_CORNER_SIZE+sizeX/2.0, y + sizeY - 1
-                , this, sizeX/2.0 - WALL_CORNER_SIZE * 2, 1, InputAction.Right, FillType.Nothing, parallax);
+        Wall wallDownRight = new Wall(x + WALL_CORNER_SIZE + sizeX / 2.0, y + sizeY - 1
+                , this, sizeX / 2.0 - WALL_CORNER_SIZE * 2, 1, InputAction.Right, FillType.Nothing, parallax);
 
 
         addEntity(wallDownLeft);
@@ -246,10 +271,35 @@ public class Map {
         addEntity(wallImage);
     }
 
+    public void addMovingWall(int x, int y, int sizeX, int sizeY, double velY, double velX) {
+        MovingWall wallImage = new MovingWall(x, y, this, sizeX, sizeY
+                , InputAction.Default, FillType.Tile, velX, velY);
+
+        MovingWall wallUp = new MovingWall(x + WALL_CORNER_SIZE, y, this
+                , sizeX - WALL_CORNER_SIZE * 2, 1, InputAction.Up, FillType.Nothing, 0, 0, wallImage);
+
+        MovingWall wallRight = new MovingWall(x + sizeX, y + WALL_CORNER_SIZE
+                , this, 1, sizeY - WALL_CORNER_SIZE * 2, InputAction.Right, FillType.Nothing, 0, 0, wallImage);
+
+        MovingWall wallLeft = new MovingWall(x, y + WALL_CORNER_SIZE, this
+                , 1, sizeY - WALL_CORNER_SIZE * 2, InputAction.Left, FillType.Nothing, 0, 0, wallImage);
+
+        MovingWall wallDown = new MovingWall(x + WALL_CORNER_SIZE, y + sizeY - 1, this, sizeX - WALL_CORNER_SIZE * 2, 1, InputAction.Down, FillType.Nothing, 0,0, wallImage);
+
+
+        addEntity(wallUp);
+        addEntity(wallRight);
+        addEntity(wallLeft);
+        addEntity(wallDown);
+        addEntity(wallImage);
+
+
+    }
+
 
     public void addWall(int x, int y, int sizeX, int sizeY, double parallax) {
 
-        addStandardWallSegments(x,y,sizeX,sizeY,parallax);
+        addStandardWallSegments(x, y, sizeX, sizeY, parallax);
         Wall wallDown = new Wall(x + WALL_CORNER_SIZE, y + sizeY - 1, this, sizeX - WALL_CORNER_SIZE * 2, 1, InputAction.Down, FillType.Nothing, parallax);
 
 
@@ -258,7 +308,31 @@ public class Map {
 
     }
 
-    public GameEntity intersectAction(GameEntity entity) {
+    public GameEntity intersectionMovingWall(GameEntity entity) {
+        GameEntity returnEntity = entity;
+        for (GameEntity currentEntity : entities) {
+            if (!(currentEntity instanceof MovingWall)) {
+                if (currentEntity.getParallax() == entity.getParallax()) {
+                    if (!entity.equals(currentEntity)) {
+                        if (currentEntity.intersect(entity)) {
+                            if (InputAction.isYType(currentEntity.getAction())) {
+                                return currentEntity;
+                            } else {
+                                if (InputAction.isXType(currentEntity.getAction())) {
+                                    returnEntity = currentEntity;
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+        return returnEntity;
+    }
+
+    public GameEntity intersectionEntity(GameEntity entity) {
         GameEntity returnEntity = entity;
         for (GameEntity currentEntity : entities) {
             if (currentEntity.getParallax() == entity.getParallax()) {

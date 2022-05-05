@@ -104,6 +104,8 @@ public class Main extends Application {
         currentMap.addWallCloseDown(1400,-1000,100,1960, 1);
         currentMap.addWall(0,800,100,1000, 1);
 
+        currentMap.addMovingWall(1100,500,100,50,0,1);
+
         currentMap.addEntity(new Player(700, 500, currentMap));
         currentMap.addEntity(new Hookable(700, 500, currentMap, 400));
     }

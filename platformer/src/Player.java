@@ -24,6 +24,8 @@ public class Player extends GameEntity {
     private double startX;
     private double startY;
 
+
+
     public Player(double x, double y, Map map) {
         super(x, y, map, InputAction.Default, FillType.Image, 1);
         this.sizeX = 50;
