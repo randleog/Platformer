@@ -254,7 +254,7 @@ public abstract class GameEntity {
                         canJump = true;
 
                     while (entity.intersect(this)) {
-                        y += 0.1;
+                        y += 11;
 
                     }
                     velY = -velY*0.1;
