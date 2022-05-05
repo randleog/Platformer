@@ -6,8 +6,7 @@ public class MovingWall extends GameEntity {
     private MovingWall mainWall;
     private boolean isMainWall;
 
-    private double startX;
-    private double startY;
+
 
     public MovingWall(double x, double y, Map map, double sizeX, double sizeY, InputAction side, FillType fillType, double velX, double velY) {
         super(x, y, map, side, fillType, 1);

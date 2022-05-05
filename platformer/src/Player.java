@@ -21,21 +21,20 @@ public class Player extends GameEntity {
     private boolean hooking = false;
 
 
-    private double startX;
-    private double startY;
-
 
 
     public Player(double x, double y, Map map) {
         super(x, y, map, InputAction.Default, FillType.Image, 1);
         this.sizeX = 50;
         this.sizeY = 50;
-        startX = x;
-        startY = y;
+
         canJump = false;
         canLeftJump = false;
         canRightJump = false;
     }
+
+
+
 
 
 

@@ -54,6 +54,8 @@ public abstract class GameEntity {
     protected double tileSize;
 
     private boolean flagRemoval;
+    protected double startX;
+    protected double startY;
 
     GameEntity(double x, double y, Map map, InputAction action, FillType fillType, double parallax) {
         flagRemoval = false;
@@ -63,6 +65,8 @@ public abstract class GameEntity {
         running = false;
         this.x = x;
         this.y = y;
+        startX = x;
+        startY = y;
         sizeX = 100;
         sizeY = 100;
         tileSize = map.correctUnit(DEFAULT_TILE_SIZE);
@@ -71,6 +75,14 @@ public abstract class GameEntity {
         this.color = Color.color(1, 0, 0);
         this.image = ImageLoader.defaultTile;
 
+    }
+
+    public void die() {
+        Main.deaths++;
+        this.x = startX;
+        this.y = startY;
+        this.velY =0;
+        this.velX = 0;
     }
 
     public double getParallax() {
@@ -176,7 +188,9 @@ public abstract class GameEntity {
             while (!(entity.getAction() == InputAction.Default)) {
                 numberOfCollisions++;
                 if (numberOfCollisions > MAX_COLLISIONS) {
-                    y = y + this.sizeY;
+                    die();
+                    numberOfCollisions =0;
+                
                 }
                 InputAction action = entity.getAction();
                 if (action == InputAction.Left) {

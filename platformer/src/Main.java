@@ -22,6 +22,9 @@ import java.util.Random;
 public class Main extends Application {
 
 
+    public static int deaths = 0;
+
+
     public static Random random = new Random();
 
     private static Canvas canvas;
