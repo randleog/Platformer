@@ -150,7 +150,8 @@ public class Main extends Application {
         currentMap.addWall(-500,1000,3500,50, 1);
 
         currentMap.addWall(1000,500,100,1000, 1);
-        currentMap.addWall(700,0,100,900, 1);
+        currentMap.addWall(700,-2000,100,2900, 1);
+        currentMap.addGate(700,900,100,100, 1, 1);
         currentMap.addWall(1400,0,100,960, 1);
 
         currentMap.addWall(1400,800,1000,100,1);
@@ -158,13 +159,18 @@ public class Main extends Application {
         currentMap.addWall(0,800,100,1000, 1);
         currentMap.addWall(1100,0,1000,100, 1);
 
+       // currentMap.addGate()
+
         currentMap.addMovingWall(1100,500,100,50,1,0);
         currentMap.addMovingWall(1100,500,100,50,0,1);
 
-        currentMap.addEntity(new Player(700, 500, currentMap));
+        currentMap.addEntity(new Player(850, 500, currentMap));
+        currentMap.addEntity(new Key(1500, 700, currentMap, 1, 1));
+
         currentMap.addEntity(new BasicEnemy(100, 700, currentMap, false));
         currentMap.addEntity(new BasicEnemy(1700, 900, currentMap, true));
         currentMap.addEntity(new Hookable(750, 0, currentMap, 600));
+        currentMap.setStartEntities();
 
 
         addbuttons();

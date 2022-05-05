@@ -4,8 +4,10 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+import java.awt.image.AreaAveragingScaleFilter;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Map {
 
@@ -14,6 +16,8 @@ public class Map {
 
     private ArrayList<GameEntity> particles = new ArrayList<>();
     private ArrayList<GameEntity> nextParticles = new ArrayList<>();
+
+    private ArrayList<GameEntity> startEntities = new ArrayList<>();
 
     public static final double GRAVITY = 15;
 
@@ -26,6 +30,8 @@ public class Map {
 
 
     public static final double BASE_DRAG_Y = 0.5;
+
+    protected HashMap<Integer,Boolean> keys = new HashMap<>();
 
 
     protected double cameraX = 0;
@@ -60,7 +66,15 @@ public class Map {
         removeFlagged();
     }
 
+    public void setStartEntities() {
+        this.startEntities = new ArrayList<>();
+        startEntities.addAll(entities);
+    }
+
     public void reset() {
+        entities = new ArrayList<>();
+        entities.addAll(startEntities);
+
         for (GameEntity entity : entities) {
             entity.setX(entity.getStartX());
             entity.setY(entity.getStartY());
@@ -70,14 +84,7 @@ public class Map {
     }
 
 
-    public Hookable getHookable() {
-        for (GameEntity entity : entities) {
-            if (entity instanceof Hookable) {
-                return (Hookable) entity;
-            }
-        }
-        return null;
-    }
+
 
     public void removeParticle(GameEntity entity) {
         entity.setFlagRemoval();
@@ -242,17 +249,6 @@ public class Map {
 
 
 
-    private void addStandardWallSegments(int x, int y, int sizeX, int sizeY, double parallax) {
-        Wall wallUp = new Wall(x + WALL_CORNER_SIZE, y, this, sizeX - WALL_CORNER_SIZE * 2, 1, InputAction.Up, FillType.Nothing, parallax);
-        Wall wallRight = new Wall(x + sizeX, y + WALL_CORNER_SIZE, this, 1, sizeY - WALL_CORNER_SIZE * 2, InputAction.Right, FillType.Nothing, parallax);
-        Wall wallLeft = new Wall(x, y + WALL_CORNER_SIZE, this, 1, sizeY - WALL_CORNER_SIZE * 2, InputAction.Left, FillType.Nothing, parallax);
-        Wall wallImage = new Wall(x, y, this, sizeX, sizeY, InputAction.Default, FillType.Tile, parallax);
-
-        addEntity(wallUp);
-        addEntity(wallRight);
-        addEntity(wallLeft);
-        addEntity(wallImage);
-    }
 
     public void addMovingWall(int x, int y, int sizeX, int sizeY, double velY, double velX) {
         MovingWall wallImage = new MovingWall(x, y, this, sizeX, sizeY
@@ -282,9 +278,50 @@ public class Map {
 
     public void addWall(int x, int y, int sizeX, int sizeY, double parallax) {
 
-        addStandardWallSegments(x, y, sizeX, sizeY, parallax);
-        Wall wallDown = new Wall(x + WALL_CORNER_SIZE, y + sizeY - WALL_CORNER_SIZE-1, this, sizeX - WALL_CORNER_SIZE * 2, 1, InputAction.Down, FillType.Nothing, parallax);
 
+        Wall wallDown = new Wall(x + WALL_CORNER_SIZE, y + sizeY - WALL_CORNER_SIZE-1, this, sizeX - WALL_CORNER_SIZE * 2, 1, InputAction.Down, FillType.Nothing, parallax);
+        Wall wallUp = new Wall(x + WALL_CORNER_SIZE, y, this, sizeX - WALL_CORNER_SIZE * 2, 1, InputAction.Up, FillType.Nothing, parallax);
+        Wall wallRight = new Wall(x + sizeX, y + WALL_CORNER_SIZE, this, 1, sizeY - WALL_CORNER_SIZE * 2, InputAction.Right, FillType.Nothing, parallax);
+        Wall wallLeft = new Wall(x, y + WALL_CORNER_SIZE, this, 1, sizeY - WALL_CORNER_SIZE * 2, InputAction.Left, FillType.Nothing, parallax);
+        Wall wallImage = new Wall(x, y, this, sizeX, sizeY, InputAction.Default, FillType.Tile, parallax);
+
+        addEntity(wallUp);
+        addEntity(wallRight);
+        addEntity(wallLeft);
+        addEntity(wallImage);
+
+        addEntity(wallDown);
+
+
+    }
+
+    public void addGate(int x, int y, int sizeX, int sizeY, double parallax, int code) {
+
+
+        Gate wallDown = new Gate(x + WALL_CORNER_SIZE
+                , y + sizeY - WALL_CORNER_SIZE-1, this
+                , sizeX - WALL_CORNER_SIZE * 2, 1
+                , InputAction.Down, FillType.Nothing, parallax, code);
+
+        Gate wallUp = new Gate(x + WALL_CORNER_SIZE, y, this
+                , sizeX - WALL_CORNER_SIZE * 2, 1
+                , InputAction.Up, FillType.Nothing, parallax, code);
+
+        Gate wallRight = new Gate(x + sizeX, y + WALL_CORNER_SIZE, this
+                , 1, sizeY - WALL_CORNER_SIZE * 2, InputAction.Right
+                , FillType.Nothing, parallax, code);
+
+        Gate wallLeft = new Gate(x, y + WALL_CORNER_SIZE, this, 1
+                , sizeY - WALL_CORNER_SIZE * 2, InputAction.Left
+                , FillType.Nothing, parallax, code);
+
+        Gate wallImage = new Gate(x, y, this, sizeX, sizeY
+                , InputAction.Default, FillType.Tile, parallax, code);
+
+        addEntity(wallUp);
+        addEntity(wallRight);
+        addEntity(wallLeft);
+        addEntity(wallImage);
 
         addEntity(wallDown);
 

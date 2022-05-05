@@ -25,6 +25,8 @@ public class ImageLoader {
 
     public static Image speed = loadImage("speed.png", 64);
     public static Image enemy = loadImage("enemy.png", 64);
+    public static Image key = loadImage("key.png", 64);
+    public static Image gate = loadImage("gateTile.png", 64);
     /**
      * Create an input stream to read images.
      * @param fileName File name.
