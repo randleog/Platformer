@@ -106,6 +106,7 @@ public class Main extends Application {
     }
 
     private static void tick(){
+
         currentMap.tick();
     }
 
@@ -155,6 +156,7 @@ public class Main extends Application {
         inputMap.put(KeyCode.D, InputAction.Right);
         inputMap.put(KeyCode.SPACE, InputAction.Up);
         inputMap.put(KeyCode.SHIFT, InputAction.Sprint);
+        inputMap.put(KeyCode.ESCAPE, InputAction.Menu);
 
         inputMap.put(KeyCode.R, InputAction.Hook);
 
@@ -163,6 +165,7 @@ public class Main extends Application {
         inputMap.put(KeyCode.DOWN, InputAction.Down);
         inputMap.put(KeyCode.RIGHT, InputAction.Right);
 
+        hashMap.put(InputAction.Menu, 1);
         hashMap.put(InputAction.Up, 0);
         hashMap.put(InputAction.Left, 0);
         hashMap.put(InputAction.Down, 0);
@@ -180,14 +183,29 @@ public class Main extends Application {
 
 
 
+
     private static void keyDown(KeyCode code) {
-        if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) > -1) {
-            hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 1);
+        if (code == KeyCode.ESCAPE) {
+            if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) == 2) {
+                hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 0);
+            } else if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) == 0) {
+                hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 1);
+            }
+        } else {
+            if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) > -1) {
+                hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 1);
+            }
         }
     }
 
     private static void keyReleased(KeyCode code) {
-        hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 0);
+        if (code == KeyCode.ESCAPE) {
+            if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) == 1) {
+                hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 2);
+            }
+        } else {
+            hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 0);
+        }
     }
 
 }

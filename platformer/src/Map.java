@@ -1,5 +1,7 @@
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 import java.util.ArrayList;
 
@@ -106,20 +108,22 @@ public class Map {
     }
 
     public void tick() {
-        for (GameEntity entity : entities) {
-            entity.tick();
+        if (Main.getKey(InputAction.Menu) > 0) {
+            for (GameEntity entity : entities) {
+                entity.tick();
+            }
+
+            for (GameEntity entity : particles) {
+                entity.tick();
+            }
+
+            entities.addAll(nextEntities);
+            nextEntities = new ArrayList<>();
+
+            particles.addAll(nextParticles);
+            nextParticles = new ArrayList<>();
+
         }
-
-        for (GameEntity entity : particles) {
-            entity.tick();
-        }
-
-        entities.addAll(nextEntities);
-        nextEntities = new ArrayList<>();
-
-        particles.addAll(nextParticles);
-        nextParticles = new ArrayList<>();
-
     }
 
 
@@ -129,6 +133,15 @@ public class Map {
         }
         for (GameEntity entity : entities) {
             entity.render(g);
+        }
+
+        if (!(Main.getKey(InputAction.Menu) > 0)) {
+            g.setFill(Color.color(0,0,0,0.4));
+            g.fillRect(0,0,g.getCanvas().getWidth(),g.getCanvas().getHeight());
+
+            g.setFill(Color.color(1,1,1));
+            g.setFont(new Font(25));
+            g.fillText("Paused", 100, 200);
         }
 
 

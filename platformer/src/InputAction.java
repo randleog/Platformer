@@ -33,6 +33,11 @@ public enum InputAction {
         public String toString() {
             return "Hook";
         }
+    },
+    Menu() {
+        public String toString() {
+            return "Menu";
+        }
     };
 
     public static boolean isXType(InputAction action) {
