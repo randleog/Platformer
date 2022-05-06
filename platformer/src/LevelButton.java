@@ -50,7 +50,7 @@ public class LevelButton extends MenuButton {
     private void click() {
         if (Main.mouseDown && mouseOver) {
             Main.mouseDown = false;
-            Main.playMap(MapLoader.loadMap(name));
+            Main.playMap(MapLoader.loadMap(name, true));
         }
     }
 }

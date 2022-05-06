@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class MapLoader {
 
 
-    public static Map loadMap(String mapName) {
+    public static Map loadMap(String mapName, boolean withPlayer) {
 
 
         File file = new File("res\\maps\\" + mapName + ".txt");
@@ -100,6 +100,11 @@ public class MapLoader {
                     int y = Integer.parseInt(line[2]);
 
                     map.addEntity(new Flag(x, y, map));
+                }else if (name.equals("dimension")) {
+                    int x = Integer.parseInt(line[1]);
+                    int y = Integer.parseInt(line[2]);
+                    String dimension = line[3];
+                    map.addEntity(new DimensionPortal(x, y, map, dimension));
                 }
 
 
@@ -107,7 +112,9 @@ public class MapLoader {
 
             entities.close();
 
-            map.addEntity(new Player(playerX, playerY, map));
+            if (withPlayer) {
+                map.addEntity(new Player(playerX, playerY, map));
+            }
             map.setStartEntities();
             return map;
 
@@ -116,6 +123,8 @@ public class MapLoader {
             return null;
         }
     }
+
+
 
 
     private static String getFileString(File file) {

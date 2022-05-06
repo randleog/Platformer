@@ -31,6 +31,7 @@ public class Main extends Application {
     private static Canvas canvas;
 
     public static final int FPS = 144;
+    public static Map lastMap = null;
 
 
     public static final double DEFAULT_WIDTH_MAP = 1925;
@@ -217,6 +218,7 @@ public class Main extends Application {
     }
 
     public static void playMap(Map newMap) {
+        lastMap = currentMap;
         hashMap.put(InputAction.Menu, 2);
         currentMap = newMap;
         menu = false;

@@ -31,6 +31,7 @@ public class Map {
     private static final int CRASH_PARTICLE_COUNT = 10;
 
 
+
     private LevelsMenuButton backButton = new LevelsMenuButton(400,500,200,100);
 
 
@@ -82,7 +83,7 @@ public class Map {
     }
 
     private void reset() {
-        Main.playMap(MapLoader.loadMap("1"));
+        Main.playMap(MapLoader.loadMap("1", true));
 
     }
 
