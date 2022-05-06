@@ -14,6 +14,7 @@ import javafx.util.Duration;
 
 import java.awt.*;
 import java.io.File;
+import java.nio.channels.ReadPendingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -65,7 +66,7 @@ public class Main extends Application {
     public static double mouseY = 0;
 
     public static ArrayList<MenuButton> levelMenu = new ArrayList<>();
-
+    public static ArrayList<MenuButton> replayMenu = new ArrayList<>();
 
     public static ArrayList<MenuButton> mainMenu = new ArrayList<>();
 
@@ -171,11 +172,42 @@ public class Main extends Application {
     private static void addbuttons() {
         mainMenu = new ArrayList<>();
         mainMenu.add(new ExitButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "exit"));
-        mainMenu.add(new LevelsMenuButton(100, BUTTON_GAP*2, BUTTON_WIDTH*2, BUTTON_HEIGHT));
+        mainMenu.add(new LevelsMenuButton(100, BUTTON_HEIGHT, BUTTON_WIDTH*2, BUTTON_HEIGHT));
         mainMenu.add(new MenuText(900,100,"Platformer", 55));
+        mainMenu.add(new ReplayMenuButton(100,BUTTON_HEIGHT*2+BUTTON_GAP,BUTTON_WIDTH*2,BUTTON_HEIGHT));
         loadLevelMenu();
+        loadReplayMenu();
 
 
+    }
+
+    private static void loadReplayMenu() {
+        replayMenu = new ArrayList<>();
+        File directory = new File("res\\replays");
+        File[] levels = directory.listFiles();
+        int fileCount = directory.list().length;
+
+        for (int i = 0; i < fileCount; i++) {
+            if (!levels[i].isDirectory()) {
+
+                double width = canvas.getWidth() - BUTTON_GAP * 2;
+
+                int xFactor = (int) (i % (width
+                        / (BUTTON_WIDTH + BUTTON_GAP)));
+
+                int yFactor = (int) (i / (width
+                        / (BUTTON_WIDTH + BUTTON_GAP)));
+
+
+
+
+                replayMenu.add(new ReplayButton(xFactor * BUTTON_WIDTH + xFactor * BUTTON_GAP + BUTTON_GAP
+                        , yFactor * BUTTON_HEIGHT + yFactor * BUTTON_GAP + BUTTON_GAP * 2
+                        , BUTTON_WIDTH, BUTTON_HEIGHT, levels[i].getName().replace(".txt", "")));
+            }
+        }
+        replayMenu.add(new MainMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back"));
+        replayMenu.add(new MenuText(900,100,"Replay Menu: ", 55));
     }
 
 
@@ -196,7 +228,7 @@ public class Main extends Application {
                 int yFactor = (int) (i / (width
                         / (BUTTON_WIDTH + BUTTON_GAP)));
 
-                System.out.println(yFactor);
+
 
 
                 levelMenu.add(new LevelButton(xFactor * BUTTON_WIDTH + xFactor * BUTTON_GAP + BUTTON_GAP

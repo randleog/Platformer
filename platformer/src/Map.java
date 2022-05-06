@@ -4,6 +4,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+import java.awt.*;
 import java.awt.image.AreaAveragingScaleFilter;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -31,8 +32,11 @@ public class Map {
     private static final int CRASH_PARTICLE_COUNT = 10;
 
 
+    private boolean isReplay;
 
-    private LevelsMenuButton backButton = new LevelsMenuButton(400,500,200,100);
+
+
+    private MenuButton backButton;
 
 
     public static final double BASE_DRAG_Y = 0.5;
@@ -56,12 +60,30 @@ public class Map {
 
     private String name;
 
-    public Map(int sizeX, int sizeY, String name) {
+    private ArrayList<Integer[]> frames = new ArrayList<>();
 
+    public Map(int sizeX, int sizeY, String name, boolean isReplay) {
+
+        this.isReplay = isReplay;
         this.name = name;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
 
+        if (!isReplay) {
+           backButton = new LevelsMenuButton(400,500,200,100);
+        } else {
+            backButton = new ReplayMenuButton(400,500,200,100);
+        }
+
+    }
+
+    public void winGame() {
+        if (!isReplay) {
+            saveReplay();
+            UserFileHandler.saveUserTime(name, getTime());
+
+        }
+        Main.switchMenu(Main.levelMenu);
     }
 
     public boolean isRadius(double x, double y, double x2, double y2, double radius) {
@@ -83,7 +105,7 @@ public class Map {
     }
 
     private void reset() {
-        Main.playMap(MapLoader.loadMap("1", true));
+        Main.playMap(MapLoader.loadMap("1", 1));
 
     }
 
@@ -144,9 +166,29 @@ public class Map {
         nextParticles.add(entity);
     }
 
+    public void saveReplay() {
+        if (!isReplay) {
+            if (UserFileHandler.getUserTime(name, 1) > getTime()) {
+                ReplaySave.saveReplay(frames, name);
+            }
+         
+        }
+    }
+
+    public int getCurrentTick() {
+        return currentTick;
+    }
+
     public void tick() {
-        currentTick++;
+
+        if (!isReplay) {
+            currentTick++;
+        }
         if (Main.getKey(InputAction.Menu) > 0) {
+            if (isReplay) {
+                currentTick++;
+            }
+            frames.add(new Integer[]{(int)playerX,(int)playerY});
 
             for (GameEntity entity : entities) {
                 entity.tick();

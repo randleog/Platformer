@@ -1,6 +1,8 @@
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
+
 public class Player extends GameEntity {
 
 
@@ -19,6 +21,7 @@ public class Player extends GameEntity {
     private boolean hooking = false;
 
 
+
     public Player(double x, double y, Map map) {
         super(x, y, map, InputAction.Default, FillType.Image, 1);
         this.sizeX = 50;
@@ -32,10 +35,13 @@ public class Player extends GameEntity {
     }
 
 
+
     public void tick() {
+
         if (map.isOutOfBounds(this.x, this.y, this.sizeX, this.sizeY)) {
             die();
         }
+
 
         inputActions();
 
@@ -83,6 +89,8 @@ public class Player extends GameEntity {
 
         runningBefore = running;
         running = Main.isKeyDown(InputAction.Sprint);
+
+
 
         double baseAccel = 1;
         if (running) {

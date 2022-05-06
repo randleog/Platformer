@@ -5,7 +5,13 @@ import java.util.Scanner;
 public class MapLoader {
 
 
-    public static Map loadMap(String mapName, boolean withPlayer) {
+    /**
+     *
+     * @param mapName
+     * @param type 0 = empty, 1 = with player, 2 = replay player
+     * @return
+     */
+    public static Map loadMap(String mapName, int type) {
 
 
         File file = new File("res\\maps\\" + mapName + ".txt");
@@ -20,7 +26,12 @@ public class MapLoader {
             int playerX = header.nextInt();
             int playerY = header.nextInt();
             header.close();
-            Map map = new Map(width, height, mapName);
+            Map map;
+            if (type == 2) {
+                map = new Map(width, height, mapName, true);
+            } else {
+                map = new Map(width, height, mapName, false);
+            }
 
 
             Scanner background = new Scanner(text[1]);
@@ -112,8 +123,10 @@ public class MapLoader {
 
             entities.close();
 
-            if (withPlayer) {
+            if (type ==1) {
                 map.addEntity(new Player(playerX, playerY, map));
+            } else if (type ==2) {
+                map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getFrames(mapName)));
             }
             map.setStartEntities();
             return map;

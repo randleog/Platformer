@@ -22,7 +22,7 @@ public class DimensionPortal extends GameEntity {
             map.removeEntity(this);
             if (Main.lastMap == null) {
 
-                Main.playDimension(MapLoader.loadMap(mapName, true));
+                Main.playDimension(MapLoader.loadMap(mapName, 1));
             } else {
 
                 Main.playDimension(Main.lastMap);

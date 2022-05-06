@@ -16,8 +16,8 @@ public class Flag extends GameEntity {
     public void tick() {
 
         if (this.intersect(map.player)) {
-            UserFileHandler.saveUserTime(map.getName(), map.getTime());
-            Main.switchMenu(Main.levelMenu);
+            map.winGame();
+
         }
 
     }
