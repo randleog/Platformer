@@ -21,11 +21,11 @@ public class DimensionPortal extends GameEntity {
         if (this.intersect(map.player)) {
             map.removeEntity(this);
             if (Main.lastMap == null) {
-                Main.playMap(MapLoader.loadMap(mapName, true));
+
+                Main.playDimension(MapLoader.loadMap(mapName, true));
             } else {
 
-                Main.playMap(Main.lastMap);
-                Main.lastMap = null;
+                Main.playDimension(Main.lastMap);
             }
 
 

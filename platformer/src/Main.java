@@ -218,7 +218,9 @@ public class Main extends Application {
     }
 
     public static void playMap(Map newMap) {
-        lastMap = currentMap;
+
+
+        lastMap = null;
         hashMap.put(InputAction.Menu, 2);
         currentMap = newMap;
         menu = false;
@@ -226,8 +228,17 @@ public class Main extends Application {
 
     }
 
+    public static void playDimension(Map newMap) {
+        Main.lastMap = Main.currentMap;
+        hashMap.put(InputAction.Menu, 2);
+        currentMap = newMap;
+        menu = false;
+        currentMenu = new ArrayList<>();
+    }
+
 
     public static void switchMenu(ArrayList<MenuButton> newMenu) {
+
         lastMap = null;
         addbuttons();
         menu = true;
