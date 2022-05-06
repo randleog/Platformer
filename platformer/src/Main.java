@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.awt.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -146,15 +147,43 @@ public class Main extends Application {
         addbuttons();
 
         switchMenu(mainButtons);
-
+        UserFileHandler.saveUserTime("2", 1.9);
 
     }
 
+    private static final int BUTTON_WIDTH = 292;
+    private static final int BUTTON_HEIGHT = 100;
+
+    private static final int BUTTON_GAP = 100;
+
 
     private static void addbuttons() {
-        mainButtons.add(new LevelsMenuButton(100, 100, 500, 100));
+        mainButtons.add(new LevelsMenuButton(100, 100, BUTTON_WIDTH*3, BUTTON_HEIGHT));
 
-        levelMenu.add(new LevelButton(100,100,500,100, "1"));
+
+        File directory = new File("res\\maps");
+        File[] levels = directory.listFiles();
+        int fileCount = directory.list().length;
+
+        for (int i = 0; i < fileCount; i++) {
+            if (!levels[i].isDirectory()) {
+                double width = canvas.getWidth()-BUTTON_GAP*2;
+
+                int xFactor = (int)(i% (width
+                        /(BUTTON_WIDTH+BUTTON_GAP)));
+
+                int yFactor = (int)(i/ (width
+                        /(BUTTON_WIDTH+BUTTON_GAP)));
+
+                System.out.println(yFactor);
+
+
+                levelMenu.add(new LevelButton(xFactor *BUTTON_WIDTH + xFactor*BUTTON_GAP+ BUTTON_GAP
+                        , yFactor* BUTTON_HEIGHT+ yFactor*BUTTON_GAP + BUTTON_GAP*2
+                        , BUTTON_WIDTH, BUTTON_HEIGHT, levels[i].getName().replace(".txt", "")));
+
+            }
+        }
     }
 
 
@@ -243,7 +272,7 @@ public class Main extends Application {
         inputMap.put(KeyCode.RIGHT, InputAction.Right);
 
         hashMap.put(InputAction.FullScreen, 0);
-        hashMap.put(InputAction.Menu, 0);
+        hashMap.put(InputAction.Menu, 2);
         hashMap.put(InputAction.Up, 0);
         hashMap.put(InputAction.Left, 0);
         hashMap.put(InputAction.Down, 0);
