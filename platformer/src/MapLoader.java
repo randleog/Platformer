@@ -123,10 +123,13 @@ public class MapLoader {
 
             entities.close();
 
+            if ((new File("res\\replays\\" + mapName + ".txt").exists())) {
+                boolean isReplay = type == 2;
+                map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getFrames(mapName), isReplay));
+            }
+
             if (type ==1) {
                 map.addEntity(new Player(playerX, playerY, map));
-            } else if (type ==2) {
-                map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getFrames(mapName)));
             }
             map.setStartEntities();
             return map;

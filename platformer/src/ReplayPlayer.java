@@ -15,8 +15,11 @@ public class ReplayPlayer extends GameEntity {
 
     private ArrayList<Integer[]> frames;
 
-    public ReplayPlayer(double x, double y, Map map, ArrayList<Integer[]> frames) {
+    private boolean isReplay;
+
+    public ReplayPlayer(double x, double y, Map map, ArrayList<Integer[]> frames, boolean isReplay) {
         super(x, y, map, InputAction.Default, FillType.Image, 1);
+        this.isReplay = isReplay;
         this.frames = frames;
         this.sizeX = 50;
         this.sizeY = 50;
@@ -30,22 +33,25 @@ public class ReplayPlayer extends GameEntity {
 
     public void tick() {
         int currentTick = Math.max(map.getCurrentTick(), 0);
+
         if (currentTick >= frames.size()-1) {
-            Main.switchMenu(Main.replayMenu);
+            currentTick = 0;
+
         }
 
         x = frames.get(currentTick)[0];
         y = frames.get(currentTick)[1];
 
 
-        map.cameraX = x-700;
-        map.cameraY = y-500;
-        //  x = startX;
 
 
 
-        map.playerX = x;
-        map.playerY = y;
+        if (isReplay) {
+            map.cameraX = x - 700;
+            map.cameraY = y - 500;
+            map.playerX = x;
+            map.playerY = y;
+        }
     }
 
     @Override
@@ -63,8 +69,10 @@ public class ReplayPlayer extends GameEntity {
 
     public void render(GraphicsContext g) {
 
-
+        g.save();
+        g.setGlobalAlpha(0.5);
         renderSquare(g);
+        g.restore();
 
     }
 }
