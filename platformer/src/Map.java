@@ -168,10 +168,10 @@ public class Map {
         }
 
         //camera bounds
-        cameraX = Math.min(cameraX, sizeX-Main.gameUnit* Main.DEFAULT_WIDTH_MAP);
-        cameraX = Math.max(cameraX, -sizeX+Main.gameUnit* Main.DEFAULT_WIDTH_MAP);
-        cameraY = Math.min(cameraY, sizeY-Main.gameUnit* Main.DEFAULT_HEIGHT_MAP);
-        cameraY = Math.max(cameraY, -sizeY+Main.gameUnit* Main.DEFAULT_HEIGHT_MAP);
+        cameraX = Math.min(cameraX, correctUnit(sizeX-Main.DEFAULT_WIDTH_MAP));
+        cameraX = Math.max(cameraX, correctUnit(-sizeX+ Main.DEFAULT_WIDTH_MAP));
+        cameraY = Math.min(cameraY, correctUnit(sizeY-Main.DEFAULT_HEIGHT_MAP));
+        cameraY = Math.max(cameraY, correctUnit(-sizeY+Main.DEFAULT_HEIGHT_MAP));
     }
 
 
@@ -200,10 +200,10 @@ public class Map {
 
 
 
-        g.setFont(new Font(25));
+        g.setFont(new Font(Main.correctUnit(25)));
         g.setFill(Color.color(1, 1, 1));
-        g.fillText("deaths: " + Main.deaths, 50, 50);
-        g.fillText("time: " + String.format("%.2f",currentTick*1.0/Main.FPS), 200, 50);
+        g.fillText("deaths: " + Main.deaths, correctUnit(50), correctUnit(50));
+        g.fillText("time: " + String.format("%.2f",currentTick*1.0/Main.FPS), correctUnit(200), correctUnit(50));
         if (!(Main.getKey(InputAction.Menu) > 0)) {
 
             g.setFill(Color.color(0, 0, 0, 0.4));
@@ -213,9 +213,9 @@ public class Map {
             backButton.render(g);
 
             g.setFill(Color.color(1, 1, 1));
-            g.setFont(new Font(40));
-            g.fillText("Paused", 100, 200);
-            g.setFont(new Font(25));
+            g.setFont(new Font(Main.correctUnit(40)));
+            g.fillText("Paused", correctUnit(100), correctUnit(200));
+            g.setFont(new Font(Main.correctUnit(25)));
             String currentAction = "";
             currentAction = currentAction + getStringKey(InputAction.Up);
             currentAction = currentAction + getStringKey(InputAction.Sprint);
@@ -223,7 +223,7 @@ public class Map {
             currentAction = currentAction + getStringKey(InputAction.Left);
             currentAction = currentAction + getStringKey(InputAction.Right);
             currentAction = currentAction + getStringKey(InputAction.Down);
-            g.fillText(currentAction, 100, 400);
+            g.fillText(currentAction, correctUnit(100), correctUnit(400));
         }
 
 

@@ -33,7 +33,7 @@ public class MenuText extends MenuButton {
 
 
         g.setFill(Color.WHITE);
-        g.setFont(new Font(size));
+        g.setFont(new Font(Main.correctUnit(size)));
         g.fillText(text, Main.correctUnit(x), Main.correctUnit(y));
     }
 

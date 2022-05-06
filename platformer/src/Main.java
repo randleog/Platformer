@@ -8,6 +8,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -26,6 +27,9 @@ public class Main extends Application {
     private static final int BUTTON_HEIGHT = 100;
 
     private static final int BUTTON_GAP = 100;
+
+    private static final double EXPECTED_ASPECT_RATIO = 1.7778;
+
     public static Random random = new Random();
 
     private static Canvas canvas;
@@ -284,11 +288,13 @@ public class Main extends Application {
 
             button.render(canvas.getGraphicsContext2D());
         }
+        g.setFill(Color.BLACK);
+        canvas.getGraphicsContext2D().fillRect(primaryStage.getHeight()*EXPECTED_ASPECT_RATIO,0,primaryStage.getWidth(),primaryStage.getHeight());
     }
 
 
     public static double correctUnit(double input) {
-        return input / gameUnit;
+        return input * gameUnit;
     }
 
 
