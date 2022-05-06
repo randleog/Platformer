@@ -74,7 +74,7 @@ public abstract class GameEntity {
         startY = y;
         sizeX = 100;
         sizeY = 100;
-        tileSize = map.correctUnit(DEFAULT_TILE_SIZE);
+        tileSize = 50;
         this.map = map;
         this.action = action;
         this.color = Color.color(1, 0, 0);
@@ -302,25 +302,27 @@ public abstract class GameEntity {
     }
 
     public double getRenderX() {
-        double x = map.correctUnit(this.x) - map.correctUnit(map.cameraX * parallax) - map.correctUnit(getVelStretchX());
+        double x = map.correctUnit(this.x  - getVelStretchX())- map.correctUnit(map.cameraX * parallax);
+
         return x;
 
     }
 
 
     public double getRenderY() {
-        double y = map.correctUnit(this.y) - map.correctUnit(map.cameraY * parallax) - map.correctUnit(getVelStretchY());
+        double y = map.correctUnit(this.y - getVelStretchY())- map.correctUnit(map.cameraY * parallax);
+
         return y;
 
     }
 
     public double getRenderSizeX() {
-        double sizeX = map.correctUnit(this.sizeX) + map.correctUnit(getVelStretchX() * 2);
+        double sizeX = map.correctUnit(this.sizeX + getVelStretchX() * 2);
         return sizeX;
     }
 
     public double getRenderSizeY() {
-        double sizeY = map.correctUnit(getSizeY()) + map.correctUnit(getVelStretchY() * 2);
+        double sizeY = map.correctUnit(getSizeY() + getVelStretchY() * 2);
         return sizeY;
     }
 
@@ -339,7 +341,7 @@ public abstract class GameEntity {
                 if (fillType == FillType.Color) {
                     g.setFill(this.color);
                 } else if (fillType == FillType.Tile) {
-                    g.setFill(new ImagePattern(image, x, y, tileSize * parallax, tileSize * parallax, false));
+                    g.setFill(new ImagePattern(image, x, y, map.correctUnit(tileSize) * parallax, map.correctUnit(tileSize) * parallax, false));
                 }
                 g.fillRect(x, y, sizeX, sizeY);
             }

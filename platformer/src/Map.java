@@ -119,15 +119,12 @@ public class Map {
     }
 
     public double correctUnit(double input) {
+        return input * Main.gameUnit;
+
+    }
+
+    public double reverseCorrectUnit(double input) {
         return input / Main.gameUnit;
-    }
-
-    public double correctUnitX(double input) {
-        return correctUnit(input) - correctUnit(cameraX);
-    }
-
-    public double correctUnitY(double input) {
-        return correctUnit(input) - correctUnit(cameraY);
     }
 
     public void addEntity(GameEntity entity) {
