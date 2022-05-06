@@ -14,13 +14,9 @@ public class Player extends GameEntity {
     private static final double JUMP_SPEED = 800.0;
 
 
-
-
     private static final double SPRINT_HEIGHT_FACTOR = 0.7;
 
     private boolean hooking = false;
-
-
 
 
     public Player(double x, double y, Map map) {
@@ -34,10 +30,6 @@ public class Player extends GameEntity {
         canRightJump = false;
 
     }
-
-
-
-
 
 
     public void tick() {
@@ -54,11 +46,10 @@ public class Player extends GameEntity {
         jumpCollision();
 
 
-        if (map.cameraMap) {
-            map.cameraX = x - startX;
-            map.cameraY = y - startY;
-            //  x = startX;
-        }
+        map.cameraX = x - startX;
+        map.cameraY = y - startY;
+        //  x = startX;
+
         if (running) {
             map.addParticleLive(new Particle(x - getVelStretchX()
                     , y - getVelStretchY(), map, sizeX + getVelStretchX() * 2
@@ -77,10 +68,8 @@ public class Player extends GameEntity {
         if (Main.isKeyDown(InputAction.Down)) {
             sizeBuff = SPRINT_HEIGHT_FACTOR;
         }
-        return sizeY*sizeBuff;
+        return sizeY * sizeBuff;
     }
-
-
 
 
     public boolean isHooking() {
@@ -146,9 +135,6 @@ public class Player extends GameEntity {
 
 
     public void render(GraphicsContext g) {
-
-
-
 
 
         renderSquare(g);

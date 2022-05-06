@@ -23,7 +23,7 @@ public class LevelsMenuButton extends MenuButton {
     private void click() {
         if (Main.mouseDown && mouseOver) {
             Main.mouseDown = false;
-
+            Main.switchMenu(Main.levelMenu);
         }
     }
 }

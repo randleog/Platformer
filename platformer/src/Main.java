@@ -36,6 +36,8 @@ public class Main extends Application {
     private static final int GAME_UNIT_SETTING = 1000;
     public static double gameUnit = 1;
 
+    private static boolean menu = true;
+
     public static HashMap<InputAction, Integer> hashMap = new HashMap<>();
 
     private static HashMap<KeyCode, InputAction> inputMap = new HashMap<>();
@@ -52,15 +54,13 @@ public class Main extends Application {
     public static double mouseX = 0;
     public static double mouseY = 0;
 
+    public static ArrayList<MenuButton> levelMenu = new ArrayList<>();
 
 
     private static ArrayList<MenuButton> mainButtons = new ArrayList<>();
 
 
     private static ArrayList<MenuButton> currentMenu = new ArrayList<>();
-
-
-
 
 
     /**
@@ -100,7 +100,7 @@ public class Main extends Application {
 
 
         canvas.setOnMouseMoved(event -> {
-           mouseX = event.getX();
+            mouseX = event.getX();
             mouseY = event.getY();
 
         });
@@ -124,7 +124,6 @@ public class Main extends Application {
         primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 
 
-
         primaryStage.show();
 
 
@@ -141,36 +140,7 @@ public class Main extends Application {
         loop.play();
 
 
-        currentMap = new Map(true, 3000,2000);
-        currentMap.addParticle(new Wall(0, 700, currentMap, 1000, 600, InputAction.Default, FillType.Tile, 0.4));
-        currentMap.addParticle(new Wall(0, 1000, currentMap, 1000, 200, InputAction.Default, FillType.Tile, 0.6));
 
-
-
-        currentMap.addWall(-500,1000,3500,50, 1);
-
-        currentMap.addWall(1000,500,100,1000, 1);
-        currentMap.addWall(700,-2000,100,2900, 1);
-        currentMap.addGate(700,900,100,100, 1, 1);
-        currentMap.addWall(1400,0,100,960, 1);
-
-        currentMap.addWall(1400,800,1000,100,1);
-
-        currentMap.addWall(0,800,100,1000, 1);
-        currentMap.addWall(1100,0,1000,100, 1);
-
-       // currentMap.addGate()
-
-        currentMap.addMovingWall(1100,500,100,50,1,0);
-        currentMap.addMovingWall(1100,500,100,50,0,1);
-
-        currentMap.addEntity(new Player(850, 500, currentMap));
-        currentMap.addEntity(new Key(1500, 700, currentMap, 1, 1));
-
-        currentMap.addEntity(new BasicEnemy(100, 700, currentMap, false));
-        currentMap.addEntity(new BasicEnemy(1700, 900, currentMap, true));
-        currentMap.addEntity(new Hookable(750, 0, currentMap, 500));
-        currentMap.setStartEntities();
 
 
         addbuttons();
@@ -182,14 +152,25 @@ public class Main extends Application {
 
 
     private static void addbuttons() {
-        mainButtons.add(new LevelsMenuButton(100,100,500,100));
+        mainButtons.add(new LevelsMenuButton(100, 100, 500, 100));
+
+        levelMenu.add(new LevelButton(100,100,500,100, "1"));
     }
 
 
-    private static void tick(){
+    private static void tick() {
 
-        currentMap.tick();
+        if (!(currentMap == null)) {
+            currentMap.tick();
+        }
 
+
+    }
+
+    public static void playMap(Map newMap) {
+        currentMap = newMap;
+        menu = false;
+        currentMenu = new ArrayList<>();
 
     }
 
@@ -199,18 +180,15 @@ public class Main extends Application {
     }
 
 
-
-
-
-
     public static void deactivateKey(InputAction action) {
-        hashMap.replace(action,-1);
+        hashMap.replace(action, -1);
 
 
     }
 
     /**
      * Interpolate between two values.
+     *
      * @param x1 Double floor value.
      * @param x2 Double ceiling value.
      * @return Double a value between the two parsed values.
@@ -225,26 +203,25 @@ public class Main extends Application {
 
     }
 
-    private static void render(GraphicsContext g){
+    private static void render(GraphicsContext g) {
 
-        g.drawImage(ImageLoader.sky1,0,0,canvas.getWidth(),canvas.getHeight());
-        currentMap.render(g);
+        g.drawImage(ImageLoader.sky1, 0, 0, canvas.getWidth(), canvas.getHeight());
+        if (!(currentMap == null)) {
+            currentMap.render(g);
+        }
 
         for (MenuButton button : currentMenu) {
-         //   button.tick();
+            button.tick();
 
 
-          //  button.render(canvas.getGraphicsContext2D());
+            button.render(canvas.getGraphicsContext2D());
         }
     }
 
 
     public static double correctUnit(double input) {
-        return input/gameUnit;
+        return input / gameUnit;
     }
-
-
-
 
 
     private static void readKeyBind() {
@@ -305,8 +282,6 @@ public class Main extends Application {
     public static boolean isKeyDown(InputAction action) {
         return hashMap.get(action) > 0;
     }
-
-
 
 
     private static void keyDown(KeyCode code) {

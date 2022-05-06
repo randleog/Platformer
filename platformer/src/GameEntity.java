@@ -101,7 +101,7 @@ public abstract class GameEntity {
     public void die() {
         if (this instanceof Player) {
             Main.deaths++;
-            map.reset();
+            map.reset = true;
             this.x = startX;
             this.y = startY;
             this.velY =0;

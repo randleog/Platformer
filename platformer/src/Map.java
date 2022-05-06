@@ -11,6 +11,8 @@ import java.util.HashMap;
 
 public class Map {
 
+    protected boolean reset = false;
+
     private ArrayList<GameEntity> entities = new ArrayList<>();
     private ArrayList<GameEntity> nextEntities = new ArrayList<>();
 
@@ -37,7 +39,7 @@ public class Map {
     protected double cameraX = 0;
     protected double cameraY = 0;
 
-    protected boolean cameraMap;
+
 
     public double playerX = 0;
     public double playerY = 0;
@@ -47,10 +49,10 @@ public class Map {
     private int sizeX;
     private int sizeY;
 
-    public Map(boolean cameraMap, int sizeX, int sizeY) {
+    public Map(int sizeX, int sizeY, String mapName) {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
-        this.cameraMap = cameraMap;
+
     }
 
     public boolean isRadius(double x, double y, double x2, double y2, double radius) {
@@ -71,17 +73,11 @@ public class Map {
         startEntities.addAll(entities);
     }
 
-    public void reset() {
-        entities = new ArrayList<>();
-        entities.addAll(startEntities);
+    private void reset() {
+        Main.playMap(MapLoader.loadMap("1"));
 
-        for (GameEntity entity : entities) {
-            entity.setX(entity.getStartX());
-            entity.setY(entity.getStartY());
-            entity.setVelY(entity.getStartVelY());
-            entity.setVelX(entity.getStartVelX());
-        }
     }
+
 
 
 
@@ -158,6 +154,9 @@ public class Map {
             particles.addAll(nextParticles);
             nextParticles = new ArrayList<>();
 
+            if (reset) {
+                reset();
+            }
         }
 
         //camera bounds
