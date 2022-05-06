@@ -86,8 +86,8 @@ public class MapLoader {
                     int x = Integer.parseInt(line[1]);
                     int y = Integer.parseInt(line[2]);
                     boolean runner = Boolean.parseBoolean(line[3]);
-
-                    map.addEntity(new BasicEnemy(x, y, map, runner));
+                    boolean jumper = Boolean.parseBoolean(line[4]);
+                    map.addEntity(new BasicEnemy(x, y, map, runner, jumper));
                 } else if (name.equals("hookable")) {
                     int x = Integer.parseInt(line[1]);
                     int y = Integer.parseInt(line[2]);
@@ -95,6 +95,11 @@ public class MapLoader {
 
 
                     map.addEntity(new Hookable(x, y, map, radius));
+                }else if (name.equals("flag")) {
+                    int x = Integer.parseInt(line[1]);
+                    int y = Integer.parseInt(line[2]);
+
+                    map.addEntity(new Flag(x, y, map));
                 }
 
 

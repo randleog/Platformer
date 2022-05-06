@@ -8,7 +8,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -23,7 +22,10 @@ public class Main extends Application {
 
     public static int deaths = 0;
 
+    private static final int BUTTON_WIDTH = 292;
+    private static final int BUTTON_HEIGHT = 100;
 
+    private static final int BUTTON_GAP = 100;
     public static Random random = new Random();
 
     private static Canvas canvas;
@@ -49,6 +51,8 @@ public class Main extends Application {
 
     private static Map currentMap;
 
+    private static Stage primaryStage;
+
 
     public static boolean mouseDown = false;
 
@@ -58,7 +62,7 @@ public class Main extends Application {
     public static ArrayList<MenuButton> levelMenu = new ArrayList<>();
 
 
-    private static ArrayList<MenuButton> mainButtons = new ArrayList<>();
+    public static ArrayList<MenuButton> mainMenu = new ArrayList<>();
 
 
     private static ArrayList<MenuButton> currentMenu = new ArrayList<>();
@@ -146,20 +150,32 @@ public class Main extends Application {
 
         addbuttons();
 
-        switchMenu(mainButtons);
-        UserFileHandler.saveUserTime("2", 1.9);
+        switchMenu(mainMenu);
+
+        Main.primaryStage = primaryStage;
+
 
     }
 
-    private static final int BUTTON_WIDTH = 292;
-    private static final int BUTTON_HEIGHT = 100;
 
-    private static final int BUTTON_GAP = 100;
+    public static void exit() {
+        primaryStage.close();
+    }
 
 
     private static void addbuttons() {
-        mainButtons.add(new LevelsMenuButton(100, 100, BUTTON_WIDTH*3, BUTTON_HEIGHT));
+        mainMenu = new ArrayList<>();
+        mainMenu.add(new ExitButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "exit"));
+        mainMenu.add(new LevelsMenuButton(100, BUTTON_GAP*2, BUTTON_WIDTH*2, BUTTON_HEIGHT));
+        mainMenu.add(new MenuText(900,100,"Platformer", 55));
+        loadLevelMenu();
 
+
+    }
+
+
+    private static void loadLevelMenu() {
+        levelMenu = new ArrayList<>();
 
         File directory = new File("res\\maps");
         File[] levels = directory.listFiles();
@@ -167,23 +183,27 @@ public class Main extends Application {
 
         for (int i = 0; i < fileCount; i++) {
             if (!levels[i].isDirectory()) {
-                double width = canvas.getWidth()-BUTTON_GAP*2;
+                double width = canvas.getWidth() - BUTTON_GAP * 2;
 
-                int xFactor = (int)(i% (width
-                        /(BUTTON_WIDTH+BUTTON_GAP)));
+                int xFactor = (int) (i % (width
+                        / (BUTTON_WIDTH + BUTTON_GAP)));
 
-                int yFactor = (int)(i/ (width
-                        /(BUTTON_WIDTH+BUTTON_GAP)));
+                int yFactor = (int) (i / (width
+                        / (BUTTON_WIDTH + BUTTON_GAP)));
 
                 System.out.println(yFactor);
 
 
-                levelMenu.add(new LevelButton(xFactor *BUTTON_WIDTH + xFactor*BUTTON_GAP+ BUTTON_GAP
-                        , yFactor* BUTTON_HEIGHT+ yFactor*BUTTON_GAP + BUTTON_GAP*2
+                levelMenu.add(new LevelButton(xFactor * BUTTON_WIDTH + xFactor * BUTTON_GAP + BUTTON_GAP
+                        , yFactor * BUTTON_HEIGHT + yFactor * BUTTON_GAP + BUTTON_GAP * 2
                         , BUTTON_WIDTH, BUTTON_HEIGHT, levels[i].getName().replace(".txt", "")));
 
             }
         }
+
+        levelMenu.add(new MainMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back"));
+        levelMenu.add(new MenuText(900,100,"Levels Menu: ", 55));
+
     }
 
 
@@ -205,7 +225,11 @@ public class Main extends Application {
 
 
     public static void switchMenu(ArrayList<MenuButton> newMenu) {
+        addbuttons();
+        menu = true;
         currentMenu = newMenu;
+
+        currentMap = null;
     }
 
 

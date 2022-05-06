@@ -6,11 +6,11 @@ import javax.swing.plaf.IconUIResource;
 
 public abstract class MenuButton {
 
-    private int x;
-    private int y;
+    protected int x;
+    protected int y;
 
-    private int width;
-    private int height;
+    protected int width;
+    protected int height;
 
 
     protected String text;
@@ -57,6 +57,8 @@ public abstract class MenuButton {
         g.setFont(new Font(25));
         g.fillText(text, Main.correctUnit(x+10), Main.correctUnit(y+height/2.0));
     }
+
+
 
     protected void updateMouse() {
 

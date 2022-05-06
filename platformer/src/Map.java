@@ -50,8 +50,11 @@ public class Map {
     private int sizeX;
     private int sizeY;
 
-    public Map(int sizeX, int sizeY, String mapName) {
+    private String name;
 
+    public Map(int sizeX, int sizeY, String name) {
+
+        this.name = name;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
 
@@ -170,6 +173,14 @@ public class Map {
         cameraY = Math.max(cameraY, -sizeY+Main.gameUnit* Main.DEFAULT_HEIGHT_MAP);
     }
 
+
+    public double getTime() {
+        return (currentTick*1.0)/Main.FPS;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     public void render(GraphicsContext g) {
 

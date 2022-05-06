@@ -22,9 +22,12 @@ public class BasicEnemy extends GameEntity {
 
     private boolean runner;
 
-    public BasicEnemy(double x, double y, Map map, boolean runner) {
+    private boolean jumper;
+
+    public BasicEnemy(double x, double y, Map map, boolean runner, boolean jumper) {
         super(x, y, map, InputAction.Default, FillType.Image, 1);
         this.runner = runner;
+        this.jumper = jumper;
         this.sizeX = 50;
         this.sizeY = 50;
         running = true;
@@ -94,9 +97,11 @@ public class BasicEnemy extends GameEntity {
         currentDrag = Map.AIR_DRAG;
         if (canJump) {
             currentDrag = Map.GROUND_DRAG;
-            if (map.playerY+this.sizeX < this.y) {
-                velY = -JUMP_SPEED / Main.FPS;
+            if (jumper) {
+                if (map.playerY + this.sizeX * 2 < this.y) {
+                    velY = -JUMP_SPEED / Main.FPS;
 
+                }
             }
         }
         if (map.playerX > this.x) {

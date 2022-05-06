@@ -12,7 +12,7 @@ public class UserFileHandler {
     private static final int MAX_LEADERBOARD = 100;
 
 
-    public static String getUserTime(String mapName, int number) {
+    public static double getUserTime(String mapName, int number) {
         File file = new File("res\\userData\\levelTimes.txt");
         try {
             Scanner scanner = new Scanner(file);
@@ -21,9 +21,9 @@ public class UserFileHandler {
 
                 if (line[0].equals(mapName)) {
                     if (line.length-1 < number) {
-                        return "N/A";
+                        return -1;
                     } else {
-                        return line[number];
+                        return Double.parseDouble(line[number]);
                     }
                 }
             }
@@ -34,12 +34,12 @@ public class UserFileHandler {
             e.printStackTrace();
         }
 
-        return "N/A";
+        return -1;
 
     }
 
 
-    public static String saveUserTime(String mapName, double time) {
+    public static void saveUserTime(String mapName, double time) {
         File file = new File("res\\userData\\levelTimes.txt");
         String text = "";
         try {
@@ -97,7 +97,7 @@ public class UserFileHandler {
             e.printStackTrace();
         }
 
-        return "N/A";
+
 
     }
 
