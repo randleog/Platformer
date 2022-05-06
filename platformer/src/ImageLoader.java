@@ -20,7 +20,7 @@ public class ImageLoader {
 
     public static Image wallTile = loadImage("wallTile.png", 64);
     public static Image defaultTile = loadImage("default.png", 64);
-    public static Image sky1 = loadImage("sky1.png", 1024);
+    public static Image sky1 = loadImage("sky1.png", 1920,1080);
     public static Image particle = loadImage("particle.png", 64);
 
     public static Image speed = loadImage("speed.png", 64);
@@ -56,7 +56,31 @@ public class ImageLoader {
         return image;
     }
 
+    /**
+     * Create an input stream to read images.
+     * @param fileName File name.
+     * @param width Size of image.
+     * @param height Size of image.
+     * @return The image.
+     */
+    private static Image loadImage(String fileName, int width, int height) {
 
+
+        Image image;
+        FileInputStream inputstream = null;
+        try {
+
+
+            inputstream = new FileInputStream("res\\images\\" + fileName);
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+            image = new Image(inputstream, width, height, true, false);
+
+        return image;
+    }
 
 
 

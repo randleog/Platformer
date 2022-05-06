@@ -14,6 +14,9 @@ public class Map {
 
     protected boolean reset = false;
 
+
+    private static final int MAX_FRAMES = 43200;
+
     private ArrayList<GameEntity> entities = new ArrayList<>();
     private ArrayList<GameEntity> nextEntities = new ArrayList<>();
 
@@ -194,7 +197,9 @@ public class Map {
                     currentTick++;
                 }
             }
-            frames.add(new Integer[]{(int)playerX,(int)playerY});
+            if (frames.size() < MAX_FRAMES) {
+                frames.add(new Integer[]{(int) playerX, (int) playerY});
+            }
 
             for (GameEntity entity : entities) {
                 entity.tick();

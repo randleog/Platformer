@@ -32,12 +32,7 @@ public class ReplayPlayer extends GameEntity {
 
 
     public void tick() {
-        int currentTick = Math.max(map.getCurrentTick(), 0);
-
-        if (currentTick >= frames.size()-1) {
-            currentTick = 0;
-
-        }
+        int currentTick = Math.max(map.getCurrentTick(), 0)% (frames.size()-1);
 
         x = frames.get(currentTick)[0];
         y = frames.get(currentTick)[1];
