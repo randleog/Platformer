@@ -29,16 +29,17 @@ public class ReplayPlayer extends GameEntity {
 
 
     public void tick() {
-        if (map.getCurrentTick() >= frames.size()-1) {
+        int currentTick = Math.max(map.getCurrentTick(), 0);
+        if (currentTick >= frames.size()-1) {
             Main.switchMenu(Main.replayMenu);
         }
 
-        x = frames.get(map.getCurrentTick())[0];
-        y = frames.get(map.getCurrentTick())[1];
+        x = frames.get(currentTick)[0];
+        y = frames.get(currentTick)[1];
 
 
-        map.cameraX = x - startX;
-        map.cameraY = y - startY;
+        map.cameraX = x-700;
+        map.cameraY = y-500;
         //  x = startX;
 
 

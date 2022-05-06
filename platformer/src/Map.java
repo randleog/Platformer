@@ -171,7 +171,7 @@ public class Map {
             if (UserFileHandler.getUserTime(name, 1) > getTime()) {
                 ReplaySave.saveReplay(frames, name);
             }
-         
+
         }
     }
 
@@ -186,7 +186,13 @@ public class Map {
         }
         if (Main.getKey(InputAction.Menu) > 0) {
             if (isReplay) {
-                currentTick++;
+                if (Main.hashMap.get(InputAction.Right) > 0) {
+                    currentTick+=2;
+                } else if (Main.hashMap.get(InputAction.Left) > 0) {
+                    currentTick--;
+                } else {
+                    currentTick++;
+                }
             }
             frames.add(new Integer[]{(int)playerX,(int)playerY});
 

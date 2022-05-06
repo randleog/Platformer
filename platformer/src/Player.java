@@ -52,8 +52,8 @@ public class Player extends GameEntity {
         jumpCollision();
 
 
-        map.cameraX = x - startX;
-        map.cameraY = y - startY;
+        map.cameraX = x-700;
+        map.cameraY = y-500;
         //  x = startX;
 
         if (running) {
