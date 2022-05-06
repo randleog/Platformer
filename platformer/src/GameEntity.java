@@ -102,11 +102,14 @@ public abstract class GameEntity {
         if (this instanceof Player) {
             Main.deaths++;
             map.reset();
+            this.x = startX;
+            this.y = startY;
+            this.velY =0;
+            this.velX = 0;
+        } else {
+            map.removeEntity(this);
         }
-        this.x = startX;
-        this.y = startY;
-        this.velY =0;
-        this.velX = 0;
+
     }
 
     public double getParallax() {

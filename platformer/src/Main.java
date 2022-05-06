@@ -169,7 +169,7 @@ public class Main extends Application {
 
         currentMap.addEntity(new BasicEnemy(100, 700, currentMap, false));
         currentMap.addEntity(new BasicEnemy(1700, 900, currentMap, true));
-        currentMap.addEntity(new Hookable(750, 0, currentMap, 600));
+        currentMap.addEntity(new Hookable(750, 0, currentMap, 500));
         currentMap.setStartEntities();
 
 
@@ -188,11 +188,7 @@ public class Main extends Application {
 
     private static void tick(){
 
-
-
         currentMap.tick();
-
-
 
 
     }
