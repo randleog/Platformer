@@ -37,7 +37,7 @@ public class Main extends Application {
     public static final double DEFAULT_WIDTH_MAP = 1925;
     public static final double DEFAULT_HEIGHT_MAP = 1100;
 
-    private static final int GAME_UNIT_SETTING = 1000;
+    private static final int GAME_UNIT_SETTING = 1166;
     public static double gameUnit = 1;
 
     private static boolean menu = true;
@@ -79,7 +79,7 @@ public class Main extends Application {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         canvas = new Canvas(screenSize.getWidth(), screenSize.getHeight());
-        gameUnit = screenSize.getHeight() / GAME_UNIT_SETTING;
+        gameUnit = GAME_UNIT_SETTING / screenSize.getHeight();
 
 
         BorderPane pane = new BorderPane();
