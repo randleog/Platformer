@@ -105,7 +105,7 @@ public class Map {
     }
 
     private void reset() {
-        Main.playMap(MapLoader.loadMap("1", 1));
+        Main.playMap(MapLoader.loadMap(name, 1));
 
     }
 
