@@ -41,6 +41,7 @@ public class Map {
 
 
 
+    private int currentTick = 0;
     public double playerX = 0;
     public double playerY = 0;
 
@@ -50,6 +51,7 @@ public class Map {
     private int sizeY;
 
     public Map(int sizeX, int sizeY, String mapName) {
+
         this.sizeX = sizeX;
         this.sizeY = sizeY;
 
@@ -139,7 +141,9 @@ public class Map {
     }
 
     public void tick() {
+        currentTick++;
         if (Main.getKey(InputAction.Menu) > 0) {
+
             for (GameEntity entity : entities) {
                 entity.tick();
             }
@@ -187,7 +191,7 @@ public class Map {
         g.setFont(new Font(25));
         g.setFill(Color.color(1, 1, 1));
         g.fillText("deaths: " + Main.deaths, 50, 50);
-
+        g.fillText("time: " + String.format("%.2f",currentTick*1.0/Main.FPS), 200, 50);
         if (!(Main.getKey(InputAction.Menu) > 0)) {
             g.setFill(Color.color(0, 0, 0, 0.4));
             g.fillRect(0, 0, g.getCanvas().getWidth(), g.getCanvas().getHeight());
