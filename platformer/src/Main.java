@@ -228,6 +228,7 @@ public class Main extends Application {
 
 
     public static void switchMenu(ArrayList<MenuButton> newMenu) {
+        lastMap = null;
         addbuttons();
         menu = true;
         currentMenu = newMenu;
