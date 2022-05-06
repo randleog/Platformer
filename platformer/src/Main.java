@@ -217,6 +217,7 @@ public class Main extends Application {
     }
 
     public static void playMap(Map newMap) {
+        hashMap.put(InputAction.Menu, 2);
         currentMap = newMap;
         menu = false;
         currentMenu = new ArrayList<>();

@@ -31,6 +31,9 @@ public class Map {
     private static final int CRASH_PARTICLE_COUNT = 10;
 
 
+    private LevelsMenuButton backButton = new LevelsMenuButton(400,500,200,100);
+
+
     public static final double BASE_DRAG_Y = 0.5;
 
     protected HashMap<Integer,Boolean> keys = new HashMap<>();
@@ -204,8 +207,12 @@ public class Map {
         g.fillText("deaths: " + Main.deaths, 50, 50);
         g.fillText("time: " + String.format("%.2f",currentTick*1.0/Main.FPS), 200, 50);
         if (!(Main.getKey(InputAction.Menu) > 0)) {
+
             g.setFill(Color.color(0, 0, 0, 0.4));
             g.fillRect(0, 0, g.getCanvas().getWidth(), g.getCanvas().getHeight());
+
+            backButton.tick();
+            backButton.render(g);
 
             g.setFill(Color.color(1, 1, 1));
             g.setFont(new Font(40));
