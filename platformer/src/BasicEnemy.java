@@ -9,7 +9,7 @@ public class BasicEnemy extends GameEntity {
 
     private static final double SIDE_BOOST = 1;
 
-    private static final double JUMP_SPEED = 800.0;
+    private static final double JUMP_SPEED = 6.0;
 
 
 
@@ -99,17 +99,17 @@ public class BasicEnemy extends GameEntity {
             currentDrag = Map.GROUND_DRAG;
             if (jumper) {
                 if (map.playerY + this.sizeX * 2 < this.y) {
-                    velY = -JUMP_SPEED / Main.FPS;
+                    velY = -JUMP_SPEED;
 
                 }
             }
         }
         if (map.playerX > this.x) {
-            accelX = (accel / Main.FPS) * baseAccel;
+            accelX = (accel ) * baseAccel;
         }
 
         if (map.playerX < this.x) {
-            accelX = (-accel / Main.FPS) * baseAccel;
+            accelX = (-accel) * baseAccel;
         }
 
 

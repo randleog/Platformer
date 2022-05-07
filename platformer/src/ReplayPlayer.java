@@ -13,6 +13,8 @@ public class ReplayPlayer extends GameEntity {
 
     private boolean hooking = false;
 
+    private double speedFactor;
+
     private ArrayList<Integer[]> frames;
 
     private boolean isReplay;
@@ -21,6 +23,12 @@ public class ReplayPlayer extends GameEntity {
         super(x, y, map, InputAction.Default, FillType.Image, 1);
         this.isReplay = isReplay;
         this.frames = frames;
+
+
+        speedFactor = (frames.get(0)[0]*1.0) /  Main.FPS;
+        System.out.println(speedFactor + " " + Main.FPS + " " + (frames.get(0)[0]*1.0));
+        frames.remove(0);
+
         this.sizeX = 50;
         this.sizeY = 50;
 
@@ -32,7 +40,9 @@ public class ReplayPlayer extends GameEntity {
 
 
     public void tick() {
-        int currentTick = Math.max(map.getCurrentTick(), 0)% (frames.size()-1);
+        int currentTick =(int)(map.getCurrentTick()*speedFactor);
+
+        currentTick = Math.max(currentTick, 0)% (frames.size()-1);
 
         x = frames.get(currentTick)[0];
         y = frames.get(currentTick)[1];

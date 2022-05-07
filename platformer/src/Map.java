@@ -78,6 +78,8 @@ public class Map {
             backButton = new ReplayMenuButton(400,500,200,100);
         }
 
+        frames.add(new Integer[]{Main.FPS, 0});
+
     }
 
     public void winGame() {

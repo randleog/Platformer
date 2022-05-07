@@ -22,6 +22,8 @@ public abstract class GameEntity {
 
     private final int MAX_COLLISIONS = 100;
 
+    private final int SPEED_FACTOR = 144;
+
 
     protected double parallax;
     private static final double DEFAULT_TILE_SIZE = 50;
@@ -132,14 +134,14 @@ public abstract class GameEntity {
 
 
     protected void physics() {
-        velX = velX + accelX;
-        velY = velY + accelY;
+        velX = velX + accelX/Main.FPS;
+        velY = velY + accelY/Main.FPS;
         velX = velX * Math.pow(currentDrag, 1.0 / Main.FPS);
         velY = velY * Math.pow(Map.BASE_DRAG_Y, 1.0 / Main.FPS);
 
 
-        x += velX;
-        y += velY;
+        x += (velX/Main.FPS)*SPEED_FACTOR;
+        y += (velY/Main.FPS)*SPEED_FACTOR;
     }
 
     public double getX() {

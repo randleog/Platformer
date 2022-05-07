@@ -13,7 +13,7 @@ public class Player extends GameEntity {
 
     private static final double SIDE_BOOST = 1;
 
-    private static final double JUMP_SPEED = 800.0;
+    private static final double JUMP_SPEED = 6;
 
 
     private static final double SPRINT_HEIGHT_FACTOR = 0.7;
@@ -107,30 +107,30 @@ public class Player extends GameEntity {
         if (canJump) {
             currentDrag = Map.GROUND_DRAG;
             if (Main.isKeyDown(InputAction.Up)) {
-                velY = -JUMP_SPEED / Main.FPS;
+                velY = -JUMP_SPEED;
                 Main.deactivateKey(InputAction.Up);
 
             }
         } else if (canLeftJump) {
             if (Main.isKeyDown(InputAction.Up)) {
-                velY = -JUMP_SPEED / Main.FPS;
-                velX = -JUMP_SPEED * SIDE_BOOST * baseAccel / Main.FPS;
+                velY = -JUMP_SPEED;
+                velX = -JUMP_SPEED * SIDE_BOOST * baseAccel ;
                 Main.deactivateKey(InputAction.Up);
             }
         } else if (canRightJump) {
             if (Main.isKeyDown(InputAction.Up)) {
-                velY = -JUMP_SPEED / Main.FPS;
-                velX = JUMP_SPEED * SIDE_BOOST * baseAccel / Main.FPS;
+                velY = -JUMP_SPEED ;
+                velX = JUMP_SPEED * SIDE_BOOST * baseAccel ;
                 Main.deactivateKey(InputAction.Up);
 
             }
         }
         if (Main.isKeyDown(InputAction.Right) && !Main.isKeyDown(InputAction.Left)) {
-            accelX = (accel / Main.FPS) * baseAccel;
+            accelX = (accel) * baseAccel;
         }
 
         if (Main.isKeyDown(InputAction.Left) && !Main.isKeyDown(InputAction.Right)) {
-            accelX = (-accel / Main.FPS) * baseAccel;
+            accelX = (-accel) * baseAccel;
         }
         if (Main.isKeyDown(InputAction.Left) && Main.isKeyDown(InputAction.Right)) {
             accelX = 0;
