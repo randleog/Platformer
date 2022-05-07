@@ -186,10 +186,16 @@ public class Map {
 
     public void tick() {
 
+
+        //handle normal gameplay speed
         if (!isReplay) {
             currentTick++;
         }
+
+
         if (Main.getKey(InputAction.Menu) > 0) {
+
+            //handle replay speed
             if (isReplay) {
                 if (Main.hashMap.get(InputAction.Right) > 0) {
                     currentTick+=2;
@@ -199,6 +205,10 @@ public class Map {
                     currentTick++;
                 }
             }
+
+
+
+
             if (frames.size() < MAX_FRAMES) {
                 frames.add(new Integer[]{(int) playerX, (int) playerY});
             }
@@ -259,6 +269,8 @@ public class Map {
         g.setFill(Color.color(1, 1, 1));
         g.fillText("deaths: " + Main.deaths, correctUnit(50), correctUnit(50));
         g.fillText("time: " + String.format("%.2f",currentTick*1.0/Main.FPS), correctUnit(200), correctUnit(50));
+
+
         if (!(Main.getKey(InputAction.Menu) > 0)) {
 
             g.setFill(Color.color(0, 0, 0, 0.4));

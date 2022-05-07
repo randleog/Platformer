@@ -30,7 +30,8 @@ public abstract class GameEntity {
 
     private static final double SQUASH_FACTOR = 1.5;
 
-
+    private static final double WALL_CLING_FORCE = 8;
+    private static final double WALL_CLING_RADIUS = 5;
     protected boolean running;
 
     protected Color color;
@@ -204,15 +205,17 @@ public abstract class GameEntity {
 
 
     protected void jumpCollision() {
-        x++;
+        x+=WALL_CLING_RADIUS;
         if (map.getActions(this).contains(InputAction.Left)) {
             canLeftJump = true;
+            velX+= WALL_CLING_FORCE /Main.FPS;
         }
-        x-=2;
+        x-=WALL_CLING_RADIUS*2;
         if (map.getActions(this).contains(InputAction.Right)) {
             canRightJump = true;
+            velX+= -WALL_CLING_FORCE /Main.FPS;
         }
-        x++;
+        x+=WALL_CLING_RADIUS;
     }
 
 
@@ -253,6 +256,7 @@ public abstract class GameEntity {
                     while (entity.intersect(this)) {
                         x += 0.1;
                     }
+
                     velX = 0;
                 } else if (action == InputAction.Up) {
                     if (this instanceof Player || this instanceof BasicEnemy) {
