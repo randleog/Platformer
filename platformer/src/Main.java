@@ -70,7 +70,7 @@ public class Main extends Application {
 
     public static ArrayList<MenuButton> mainMenu = new ArrayList<>();
 
-
+    public static ArrayList<MenuButton> settingsMenu = new ArrayList<>();
     private static ArrayList<MenuButton> currentMenu = new ArrayList<>();
 
 
@@ -173,12 +173,27 @@ public class Main extends Application {
         mainMenu = new ArrayList<>();
         mainMenu.add(new ExitButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "exit"));
         mainMenu.add(new LevelsMenuButton(100, BUTTON_HEIGHT, BUTTON_WIDTH*2, BUTTON_HEIGHT));
-        mainMenu.add(new MenuText(900,100,"Platformer", 55));
         mainMenu.add(new ReplayMenuButton(100,BUTTON_HEIGHT*2+BUTTON_GAP,BUTTON_WIDTH*2,BUTTON_HEIGHT));
+        mainMenu.add(new SettingsMenuButton(100,BUTTON_HEIGHT*3+BUTTON_GAP*2,BUTTON_WIDTH*2,BUTTON_HEIGHT));
+
+        mainMenu.add(new MenuText(900,100,"Platformer", 55));
+
         loadLevelMenu();
         loadReplayMenu();
+        loadSettingsMenu();
 
 
+
+
+    }
+
+
+    private static void loadSettingsMenu() {
+        settingsMenu = new ArrayList<>();
+
+
+        settingsMenu.add(new MainMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back"));
+        settingsMenu.add(new MenuText(900,100,"settings: ", 55));
     }
 
     private static void loadReplayMenu() {
