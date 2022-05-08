@@ -121,7 +121,7 @@ public abstract class GameEntity {
 
     protected void gravity() {
 
-        velY += Map.GRAVITY / Main.FPS;
+        velY += Map.GRAVITY / Main.fps;
 
     }
 
@@ -135,14 +135,14 @@ public abstract class GameEntity {
 
 
     protected void physics() {
-        velX = velX + accelX/Main.FPS;
-        velY = velY + accelY/Main.FPS;
-        velX = velX * Math.pow(currentDrag, 1.0 / Main.FPS);
-        velY = velY * Math.pow(Map.BASE_DRAG_Y, 1.0 / Main.FPS);
+        velX = velX + accelX/Main.fps;
+        velY = velY + accelY/Main.fps;
+        velX = velX * Math.pow(currentDrag, 1.0 / Main.fps);
+        velY = velY * Math.pow(Map.BASE_DRAG_Y, 1.0 / Main.fps);
 
 
-        x += (velX/Main.FPS)*SPEED_FACTOR;
-        y += (velY/Main.FPS)*SPEED_FACTOR;
+        x += (velX/Main.fps)*SPEED_FACTOR;
+        y += (velY/Main.fps)*SPEED_FACTOR;
     }
 
     public double getX() {
@@ -208,12 +208,12 @@ public abstract class GameEntity {
         x+=WALL_CLING_RADIUS;
         if (map.getActions(this).contains(InputAction.Left)) {
             canLeftJump = true;
-            velX+= WALL_CLING_FORCE /Main.FPS;
+            velX+= WALL_CLING_FORCE /Main.fps;
         }
         x-=WALL_CLING_RADIUS*2;
         if (map.getActions(this).contains(InputAction.Right)) {
             canRightJump = true;
-            velX+= -WALL_CLING_FORCE /Main.FPS;
+            velX+= -WALL_CLING_FORCE /Main.fps;
         }
         x+=WALL_CLING_RADIUS;
     }

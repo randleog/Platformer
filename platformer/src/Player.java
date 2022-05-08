@@ -18,6 +18,8 @@ public class Player extends GameEntity {
 
     private static final double SPRINT_HEIGHT_FACTOR = 0.7;
 
+    private static final double MAX_WALL_JUMP_FACTOR = 1.5;
+
     private boolean hooking = false;
 
 
@@ -113,14 +115,17 @@ public class Player extends GameEntity {
             }
         } else if (canLeftJump) {
             if (Main.isKeyDown(InputAction.Up)) {
+
                 velY = -JUMP_SPEED;
-                velX = -JUMP_SPEED * SIDE_BOOST * baseAccel ;
+
+                velX = -JUMP_SPEED * SIDE_BOOST * baseAccel;
                 Main.deactivateKey(InputAction.Up);
             }
         } else if (canRightJump) {
             if (Main.isKeyDown(InputAction.Up)) {
+                velX = JUMP_SPEED * SIDE_BOOST * baseAccel;
                 velY = -JUMP_SPEED ;
-                velX = JUMP_SPEED * SIDE_BOOST * baseAccel ;
+
                 Main.deactivateKey(InputAction.Up);
 
             }

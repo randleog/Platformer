@@ -1,5 +1,4 @@
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 
@@ -25,8 +24,8 @@ public class ReplayPlayer extends GameEntity {
         this.frames = frames;
 
 
-        speedFactor = (frames.get(0)[0]*1.0) /  Main.FPS;
-        System.out.println(speedFactor + " " + Main.FPS + " " + (frames.get(0)[0]*1.0));
+        speedFactor = (frames.get(0)[0]*1.0) /  Main.fps;
+        System.out.println(speedFactor + " " + Main.fps + " " + (frames.get(0)[0]*1.0));
         frames.remove(0);
 
         this.sizeX = 50;
@@ -42,7 +41,11 @@ public class ReplayPlayer extends GameEntity {
     public void tick() {
         int currentTick =(int)(map.getCurrentTick()*speedFactor);
 
-        currentTick = Math.max(currentTick, 0)% (frames.size()-1);
+        if (currentTick < 0) {
+            currentTick = (currentTick+(Math.abs(currentTick)/(frames.size()-1))*(frames.size()-1))+(frames.size()-1);
+        }
+        currentTick = (currentTick)% (frames.size()-1);
+
 
         x = frames.get(currentTick)[0];
         y = frames.get(currentTick)[1];

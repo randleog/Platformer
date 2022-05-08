@@ -5,24 +5,24 @@ import javafx.scene.text.Font;
 public class MenuText extends MenuButton {
 
 
-    private String name;
+
 
     private int size;
 
-    public MenuText(int x, int y, String text, int size) {
+    private String updateTag;
+
+    public MenuText(int x, int y, String text, int size, String updateTag) {
         super(x,y,1,1, text);
         this.size = size;
-
-        double time = UserFileHandler.getUserTime(name, 1);
-        if (time == -1) {
-            text = text+"\nbest time: N/A";
-        } else {
-            text = text+"\nbest time: " + String.format("%.2f",time);
-        }
+        this.updateTag = updateTag;
 
     }
 
 
+
+    public String getUpdateTag() {
+        return updateTag;
+    }
 
     public void tick() {
 

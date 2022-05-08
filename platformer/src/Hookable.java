@@ -37,8 +37,8 @@ public class Hookable extends GameEntity {
     private void hook(Player player) {
 
 
-        player.setVelY(player.getVelY() + ((this.y - player.getY()))/Main.FPS / HOOK_FACTOR);
-        player.setVelX(player.getVelX() + ((this.x - player.getX()))/Main.FPS / HOOK_FACTOR);
+        player.setVelY(player.getVelY() + ((this.y - player.getY()))/Main.fps / HOOK_FACTOR);
+        player.setVelX(player.getVelX() + ((this.x - player.getX()))/Main.fps / HOOK_FACTOR);
 
 
     }

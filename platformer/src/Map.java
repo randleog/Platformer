@@ -1,12 +1,8 @@
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-import java.awt.*;
-import java.awt.image.AreaAveragingScaleFilter;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -16,6 +12,8 @@ public class Map {
 
 
     private static final int MAX_FRAMES = 43200;
+
+    private static final int MAX_SPEED = 16;
 
     private ArrayList<GameEntity> entities = new ArrayList<>();
     private ArrayList<GameEntity> nextEntities = new ArrayList<>();
@@ -39,12 +37,16 @@ public class Map {
 
 
 
+
+
     private MenuButton backButton;
 
 
     public static final double BASE_DRAG_Y = 0.5;
 
     protected HashMap<Integer,Boolean> keys = new HashMap<>();
+
+    private ArrayList<MenuButton> replayButtons = new ArrayList<>();
 
 
     protected double cameraX = 0;
@@ -55,6 +57,8 @@ public class Map {
     private int currentTick = 0;
     public double playerX = 0;
     public double playerY = 0;
+
+    private double speed = 1;
 
     GameEntity player = null;
 
@@ -76,9 +80,11 @@ public class Map {
            backButton = new LevelsMenuButton(400,500,200,100);
         } else {
             backButton = new ReplayMenuButton(400,500,200,100);
+            replayButtons.add(new SpeedupButton(100,800,200, 100, "<<", -0.5,this));
+            replayButtons.add(new SpeedupButton(300,800,200, 100, ">>", 0.5,this));
         }
 
-        frames.add(new Integer[]{Main.FPS, 0});
+        frames.add(new Integer[]{Main.fps, 0});
 
     }
 
@@ -89,6 +95,13 @@ public class Map {
 
         }
         Main.switchMenu(Main.levelMenu);
+    }
+
+
+    public void increaseSpeed(double ammount) {
+        speed+= ammount;
+        speed = Math.max(speed, -MAX_SPEED);
+        speed = Math.min(speed,MAX_SPEED);
     }
 
     public boolean isRadius(double x, double y, double x2, double y2, double radius) {
@@ -181,6 +194,7 @@ public class Map {
     }
 
     public int getCurrentTick() {
+
         return currentTick;
     }
 
@@ -193,25 +207,31 @@ public class Map {
         }
 
 
+
+
         if (Main.getKey(InputAction.Menu) > 0) {
+
 
             //handle replay speed
             if (isReplay) {
-                if (Main.hashMap.get(InputAction.Right) > 0) {
-                    currentTick+=2;
-                } else if (Main.hashMap.get(InputAction.Left) > 0) {
-                    currentTick--;
-                } else {
-                    currentTick++;
+                currentTick += speed;
+                for (MenuButton button : replayButtons) {
+                    button.tick();
                 }
+            } else {
+                if (Main.isKeyDown(InputAction.Reset)) {
+                    Main.deactivateKey(InputAction.Reset);
+                    reset();
+                }
+                if (frames.size() < MAX_FRAMES) {
+                    frames.add(new Integer[]{(int) playerX, (int) playerY});
+                }
+
             }
 
 
 
 
-            if (frames.size() < MAX_FRAMES) {
-                frames.add(new Integer[]{(int) playerX, (int) playerY});
-            }
 
             for (GameEntity entity : entities) {
                 entity.tick();
@@ -233,15 +253,15 @@ public class Map {
         }
 
         //camera bounds
-        cameraX = Math.min(cameraX, correctUnit(sizeX-Main.DEFAULT_WIDTH_MAP));
-        cameraX = Math.max(cameraX, correctUnit(-sizeX+ Main.DEFAULT_WIDTH_MAP));
-        cameraY = Math.min(cameraY, correctUnit(sizeY-Main.DEFAULT_HEIGHT_MAP));
-        cameraY = Math.max(cameraY, correctUnit(-sizeY+Main.DEFAULT_HEIGHT_MAP));
+        cameraX = Math.min(cameraX, sizeX-Main.DEFAULT_WIDTH_MAP);
+        cameraX = Math.max(cameraX, -sizeX+ Main.DEFAULT_WIDTH_MAP);
+        cameraY = Math.min(cameraY, sizeY-Main.DEFAULT_HEIGHT_MAP);
+        cameraY = Math.max(cameraY, -sizeY+Main.DEFAULT_HEIGHT_MAP);
     }
 
 
     public double getTime() {
-        return (currentTick*1.0)/Main.FPS;
+        return (currentTick*1.0)/Main.fps;
     }
 
     public String getName() {
@@ -249,6 +269,8 @@ public class Map {
     }
 
     public void render(GraphicsContext g) {
+
+
 
 
         for (GameEntity entity : particles) {
@@ -268,7 +290,7 @@ public class Map {
         g.setFont(new Font(Main.correctUnit(25)));
         g.setFill(Color.color(1, 1, 1));
         g.fillText("deaths: " + Main.deaths, correctUnit(50), correctUnit(50));
-        g.fillText("time: " + String.format("%.2f",currentTick*1.0/Main.FPS), correctUnit(200), correctUnit(50));
+        g.fillText("time: " + String.format("%.2f",currentTick*1.0/Main.fps), correctUnit(200), correctUnit(50));
 
 
         if (!(Main.getKey(InputAction.Menu) > 0)) {
@@ -292,7 +314,14 @@ public class Map {
             currentAction = currentAction + getStringKey(InputAction.Down);
             g.fillText(currentAction, correctUnit(100), correctUnit(400));
         }
-
+        if (isReplay) {
+            for (MenuButton button : replayButtons) {
+                button.render(g);
+            }
+            g.setFill(Color.color(1, 1, 1));
+            g.setFont(new Font(Main.correctUnit(40)));
+            g.fillText("x" + speed, correctUnit(500), correctUnit(800));
+        }
 
     }
 

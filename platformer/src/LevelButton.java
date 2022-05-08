@@ -35,7 +35,7 @@ public class LevelButton extends MenuButton {
 
         double time = UserFileHandler.getUserTime(name, 1);
         if (time < timeBefore) {
-            celebrationTicks = CELEBRATION_TIME*Main.FPS;
+            celebrationTicks = CELEBRATION_TIME*Main.fps;
         }
 
         if (time == -1) {

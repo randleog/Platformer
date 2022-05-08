@@ -14,7 +14,6 @@ import javafx.util.Duration;
 
 import java.awt.*;
 import java.io.File;
-import java.nio.channels.ReadPendingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -27,7 +26,7 @@ public class Main extends Application {
     private static final int BUTTON_WIDTH = 292;
     private static final int BUTTON_HEIGHT = 100;
 
-    private static final int BUTTON_GAP = 100;
+    private static final int BUTTON_GAP = 50;
 
     private static final double EXPECTED_ASPECT_RATIO = 1.7778;
 
@@ -35,11 +34,13 @@ public class Main extends Application {
 
     private static Canvas canvas;
 
-    public static final int FPS = 144;
+    public static int fps = 144;
+
+    private static double fpstime = 3;
     public static Map lastMap = null;
 
 
-    public static final double DEFAULT_WIDTH_MAP = 1925;
+    public static final double DEFAULT_WIDTH_MAP = 1800;
     public static final double DEFAULT_HEIGHT_MAP = 1100;
 
     private static final int GAME_UNIT_SETTING = 1000;
@@ -59,6 +60,10 @@ public class Main extends Application {
 
     private static Stage primaryStage;
 
+
+    private static int fpsIndex = 1;
+
+    private static ArrayList<Integer> fpsValues = new ArrayList<>();
 
     public static boolean mouseDown = false;
 
@@ -80,6 +85,17 @@ public class Main extends Application {
      * @param primaryStage Stage javafx shows things on.
      */
     public void start(Stage primaryStage) {
+        fpsValues.add(45);
+        fpsValues.add(60);
+        fpsValues.add(90);
+        fpsValues.add(144);
+        fpsValues.add(160);
+        fpsValues.add(240);
+
+
+
+
+
         readKeyBind();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -138,7 +154,7 @@ public class Main extends Application {
         primaryStage.show();
 
 
-        int fpstime = 1000 / FPS;
+        fpstime = 1000.0 / fps;
 
 
         loop = new Timeline(new KeyFrame(Duration.millis(fpstime), (ActionEvent event) -> {
@@ -176,7 +192,7 @@ public class Main extends Application {
         mainMenu.add(new ReplayMenuButton(100,BUTTON_HEIGHT*2+BUTTON_GAP,BUTTON_WIDTH*2,BUTTON_HEIGHT));
         mainMenu.add(new SettingsMenuButton(100,BUTTON_HEIGHT*3+BUTTON_GAP*2,BUTTON_WIDTH*2,BUTTON_HEIGHT));
 
-        mainMenu.add(new MenuText(900,100,"Platformer", 55));
+        mainMenu.add(new MenuText(900,100,"Platformer", 55, "Title"));
 
         loadLevelMenu();
         loadReplayMenu();
@@ -191,9 +207,14 @@ public class Main extends Application {
     private static void loadSettingsMenu() {
         settingsMenu = new ArrayList<>();
 
+        settingsMenu.add(new DecreaseFpsButton(BUTTON_GAP,100,100,100));
+
+        settingsMenu.add(new MenuText(BUTTON_GAP*3,150,"FPS: " + fps, 40, "FPS"));
+
+        settingsMenu.add(new IncreaseFpsButton( BUTTON_GAP*6,100,100,100));
 
         settingsMenu.add(new MainMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back"));
-        settingsMenu.add(new MenuText(900,100,"settings: ", 55));
+        settingsMenu.add(new MenuText(900,100,"settings: ", 55, "Title"));
     }
 
     private static void loadReplayMenu() {
@@ -222,7 +243,7 @@ public class Main extends Application {
             }
         }
         replayMenu.add(new MainMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back"));
-        replayMenu.add(new MenuText(900,100,"Replay Menu: ", 55));
+        replayMenu.add(new MenuText(900,100,"Replay Menu: ", 55, "Title"));
     }
 
 
@@ -254,18 +275,52 @@ public class Main extends Application {
         }
 
         levelMenu.add(new MainMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back"));
-        levelMenu.add(new MenuText(900,100,"Levels Menu: ", 55));
+        levelMenu.add(new MenuText(900,100,"Levels Menu: ", 55, "Title"));
 
     }
 
 
     private static void tick() {
+
         gameUnit =  primaryStage.getHeight() /GAME_UNIT_SETTING  ;
         if (!(currentMap == null)) {
             currentMap.tick();
         }
 
 
+    }
+
+
+    public static void resetTimeline() {
+        loop.stop();
+
+        fps = fpsValues.get(fpsIndex);
+        fpstime = 1000.0 / fps;
+
+
+        loop = new Timeline(new KeyFrame(Duration.millis(fpstime), (ActionEvent event) -> {
+            tick();
+            render(canvas.getGraphicsContext2D());
+        }));
+
+        loop.setCycleCount(Animation.INDEFINITE);
+
+        loop.play();
+
+    }
+
+    public static void decreaseFPS() {
+        fpsIndex--;
+        fpsIndex = Math.max(fpsIndex, 0);
+
+
+        resetTimeline();
+    }
+    public static void increaseFPS() {
+        fpsIndex++;
+        fpsIndex = Math.min(fpsIndex, fpsValues.size()-1);
+
+        resetTimeline();
     }
 
     public static void playMap(Map newMap) {
@@ -331,6 +386,13 @@ public class Main extends Application {
 
         for (MenuButton button : currentMenu) {
             button.tick();
+            if (button instanceof MenuText) {
+                MenuText menuText = (MenuText)button;
+
+                if (menuText.getUpdateTag().equals("FPS")) {
+                    menuText.setText("FPS: " + fps);
+                }
+            }
 
 
             button.render(canvas.getGraphicsContext2D());
@@ -355,6 +417,7 @@ public class Main extends Application {
         inputMap.put(KeyCode.SHIFT, InputAction.Sprint);
         inputMap.put(KeyCode.ESCAPE, InputAction.Menu);
         inputMap.put(KeyCode.F11, InputAction.FullScreen);
+        inputMap.put(KeyCode.BACK_SPACE, InputAction.Reset);
 
         inputMap.put(KeyCode.R, InputAction.Hook);
 
@@ -362,6 +425,8 @@ public class Main extends Application {
         inputMap.put(KeyCode.LEFT, InputAction.Left);
         inputMap.put(KeyCode.DOWN, InputAction.Down);
         inputMap.put(KeyCode.RIGHT, InputAction.Right);
+
+        hashMap.put(InputAction.Reset, 0);
 
         hashMap.put(InputAction.FullScreen, 0);
         hashMap.put(InputAction.Menu, 2);
