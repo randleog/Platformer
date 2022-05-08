@@ -54,7 +54,7 @@ public class Map {
 
 
 
-    private int currentTick = 0;
+    private double currentTick = 0;
     public double playerX = 0;
     public double playerY = 0;
 
@@ -80,8 +80,8 @@ public class Map {
            backButton = new LevelsMenuButton(400,500,200,100);
         } else {
             backButton = new ReplayMenuButton(400,500,200,100);
-            replayButtons.add(new SpeedupButton(100,800,200, 100, "<<", -0.5,this));
-            replayButtons.add(new SpeedupButton(300,800,200, 100, ">>", 0.5,this));
+            replayButtons.add(new SpeedupButton(100,800,200, 100, "<<", -0.25,this));
+            replayButtons.add(new SpeedupButton(300,800,200, 100, ">>", 0.25,this));
         }
 
         frames.add(new Integer[]{Main.fps, 0});
@@ -195,7 +195,7 @@ public class Map {
 
     public int getCurrentTick() {
 
-        return currentTick;
+        return (int)currentTick;
     }
 
     public void tick() {
