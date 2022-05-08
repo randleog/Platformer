@@ -61,7 +61,7 @@ public class Main extends Application {
     private static Stage primaryStage;
 
 
-    private static int fpsIndex = 1;
+    private static int fpsIndex = 3;
 
     private static ArrayList<Integer> fpsValues = new ArrayList<>();
 
