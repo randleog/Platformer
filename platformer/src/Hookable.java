@@ -52,12 +52,20 @@ public class Hookable extends GameEntity {
             g.fillOval(getRenderX(), getRenderY(), map.correctUnit(getSizeX()), map.correctUnit(getSizeY()));
 
             if (Main.isKeyDown(InputAction.Hook)) {
-                g.setStroke(Color.color(0.5, 0.5, 0.5));
+
                 double x = getRenderX();
                 double y = getRenderY();
                 double hookX = map.player.getRenderX();
                 double hookY = map.player.getRenderY();
-                g.setLineWidth(4);
+
+                g.setStroke(Color.color(0.2, 0.2, 0.2));
+
+                g.setLineWidth(6);
+                g.strokeLine(x, y, hookX, hookY);
+
+
+                g.setStroke(Color.color(0.5, 0.5, 0.5));
+                g.setLineWidth(3d);
 
                 g.strokeLine(x, y, hookX, hookY);
             }

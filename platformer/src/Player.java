@@ -15,6 +15,8 @@ public class Player extends GameEntity {
 
     private static final double JUMP_SPEED = 6;
 
+    private static final double CROUCH_GRAVITY = 2;
+
 
     private static final double SPRINT_HEIGHT_FACTOR = 0.7;
 
@@ -36,6 +38,19 @@ public class Player extends GameEntity {
 
     }
 
+
+
+    @Override
+    protected void gravity() {
+
+        if (Main.isKeyDown(InputAction.Down)) {
+            velY += Map.GRAVITY*CROUCH_GRAVITY  / Main.fps;
+        } else {
+            velY += Map.GRAVITY / Main.fps;
+        }
+
+
+    }
 
 
     public void tick() {
@@ -129,6 +144,13 @@ public class Player extends GameEntity {
                 Main.deactivateKey(InputAction.Up);
 
             }
+        }else if (canCornerJump) {
+            if (Main.isKeyDown(InputAction.Up)) {
+                velX = -Math.cos(cornerRotation) *JUMP_SPEED * SIDE_BOOST * baseAccel;
+                velY = Math.sin(cornerRotation) *JUMP_SPEED * SIDE_BOOST * baseAccel;
+                Main.deactivateKey(InputAction.Up);
+
+            }
         }
         if (Main.isKeyDown(InputAction.Right) && !Main.isKeyDown(InputAction.Left)) {
             accelX = (accel) * baseAccel;
@@ -148,9 +170,12 @@ public class Player extends GameEntity {
 
 
     public void render(GraphicsContext g) {
+        g.save();
+        g.translate(getRenderX()+map.correctUnit(sizeX/2),getRenderY()+map.correctUnit(getSizeY()/2));
+        g.rotate(Math.toDegrees(cornerRotation));
 
-
-        renderSquare(g);
+        renderStill(g);
+        g.restore();
 
     }
 }

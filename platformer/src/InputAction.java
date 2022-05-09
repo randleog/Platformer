@@ -48,20 +48,25 @@ public enum InputAction {
         public String toString() {
             return "Reset";
         }
+    },
+    Corner() {
+        public String toString() {
+            return "Corner";
+        }
     };
 
     public static boolean isXType(InputAction action) {
-        return(action == InputAction.Right || action == InputAction.Left);
+        return(action == InputAction.Right || action == InputAction.Left || action == InputAction.Corner);
 
     }
 
     public static boolean isYType(InputAction action) {
-        return(action == InputAction.Down || action == InputAction.Up);
+        return(action == InputAction.Down || action == InputAction.Up || action == InputAction.Corner);
 
     }
 
     public static boolean isWallType(InputAction action) {
-        return(action == InputAction.Right || action == InputAction.Left|| action == InputAction.Up || action == InputAction.Down);
+        return(action == InputAction.Right || action == InputAction.Left|| action == InputAction.Up || action == InputAction.Down || action == InputAction.Corner);
 
     }
 }

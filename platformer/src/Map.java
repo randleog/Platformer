@@ -80,8 +80,8 @@ public class Map {
            backButton = new LevelsMenuButton(400,500,200,100);
         } else {
             backButton = new ReplayMenuButton(400,500,200,100);
-            replayButtons.add(new SpeedupButton(100,800,200, 100, "<<", -0.25,this));
-            replayButtons.add(new SpeedupButton(300,800,200, 100, ">>", 0.25,this));
+            replayButtons.add(new SpeedupButton(100,800,200, 100, "<<", -0.1,this));
+            replayButtons.add(new SpeedupButton(300,800,200, 100, ">>", 0.1,this));
         }
 
         frames.add(new Integer[]{Main.fps, 0});
@@ -386,6 +386,23 @@ public class Map {
         addEntity(wallLeft);
         addEntity(wallDown);
         addEntity(wallImage);
+
+
+    }
+
+    public void addCornerWall(int x, int y, int sizeX, int sizeY, double parallax, double rotation) {
+
+
+
+        CornerWall wallUp = new CornerWall(x + WALL_CORNER_SIZE, y, this, sizeX - WALL_CORNER_SIZE * 2, 1, InputAction.Corner, FillType.Tile, parallax, rotation);
+
+        CornerWall wallImage = new CornerWall(x, y, this, sizeX, sizeY, InputAction.Default, FillType.Tile, parallax, rotation);
+
+        addEntity(wallUp);
+
+        addEntity(wallImage);
+
+
 
 
     }
