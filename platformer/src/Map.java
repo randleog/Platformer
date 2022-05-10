@@ -2,7 +2,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.transform.Affine;
 
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -201,12 +203,6 @@ public class Map {
     public void tick() {
 
 
-        //handle normal gameplay speed
-        if (!isReplay) {
-            currentTick++;
-        }
-
-
 
 
         if (Main.getKey(InputAction.Menu) > 0) {
@@ -219,6 +215,7 @@ public class Map {
                     button.tick();
                 }
             } else {
+                currentTick++;
                 if (Main.isKeyDown(InputAction.Reset)) {
                     Main.deactivateKey(InputAction.Reset);
                     reset();
@@ -268,7 +265,26 @@ public class Map {
         return name;
     }
 
+    private double rotation = 0;
+
+    private static final double ROTATION_TIME = 0.1;
+
+
     public void render(GraphicsContext g) {
+
+        /*
+        g.save();
+        g.translate(g.getCanvas().getHeight()*Main.EXPECTED_ASPECT_RATIO/2,g.getCanvas().getHeight()/2);
+
+        double playerRotate = -player.getCornerRotation();
+
+        g.rotate(Main.interpolate(rotation, Math.toDegrees(playerRotate), ROTATION_TIME*Main.fps, currentTick%  (ROTATION_TIME*Main.fps)));
+        g.translate(-g.getCanvas().getHeight()*Main.EXPECTED_ASPECT_RATIO/2, -g.getCanvas().getHeight()/2);
+        if (currentTick% (ROTATION_TIME*Main.fps) >(ROTATION_TIME*Main.fps)-1) {
+            rotation = Math.toDegrees(playerRotate);
+        }
+
+         */
 
 
 
@@ -279,7 +295,7 @@ public class Map {
         for (GameEntity entity : entities) {
             entity.render(g);
         }
-
+     //   g.restore();
         //bounds
         g.setStroke(Color.color(1,0,0));
         g.setLineWidth(10);

@@ -16,6 +16,8 @@ public class ReplayPlayer extends GameEntity {
 
     private ArrayList<Integer[]> frames;
 
+    private double fps;
+
     private boolean isReplay;
 
     public ReplayPlayer(double x, double y, Map map, ArrayList<Integer[]> frames, boolean isReplay) {
@@ -25,6 +27,7 @@ public class ReplayPlayer extends GameEntity {
 
 
         speedFactor = (frames.get(0)[0]*1.0) /  Main.fps;
+        this.fps=frames.get(0)[0];
         System.out.println(speedFactor + " " + Main.fps + " " + (frames.get(0)[0]*1.0));
         frames.remove(0);
 
@@ -50,6 +53,15 @@ public class ReplayPlayer extends GameEntity {
         x = frames.get(currentTick)[0];
         y = frames.get(currentTick)[1];
 
+        /*
+            if (currentTick < frames.size() - 1) {
+                x = Main.interpolate(x, frames.get(currentTick + 1)[0], speedFactor, map.getCurrentTick() % speedFactor);
+                y = Main.interpolate(y, frames.get(currentTick + 1)[1], speedFactor, map.getCurrentTick() % speedFactor);
+            }
+
+
+
+         */
 
 
 

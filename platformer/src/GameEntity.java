@@ -25,8 +25,6 @@ public abstract class GameEntity {
     private final int SPEED_FACTOR = 144;
 
 
-
-
     protected double parallax;
     private static final double DEFAULT_TILE_SIZE = 50;
 
@@ -115,7 +113,7 @@ public abstract class GameEntity {
             map.reset = true;
             this.x = startX;
             this.y = startY;
-            this.velY =0;
+            this.velY = 0;
             this.velX = 0;
         } else {
             map.removeEntity(this);
@@ -143,14 +141,16 @@ public abstract class GameEntity {
 
 
     protected void physics() {
-        velX = velX + accelX/Main.fps;
-        velY = velY + accelY/Main.fps;
+        velX = velX + accelX / Main.fps;
+        velY = velY + accelY / Main.fps;
         velX = velX * Math.pow(currentDrag, 1.0 / Main.fps);
         velY = velY * Math.pow(Map.BASE_DRAG_Y, 1.0 / Main.fps);
 
 
-        x += (velX/Main.fps)*SPEED_FACTOR;
-        y += (velY/Main.fps)*SPEED_FACTOR;
+
+
+        x += (velX / Main.fps) * SPEED_FACTOR;
+        y += (velY / Main.fps) * SPEED_FACTOR;
     }
 
     public double getX() {
@@ -213,21 +213,31 @@ public abstract class GameEntity {
 
 
     protected void jumpCollision() {
-        x+=WALL_CLING_RADIUS;
+        x += WALL_CLING_RADIUS;
         if (map.getActions(this).contains(InputAction.Left)) {
             canLeftJump = true;
-            velX+= WALL_CLING_FORCE /Main.fps;
+            velX += WALL_CLING_FORCE / Main.fps;
         }
-        x-=WALL_CLING_RADIUS*2;
+        x -= WALL_CLING_RADIUS * 2;
         if (map.getActions(this).contains(InputAction.Right)) {
             canRightJump = true;
-            velX+= -WALL_CLING_FORCE /Main.fps;
+            velX += -WALL_CLING_FORCE / Main.fps;
         }
-        x+=WALL_CLING_RADIUS;
+        x += WALL_CLING_RADIUS;
+
+
+        y += WALL_CLING_RADIUS;
+        if (map.getActions(this).contains(InputAction.Up)) {
+            canJump = true;
+
+        }
+        if (map.getActions(this).contains(InputAction.Corner)) {
+            canCornerJump = true;
+        }
+        y -= WALL_CLING_RADIUS;
+
+
     }
-
-
-
 
 
     protected void collision() {
@@ -248,7 +258,7 @@ public abstract class GameEntity {
                 numberOfCollisions++;
                 if (numberOfCollisions > MAX_COLLISIONS) {
                     die();
-                    numberOfCollisions =0;
+                    numberOfCollisions = 0;
 
                 }
                 InputAction action = entity.getAction();
@@ -276,13 +286,13 @@ public abstract class GameEntity {
                             map.crashParticle(this.x + sizeX / 2, this.y + sizeY / 2);
                         }
                     }
-                        canJump = true;
+                    canJump = true;
 
-                        while (entity.intersect(this)) {
-                            y -= 0.1;
+                    while (entity.intersect(this)) {
+                        y -= 0.1;
 
-                        }
-                        velY = 0;
+                    }
+                    velY = 0;
                     cornerRotation = 0;
 
                 } else if (action == InputAction.Down) {
@@ -294,20 +304,31 @@ public abstract class GameEntity {
                     }
                     velY = 0;
                     cornerRotation = 0;
-                }else if (action == InputAction.Corner) {
-                    CornerWall corner = ((CornerWall)entity);
+                } else if (action == InputAction.Corner) {
+                    CornerWall corner = ((CornerWall) entity);
 
                     double rotation = Math.toRadians((corner).getRotation());
                     canCornerJump = true;
                     cornerRotation = rotation;
                     while (corner.intersect(this)) {
-                        y += 0.1*Math.sin(rotation);
-                        x-= 0.1*Math.cos(rotation);
+                        y += 0.1 * Math.sin(rotation);
+
+
+                        if (this instanceof Player && Main.isKeyDown(InputAction.Down)) {
+                            x -= 0.1 * Math.cos(rotation);
+
+                        }
 
                     }
-                    double totalVel = Math.sqrt(Math.pow(velY, 2) + Math.pow(velX, 2));
-                    velY = -Math.sin(rotation)*totalVel;
-                    velX = -Math.cos(rotation)*totalVel;
+                    if (this instanceof Player && Main.isKeyDown(InputAction.Down)) {
+                        double totalVel = Math.sqrt(Math.pow(velY, 2) + Math.pow(velX, 2));
+                        velY = -Math.sin(rotation) * totalVel;
+                        velX = -Math.cos(rotation) * totalVel;
+                    } else {
+                        velY = velY * 0.9;
+                    }
+
+
                     /*
                     slide
                     while (corner.intersect(this)) {
@@ -345,9 +366,6 @@ public abstract class GameEntity {
     }
 
 
-
-
-
     public double getVelStretchX() {
 
         return (Math.sqrt(Math.abs(velX)) - Math.sqrt(Math.abs(velY))) * SQUASH_FACTOR;
@@ -359,7 +377,7 @@ public abstract class GameEntity {
     }
 
     public double getRenderX() {
-        double x = map.correctUnit(this.x  - getVelStretchX())- map.correctUnit(map.cameraX * parallax);
+        double x = map.correctUnit(this.x - getVelStretchX()) - map.correctUnit(map.cameraX * parallax);
 
         return x;
 
@@ -367,7 +385,7 @@ public abstract class GameEntity {
 
 
     public double getRenderY() {
-        double y = map.correctUnit(this.y - getVelStretchY())- map.correctUnit(map.cameraY * parallax);
+        double y = map.correctUnit(this.y - getVelStretchY()) - map.correctUnit(map.cameraY * parallax);
 
         return y;
 
@@ -406,6 +424,12 @@ public abstract class GameEntity {
 
     }
 
+
+    public double getCornerRotation() {
+        return cornerRotation;
+    }
+
+
     protected void renderStill(GraphicsContext g) {
         if (!(fillType == FillType.Nothing)) {
 
@@ -415,14 +439,14 @@ public abstract class GameEntity {
 
 
             if (fillType == FillType.Image) {
-                g.drawImage(image, -sizeX/2, -sizeY/2, sizeX, sizeY);
+                g.drawImage(image, -sizeX / 2, -sizeY / 2, sizeX, sizeY);
             } else {
                 if (fillType == FillType.Color) {
                     g.setFill(this.color);
                 } else if (fillType == FillType.Tile) {
                     g.setFill(new ImagePattern(image, 0, 0, map.correctUnit(tileSize) * parallax, map.correctUnit(tileSize) * parallax, false));
                 }
-                g.fillRect(-sizeX/2, -sizeY/2, sizeX, sizeY);
+                g.fillRect(-sizeX / 2, -sizeY / 2, sizeX, sizeY);
             }
         }
 

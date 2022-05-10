@@ -116,7 +116,7 @@ public class Player extends GameEntity {
 
 
         double accel = GROUND_ACCELERATION;
-        if (!canJump) {
+        if (!(canJump || (canCornerJump && !Main.isKeyDown(InputAction.Down)))) {
             accel = AIR_ACCELERATION;
         }
 
@@ -145,9 +145,20 @@ public class Player extends GameEntity {
 
             }
         }else if (canCornerJump) {
+            if (!Main.isKeyDown(InputAction.Down)) {
+                currentDrag = Map.GROUND_DRAG;
+            }
             if (Main.isKeyDown(InputAction.Up)) {
-                velX = -Math.cos(cornerRotation) *JUMP_SPEED * SIDE_BOOST * baseAccel;
-                velY = Math.sin(cornerRotation) *JUMP_SPEED * SIDE_BOOST * baseAccel;
+
+
+                if (Main.isKeyDown(InputAction.Down)) {
+                    velX = -Math.cos(cornerRotation) *JUMP_SPEED * SIDE_BOOST * baseAccel;
+                    velY = Math.sin(cornerRotation) *JUMP_SPEED * SIDE_BOOST * baseAccel;
+                } else {
+                    velY = -JUMP_SPEED;
+                }
+
+
                 Main.deactivateKey(InputAction.Up);
 
             }
@@ -168,14 +179,23 @@ public class Player extends GameEntity {
 
     }
 
+    public double getCornerRotation() {
+        return cornerRotation;
+    }
+
 
     public void render(GraphicsContext g) {
-        g.save();
-        g.translate(getRenderX()+map.correctUnit(sizeX/2),getRenderY()+map.correctUnit(getSizeY()/2));
-        g.rotate(Math.toDegrees(cornerRotation));
+        if (cornerRotation != 0) {
+            g.save();
+            g.translate(getRenderX()+map.correctUnit(sizeX/2),getRenderY()+map.correctUnit(sizeY/2));
+            g.rotate(Math.toDegrees(cornerRotation));
 
-        renderStill(g);
-        g.restore();
+            renderStill(g);
+            g.restore();
+        } else {
+
+            renderSquare(g);
+        }
 
     }
 }

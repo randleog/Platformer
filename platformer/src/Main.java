@@ -28,7 +28,7 @@ public class Main extends Application {
 
     private static final int BUTTON_GAP = 50;
 
-    private static final double EXPECTED_ASPECT_RATIO = 1.7778;
+    public static final double EXPECTED_ASPECT_RATIO = 1.7778;
 
     public static Random random = new Random();
 
@@ -36,7 +36,7 @@ public class Main extends Application {
 
     public static int fps = 144;
 
-    private static double fpstime = 3;
+    private static double fpstime = 2;
     public static Map lastMap = null;
 
 
@@ -61,7 +61,7 @@ public class Main extends Application {
     private static Stage primaryStage;
 
 
-    private static int fpsIndex = 3;
+    private static int fpsIndex = 2;
 
     private static ArrayList<Integer> fpsValues = new ArrayList<>();
 
@@ -85,7 +85,6 @@ public class Main extends Application {
      * @param primaryStage Stage javafx shows things on.
      */
     public void start(Stage primaryStage) {
-        fpsValues.add(45);
         fpsValues.add(60);
         fpsValues.add(90);
         fpsValues.add(144);
@@ -409,6 +408,7 @@ public class Main extends Application {
 
     private static void readKeyBind() {
         inputMap = new HashMap<>();
+
         inputMap.put(KeyCode.W, InputAction.Up);
         inputMap.put(KeyCode.A, InputAction.Left);
         inputMap.put(KeyCode.S, InputAction.Down);
