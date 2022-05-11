@@ -18,6 +18,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+/**
+ * the main class that launches the game
+ *
+ * @version 0.0.1
+ *
+ * @author William Randle
+ */
 public class Main extends Application {
 
 

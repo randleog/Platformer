@@ -188,7 +188,7 @@ public class Map {
 
     public void saveReplay() {
         if (!isReplay) {
-            if (UserFileHandler.getUserTime(name, 1) > getTime()) {
+            if (UserFileHandler.getUserTime(name, 1) > getTime() || UserFileHandler.getUserTime(name, 1) ==-1) {
                 ReplaySave.saveReplay(frames, name);
             }
 

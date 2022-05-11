@@ -188,7 +188,7 @@ public class Player extends GameEntity {
         if (cornerRotation != 0) {
             g.save();
             g.translate(getRenderX()+map.correctUnit(sizeX/2),getRenderY()+map.correctUnit(sizeY/2));
-            g.rotate(Math.toDegrees(cornerRotation));
+            g.rotate(Math.toDegrees(getRenderRotation()));
 
             renderStill(g);
             g.restore();

@@ -42,6 +42,9 @@ public class ReplayPlayer extends GameEntity {
 
 
     public void tick() {
+        if (frames.size() < 1) {
+            map.removeEntity(this);
+        }
         int currentTick =(int)(map.getCurrentTick()*speedFactor);
 
         if (currentTick < 0) {

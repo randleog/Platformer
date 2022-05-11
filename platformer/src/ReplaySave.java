@@ -13,20 +13,24 @@ public class ReplaySave {
 
         File file = new File("res\\replays\\" + mapName + ".txt");
 
-        try {
-            Scanner scanner = new Scanner(file);
+        if (file.exists()) {
 
-            while (scanner.hasNextLine()) {
-            String[] line = scanner.nextLine().split(" ");
 
-            frames.add(new Integer[]{Integer.parseInt(line[0]), Integer.parseInt(line[1])});
+            try {
+                Scanner scanner = new Scanner(file);
 
+                while (scanner.hasNextLine()) {
+                    String[] line = scanner.nextLine().split(" ");
+
+                    frames.add(new Integer[]{Integer.parseInt(line[0]), Integer.parseInt(line[1])});
+
+                }
+
+
+                scanner.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
-
-
-            scanner.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         }
 
         return frames;
@@ -36,6 +40,10 @@ public class ReplaySave {
 
     public static void saveReplay(ArrayList<Integer[]> frames, String mapName) {
         try {
+
+
+
+
             FileWriter writer = new FileWriter("res\\replays\\"+ mapName + ".txt");
             String text = "";
             for (Integer[] frame :frames) {

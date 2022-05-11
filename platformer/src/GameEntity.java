@@ -24,6 +24,8 @@ public abstract class GameEntity {
 
     private final int SPEED_FACTOR = 144;
 
+    private final double ROTATE_TIME = 1;
+
 
     protected double parallax;
     private static final double DEFAULT_TILE_SIZE = 50;
@@ -53,8 +55,10 @@ public abstract class GameEntity {
     protected boolean canRightJump;
 
     protected boolean canCornerJump;
-
+    protected double lastRotation;
     protected double cornerRotation;
+
+    protected int rotationTicks = 0;
 
     protected Map map;
 
@@ -241,6 +245,9 @@ public abstract class GameEntity {
 
 
     protected void collision() {
+        if (rotationTicks > 0) {
+            rotationTicks--;
+        }
         GameEntity entity = map.intersectionEntity(this);
         canJump = false;
         canLeftJump = false;
@@ -309,8 +316,24 @@ public abstract class GameEntity {
 
                     double rotation = Math.toRadians((corner).getRotation());
                     canCornerJump = true;
+                    lastRotation = cornerRotation;
                     cornerRotation = rotation;
+                    rotationTicks = (int)(Main.fps*ROTATE_TIME);
                     while (corner.intersect(this)) {
+                        y += 0.1 * Math.sin(rotation);
+
+
+                        x -= 0.1 * Math.cos(rotation);
+
+                    }
+                    double totalVel = Math.sqrt(Math.pow(velY, 2) + Math.pow(velX, 2));
+                    velY = -Math.sin(rotation) * totalVel;
+                    velX = -Math.cos(rotation) * totalVel;
+
+
+                    //down to slide
+                    /*
+                                        while (corner.intersect(this)) {
                         y += 0.1 * Math.sin(rotation);
 
 
@@ -328,7 +351,7 @@ public abstract class GameEntity {
                         velY = velY * 0.9;
                     }
 
-
+                     */
                     /*
                     slide
                     while (corner.intersect(this)) {
@@ -363,6 +386,11 @@ public abstract class GameEntity {
 
             }
         }
+    }
+
+
+    public double getRenderRotation() {
+        return Main.interpolate(cornerRotation, lastRotation, Main.fps*ROTATE_TIME, rotationTicks);
     }
 
 

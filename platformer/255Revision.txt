@@ -1,0 +1,66 @@
+-----------------
+cross correlation:
+add all values,
+normalise values
+
+-------------------------
+lighting equations:
+
+
+ambient light:
+intensity * ambient light
+eg 1*0.3
+
+
+
+diffuse light:
+find vector from intersection to light source
+find dot product of this to the normal vector
+intensity factor*diffusion factor
+
+-----------------------
+representing 3d shapes:
+triangular strips
+pointers to vertex list:
+0 = (1,1,1)
+1 = (1,-1,1)
+then 1,0
+ 0,1 etc 
+(same as explicit representation but with pointers)
+advantages: 3d transformations of just 8 vertices. no rounding errors.
+drawbacks: (like with explicit)24 edges (rather than 12), extra processing during modelling
+
+explicit representation
+(0,0,0) (0,0,1) etc
+- drawbacks: 3d transformations of 24 vertices (not 8), draw 24 edges (rather than 12)
+
+---------------------------
+dithering:
+
+diffusion dithering
+round up and down, taking the result to the right of the pixel
+snaking left then right each row
+
+steinberg dithering
+
+
+-------------------
+ray sphere intersection
+
+----------------------
+histogram equalisation
+total number of pixels in image = h*w
+number of grey levels = g_levels
+ideal histogram is flat
+ideal number of pixels at each level: p_num = (h*w)/g_levels
+
+mapping F:
+if t(i) is the atual number of pixels at all old grey levels up to and including grey level i, then
+F(i) = (g_levels*t(i))/(h*w)-1       (min 0)
+t(i) is the cumulative distrubution function
+
+convert RGB to HSV
+build histogram on V (brightness)
+equalise V
+convert HSV back to RGB
+display
