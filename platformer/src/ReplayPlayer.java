@@ -21,10 +21,14 @@ public class ReplayPlayer extends GameEntity {
 
     private boolean isReplay;
 
+    private String type;
+
     public ReplayPlayer(double x, double y, Map map, ArrayList<Integer[]> frames, boolean isReplay, String type) {
         super(x, y, map, InputAction.Default, FillType.Image, 1);
         this.isReplay = isReplay;
         this.frames = frames;
+        this.type = type;
+
 
 
         speedFactor = (frames.get(0)[0]*1.0) /  Main.fps;
@@ -51,6 +55,7 @@ public class ReplayPlayer extends GameEntity {
 
 
     public void tick() {
+
         if (frames.size() < 1) {
             map.removeEntity(this);
         }
@@ -62,6 +67,10 @@ public class ReplayPlayer extends GameEntity {
         if (currentTick >= frames.size()-1) {
             if (!isReplay) {
                 map.removeEntity(this);
+            } else {
+                if (type.equals("player")) {
+                    map.resetTimer();
+                }
             }
         }
         currentTick = (currentTick)% (frames.size()-1);

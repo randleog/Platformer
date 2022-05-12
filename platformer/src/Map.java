@@ -186,6 +186,11 @@ public class Map {
         nextParticles.add(entity);
     }
 
+
+    public void resetTimer() {
+        this.currentTick = 0;
+    }
+
     public void saveReplay() {
         if (!isReplay) {
             if (UserFileHandler.getUserTime(name, 1) > getTime() || UserFileHandler.getUserTime(name, 1) ==-1) {
