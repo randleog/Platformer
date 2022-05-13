@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class GridParser {
 
-    public static final int MAP_SCALE = 100;
+    //public static final int MAP_SCALE = 200;
 
 
     public static void parseAll() {
@@ -17,7 +17,7 @@ public class GridParser {
 
         for (int i = 0; i < fileCount; i++) {
             if (!levels[i].isDirectory()) {
-                loadLevel(levels[i].getName().replace(".txt",""));
+                loadLevel(levels[i].getName().replace(".txt", ""));
             }
         }
     }
@@ -27,10 +27,12 @@ public class GridParser {
 
         File file = new File("res\\maps\\format\\" + name + ".txt");
         ArrayList<String[]> formatMap = new ArrayList<>();
+        int mapScale = 100;  //should be multiple of 50. anything lower than 50 definately not
         try {
             Scanner in = new Scanner(file);
+            mapScale = in.nextInt();
 
-
+            in.nextLine();
 
 
             while (in.hasNextLine()) {
@@ -38,9 +40,6 @@ public class GridParser {
                 formatMap.add(line.split(" "));
 
             }
-
-
-
 
 
             in.close();
@@ -54,9 +53,10 @@ public class GridParser {
 
         try {
             FileWriter writer = new FileWriter("res\\maps\\" + name + ".txt");
+            System.out.println(mapScale);
 
-            int width = formatMap.get(0).length*MAP_SCALE*2;
-            int height = formatMap.size()*MAP_SCALE*2;
+            int width = formatMap.get(0).length * mapScale * 4;
+            int height = formatMap.size() * mapScale * 4;
 
             int playerX = 0;
             int playerY = 0;
@@ -64,29 +64,39 @@ public class GridParser {
 
             for (int i = 0; i < formatMap.size(); i++) {
                 for (int j = 0; j < formatMap.get(i).length; j++) {
-                    int x = j*MAP_SCALE;
-                    int y = i*MAP_SCALE;
-                    if (formatMap.get(i)[j].equals("1")) {
-                        if (j > 0) {
-                            if (formatMap.get(i)[j - 1].equals("1")) {
-                                walls.get(walls.size()-1).setSizeX(walls.get(walls.size()-1).getSizeX()+MAP_SCALE);
+                    int x = j * mapScale;
+                    int y = i * mapScale;
+                    switch (formatMap.get(i)[j]) {
+                        case "1":
+                            if (j > 0) {
+                                if (formatMap.get(i)[j - 1].equals("1")) {
+                                    walls.get(walls.size() - 1).setSizeX(walls.get(walls.size() - 1).getSizeX() + mapScale);
+                                } else {
+                                    walls.add(new Wall(x, y, null, mapScale, mapScale, InputAction.Default, FillType.Nothing, 1));
+                                }
                             } else {
-                                walls.add(new Wall(x, y, null, MAP_SCALE, MAP_SCALE, InputAction.Default, FillType.Nothing, 1));
+                                walls.add(new Wall(x, y, null, mapScale, mapScale, InputAction.Default, FillType.Nothing, 1));
+
+
                             }
-                        } else {
-                            walls.add(new Wall(x, y, null, MAP_SCALE, MAP_SCALE, InputAction.Default, FillType.Nothing, 1));
+                            break;
+                        case "-1":
+                            playerX = x;
+                            playerY = y + 15;
+                            break;
+                        case "-2":
+                            walls.add(new Flag(x, y, null));
+                            break;
 
-
-                        }
-                    } else if (formatMap.get(i)[j].equals("-1")) {
-                        playerX = x;
-                        playerY = y+15;
-                    }else if (formatMap.get(i)[j].equals("-2")) {
-                        walls.add(new Flag(x, y, null));
+                        default:
+                            if (formatMap.get(i)[j].contains("C")) {
+                                double rotation = Double.parseDouble(formatMap.get(i)[j].split(":")[1]);
+                                walls.add(new CornerWall(x, y, null,mapScale*3, mapScale, InputAction.Default, FillType.Nothing, 1, rotation));
+                            }
+                            break;
                     }
                 }
             }
-
 
 
             String lines = width + " " + height + " " + playerX + " " + playerY + "\n/\n/\n";

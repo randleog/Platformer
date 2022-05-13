@@ -67,4 +67,11 @@ public class CornerWall extends GameEntity {
        // renderSquare(g);
 
     }
+
+
+    public String toString() {
+        String line = "corner " + (int)x + " " + (int)y + " " + (int)sizeX + " " + (int)sizeY + " " + rotation;
+
+        return line;
+    }
 }
