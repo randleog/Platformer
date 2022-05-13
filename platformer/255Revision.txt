@@ -1,8 +1,12 @@
 -----------------
 cross correlation:
 add all values,
-normalise values
+normalise values (when rgb, find min and max out of all, then normalise individually)
 
+for edge detection, you combine the sobel using equations, not adding. you find teh gradients etc
+
+gausian for any size filter
+G(x) = e^(-x*x/2st^2)
 -------------------------
 lighting equations:
 
@@ -21,6 +25,12 @@ intensity factor*diffusion factor
 -----------------------
 representing 3d shapes:
 triangular strips
+compact n triangles represented using n+2 vertices
+-transmission to gpu is lower
+- very efficient when drawing (particularly in hardware)
+- can be hard to create triangle strips from arbitrary geometry
+
+
 pointers to vertex list:
 0 = (1,1,1)
 1 = (1,-1,1)
@@ -64,3 +74,70 @@ build histogram on V (brightness)
 equalise V
 convert HSV back to RGB
 display
+
+
+-----------------
+bounding volumes
+hierarchy
+
+automatic: 
+octree
+
+placed in box, then divided into 8, then divide furhter going in
+
+kd-tree
+cut in halves , not necisarily in the center
+-bsp trees: cut is a plane not a cube
+
+------
+
+volume rendering
+cast a ray into the 3d array of voxels for each pixel in the final image.
+interpolate the sampled voxels in each ray where it doesnt perfectly align with the ray.
+shade each voxel in the ray based on the orientation relative to surfaces of the model and the position of hte light
+compose the voxels on top of eachother with lowered opacity so they have some input into the final pixel.
+
+maximum intensity projection
+cast a ray at each voxel on one of the sides of the 3d array, taking the largest colour value for each.
+all values are normalised and placed in a 2d array for the final image.
+
+-----
+anti aliasing
+use the vector of the lines, 
+find the percent coverage of the line, 
+set this pixel to that % of the colour.
+
+super sampling
+take a line and take samples at regular intervalues within each pixel.
+if it is in the line, colour with one colour. if the other, colour differently.
+then sum the colour of the samples and make that the new colour of the pixel.
+- more samples : give better images, take much longer to compute, 4x4 samples will take 16 times longer.
+
+adaptive supersampling
+decide threshold (eg t=20) 
+sample the scene at each pixel corner. (averaging the touching pixels for that corner)
+if the max - min of these is <= t then pixel colour = average
+- otherwise, recursively take 5 (in between old and middle of all) additional samples in the upper right 
+- stop when a limit is reached or the <=t is met
+- final pixel is average of all samples.
+
+-----
+sampling positions
+
+grid
+
+random (stochastic sampling)
+
+jitter
+
+poisson-disk
+
+-------
+look up table
+gamma correction
+Math.pow(index, 1/new gamma
+
+
+-----------
+derivative / gradient / slope
+gradient is approx change in y over change in x as the sample gets smaller

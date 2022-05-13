@@ -95,6 +95,7 @@ public abstract class GameEntity {
 
     }
 
+
     public double getStartVelX() {
         return startVelX;
     }
@@ -213,6 +214,11 @@ public abstract class GameEntity {
 
     public InputAction getAction() {
         return action;
+    }
+
+
+    public void setSizeX(double sizeX) {
+        this.sizeX = sizeX;
     }
 
 

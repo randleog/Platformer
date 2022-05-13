@@ -22,4 +22,12 @@ public class Wall extends GameEntity {
     public void render(GraphicsContext g) {
         renderSquare(g);
     }
+
+
+
+    public String toString() {
+        String line = "wall " + (int)x + " " + (int)y + " " + (int)sizeX + " " + (int)sizeY;
+
+        return line;
+    }
 }

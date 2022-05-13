@@ -92,6 +92,8 @@ public class Main extends Application {
      * @param primaryStage Stage javafx shows things on.
      */
     public void start(Stage primaryStage) {
+
+        GridParser.parseAll();
         fpsValues.add(60);
         fpsValues.add(90);
         fpsValues.add(144);
@@ -229,15 +231,20 @@ public class Main extends Application {
         File[] levels = directory.listFiles();
         int fileCount = directory.list().length;
 
+        int directories = 0;
         for (int i = 0; i < fileCount; i++) {
             if (!levels[i].isDirectory()) {
+                int x = i-directories;
 
-                double width = canvas.getWidth() - BUTTON_GAP * 2;
+                double width = Main.DEFAULT_WIDTH_MAP - BUTTON_GAP * 2;
 
-                int xFactor = (int) (i % (width
+                int xFactor = (int) (x % (width
                         / (BUTTON_WIDTH + BUTTON_GAP)));
 
-                int yFactor = (int) (i / (width
+                int yFactor = (int) (x / (width
+                        / (BUTTON_WIDTH + BUTTON_GAP)));
+
+                System.out.println((width
                         / (BUTTON_WIDTH + BUTTON_GAP)));
 
 
@@ -246,6 +253,8 @@ public class Main extends Application {
                 replayMenu.add(new ReplayButton(xFactor * BUTTON_WIDTH + xFactor * BUTTON_GAP + BUTTON_GAP
                         , yFactor * BUTTON_HEIGHT + yFactor * BUTTON_GAP + BUTTON_GAP * 2
                         , BUTTON_WIDTH, BUTTON_HEIGHT, levels[i].getName().replace(".txt", "")));
+            } else {
+                directories++;
             }
         }
         replayMenu.add(new MainMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back"));
@@ -260,14 +269,22 @@ public class Main extends Application {
         File[] levels = directory.listFiles();
         int fileCount = directory.list().length;
 
-        for (int i = 0; i < fileCount; i++) {
-            if (!levels[i].isDirectory()) {
-                double width = canvas.getWidth() - BUTTON_GAP * 2;
+        int directories = 0;
 
-                int xFactor = (int) (i % (width
+        for (int i = 0; i < fileCount; i++) {
+
+
+            if (!levels[i].isDirectory()) {
+                int x = i-directories;
+                double width = Main.DEFAULT_WIDTH_MAP - BUTTON_GAP * 2;
+
+                int xFactor = (int) (x % (width
                         / (BUTTON_WIDTH + BUTTON_GAP)));
 
-                int yFactor = (int) (i / (width
+                int yFactor = (int) (x / (width
+                        / (BUTTON_WIDTH + BUTTON_GAP)));
+
+                System.out.println((width
                         / (BUTTON_WIDTH + BUTTON_GAP)));
 
 
@@ -277,6 +294,8 @@ public class Main extends Application {
                         , yFactor * BUTTON_HEIGHT + yFactor * BUTTON_GAP + BUTTON_GAP * 2
                         , BUTTON_WIDTH, BUTTON_HEIGHT, levels[i].getName().replace(".txt", "")));
 
+            } else {
+                directories++;
             }
         }
 

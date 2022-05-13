@@ -25,4 +25,11 @@ public class Flag extends GameEntity {
     public void render(GraphicsContext g) {
         renderSquare(g);
     }
+
+
+    public String toString() {
+        String line = "flag " + (int)x + " " + (int)y;
+
+        return line;
+    }
 }

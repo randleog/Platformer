@@ -88,6 +88,7 @@ public class Map {
 
         frames.add(new Integer[]{Main.fps, 0});
 
+
     }
 
     public void winGame() {
