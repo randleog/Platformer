@@ -53,7 +53,7 @@ public class GridParser {
 
         try {
             FileWriter writer = new FileWriter("res\\maps\\" + name + ".txt");
-            System.out.println(mapScale);
+
 
             int width = formatMap.get(0).length * mapScale * 4;
             int height = formatMap.size() * mapScale * 4;
@@ -80,6 +80,45 @@ public class GridParser {
 
                             }
                             break;
+                        case "2":
+                            if (j > 0) {
+                                if (formatMap.get(i)[j - 1].equals("2")) {
+                                    walls.get(walls.size() - 1).setSizeX(walls.get(walls.size() - 1).getSizeX() + mapScale);
+                                } else {
+                                    walls.add(new Wall(x, y, null, mapScale, mapScale+(mapScale*1.0)/1.539, InputAction.Default, FillType.Nothing, 1));
+                                }
+                            } else {
+                                walls.add(new Wall(x, y, null, mapScale, mapScale+(mapScale*1.0)/1.539, InputAction.Default, FillType.Nothing, 1));
+
+
+                            }
+                            break;
+                        case "3":
+                            if (j > 0) {
+                                if (formatMap.get(i)[j - 1].equals("3")) {
+                                    walls.get(walls.size() - 1).setSizeX(walls.get(walls.size() - 1).getSizeX() + mapScale);
+                                } else {
+                                    walls.add(new Wall(x, y-(mapScale*1.0)/2, null, mapScale, mapScale+(mapScale*1.0)/1.539, InputAction.Default, FillType.Nothing, 1));
+                                }
+                            } else {
+                                walls.add(new Wall(x, y-(mapScale*1.0)/2, null, mapScale, mapScale+(mapScale*1.0)/1.539, InputAction.Default, FillType.Nothing, 1));
+
+
+                            }
+                            break;
+                        case "4":
+                            if (j > 0) {
+                                if (formatMap.get(i)[j - 1].equals("4")) {
+                                    walls.get(walls.size() - 1).setSizeX(walls.get(walls.size() - 1).getSizeX() + mapScale);
+                                } else {
+                                    walls.add(new Wall(x, y, null, mapScale, mapScale+(mapScale*1.0)/6.667, InputAction.Default, FillType.Nothing, 1));
+                                }
+                            } else {
+                                walls.add(new Wall(x, y, null, mapScale, mapScale+(mapScale*1.0)/6.667, InputAction.Default, FillType.Nothing, 1));
+
+
+                            }
+                            break;
                         case "-1":
                             playerX = x;
                             playerY = y + 15;
@@ -87,11 +126,20 @@ public class GridParser {
                         case "-2":
                             walls.add(new Flag(x, y, null));
                             break;
+                        case "E":
+                            walls.add(new BasicEnemy(x, y, null, false, false));
+                            break;
 
                         default:
                             if (formatMap.get(i)[j].contains("C")) {
                                 double rotation = Double.parseDouble(formatMap.get(i)[j].split(":")[1]);
-                                walls.add(new CornerWall(x, y, null,mapScale*3, mapScale, InputAction.Default, FillType.Nothing, 1, rotation));
+                                walls.add(new CornerWall(x, y, null,mapScale, mapScale, InputAction.Default, FillType.Nothing, 1, rotation));
+                            } else   if (formatMap.get(i)[j].contains("G")) {
+                                int code = Integer.parseInt(formatMap.get(i)[j].split(":")[1]);
+                                walls.add(new Gate(x, y, null,mapScale, mapScale, InputAction.Default, FillType.Nothing, 1, code));
+                            }else   if (formatMap.get(i)[j].contains("K")) {
+                                int code = Integer.parseInt(formatMap.get(i)[j].split(":")[1]);
+                                walls.add(new Key(x, y, null, 1, code));
                             }
                             break;
                     }

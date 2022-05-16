@@ -125,4 +125,11 @@ public class BasicEnemy extends GameEntity {
         renderSquare(g);
 
     }
+
+
+    public String toString() {
+        String line = "basicEnemy " + (int)x + " " + (int)y + " " + runner + " " + jumper;
+
+        return line;
+    }
 }

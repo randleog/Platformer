@@ -19,6 +19,9 @@ import java.io.IOException;
 public class ImageLoader {
 
     public static Image wallTile = loadImage("wallTile.png", 64);
+    public static Image wallTile2 = loadImage("wallTile2.png", 64);
+    public static Image wallTile3 = loadImage("wallTile3.png", 64);
+    public static Image wallTile4 = loadImage("wallTile4.png", 64);
     public static Image defaultTile = loadImage("default.png", 64);
     public static Image sky1 = loadImage("sky1.png", 1920,1080);
     public static Image particle = loadImage("particle.png", 64);

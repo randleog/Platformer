@@ -33,4 +33,10 @@ public class Key extends GameEntity {
     public void render(GraphicsContext g) {
         renderSquare(g);
     }
+
+    public String toString() {
+        String line = "key " + (int)x + " " + (int)y + " " + code;
+
+        return line;
+    }
 }

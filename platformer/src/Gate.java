@@ -28,4 +28,10 @@ public class Gate extends GameEntity {
     public void render(GraphicsContext g) {
         renderSquare(g);
     }
+
+    public String toString() {
+        String line = "gate " + (int)x + " " + (int)y + " " + (int)sizeX + " " + (int)sizeY + " " + code;
+
+        return line;
+    }
 }

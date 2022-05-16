@@ -416,11 +416,11 @@ public class Map {
 
 
 
-        CornerWall wallUp = new CornerWall(x + WALL_CORNER_SIZE, y, this, sizeX - WALL_CORNER_SIZE * 2, 1, InputAction.Corner, FillType.Tile, parallax, rotation);
 
-        CornerWall wallImage = new CornerWall(x, y, this, sizeX, sizeY, InputAction.Default, FillType.Tile, parallax, rotation);
 
-        addEntity(wallUp);
+        CornerWall wallImage = new CornerWall(x, y, this, sizeX, sizeY,  InputAction.Corner, FillType.Tile, parallax, rotation);
+
+
 
         addEntity(wallImage);
 

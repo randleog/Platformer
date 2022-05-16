@@ -21,7 +21,7 @@ import java.util.Random;
 /**
  * the main class that launches the game
  *
- * @version 0.0.2
+ * @version 0.0.3
  *
  * @author William Randle
  */

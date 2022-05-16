@@ -20,7 +20,7 @@ public abstract class GameEntity {
     protected double accelX;
     protected double accelY;
 
-    private final int MAX_COLLISIONS = 100;
+    private final int MAX_COLLISIONS = 150;
 
     private final int SPEED_FACTOR = 144;
 
@@ -241,9 +241,6 @@ public abstract class GameEntity {
             canJump = true;
 
         }
-        if (map.getActions(this).contains(InputAction.Corner)) {
-            canCornerJump = true;
-        }
         y -= WALL_CLING_RADIUS;
 
 
@@ -457,6 +454,7 @@ public abstract class GameEntity {
         }
 
     }
+
 
 
     public double getCornerRotation() {
