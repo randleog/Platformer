@@ -38,6 +38,90 @@ public class UserFileHandler {
 
     }
 
+    public static ArrayList<String> getTrophies(String mapName) {
+        ArrayList<String> trophies = new ArrayList<>();
+        File file = new File("res\\userData\\trophies.txt");
+        try {
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String[] line = scanner.nextLine().split(" ");
+
+                if (line[0].equals(mapName)) {
+                    for (int i = 1; i < line.length; i++) {
+                        trophies.add(line[i]);
+                    }
+                }
+            }
+
+
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return trophies;
+
+    }
+
+
+    public static void saveUserTrophy(String mapName, String trophy) {
+        File file = new File("res\\userData\\trophies.txt");
+        String text = "";
+        try {
+            Scanner scanner = new Scanner(file);
+            boolean added = false;
+            while (scanner.hasNextLine()) {
+                String lineText = scanner.nextLine();
+                String[] line = lineText.split(" ");
+
+                if (line[0].equals(mapName)) {
+
+
+                    text = text + line[0]+ " ";
+                    ArrayList<String> values = new ArrayList<>();
+                    for (int i = 1; i < line.length; i++) {
+                        values.add(line[i]);
+                    }
+                    values.add(trophy);
+
+
+                    for (String currenTime : values) {
+
+                        text = text + currenTime + " ";
+                    }
+
+                    added = true;
+
+                    text = text + "\n";
+                } else {
+                    text = text + lineText + "\n";
+                }
+                if (!scanner.hasNextLine()) {
+                    text = text.substring(0,text.length()-1);
+                }
+            }
+            if (!added) {
+                text = text + "\n" + mapName + " " + trophy;
+            }
+
+            if (text.charAt(0) == '\n') {
+                text = text.substring(1);
+            }
+
+            FileWriter myWriter = new FileWriter("res\\userData\\trophies.txt");
+
+            myWriter.write(text);
+            myWriter.close();
+
+            scanner.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+    }
+
 
     public static void saveUserTime(String mapName, double time) {
         File file = new File("res\\userData\\levelTimes.txt");

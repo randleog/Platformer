@@ -66,18 +66,16 @@ public class MapLoader {
 
                 String name = line[0];
                 System.out.println(name);
+                int x = Integer.parseInt(line[1]);
+                int y = Integer.parseInt(line[2]);
                 switch (name) {
                     case "wall" -> {
-                        int x = Integer.parseInt(line[1]);
-                        int y = Integer.parseInt(line[2]);
                         int wallWidth = Integer.parseInt(line[3]);
                         int wallHeight = Integer.parseInt(line[4]);
                         map.addWall(x, y, wallWidth, wallHeight, 1);
                         break;
                     }
                     case "gate" -> {
-                        int x = Integer.parseInt(line[1]);
-                        int y = Integer.parseInt(line[2]);
                         int wallWidth = Integer.parseInt(line[3]);
                         int wallHeight = Integer.parseInt(line[4]);
                         int code = Integer.parseInt(line[5]);
@@ -85,15 +83,11 @@ public class MapLoader {
                         break;
                     }
                     case "key" -> {
-                        int x = Integer.parseInt(line[1]);
-                        int y = Integer.parseInt(line[2]);
                         int code = Integer.parseInt(line[3]);
                         map.addEntity(new Key(x, y, map, 1, code));
                         break;
                     }
                     case "moving" -> {
-                        int x = Integer.parseInt(line[1]);
-                        int y = Integer.parseInt(line[2]);
                         int wallWidth = Integer.parseInt(line[3]);
                         int wallHeight = Integer.parseInt(line[4]);
                         int velx = Integer.parseInt(line[5]);
@@ -103,16 +97,12 @@ public class MapLoader {
                         break;
                     }
                     case "basicEnemy" -> {
-                        int x = Integer.parseInt(line[1]);
-                        int y = Integer.parseInt(line[2]);
                         boolean runner = Boolean.parseBoolean(line[3]);
                         boolean jumper = Boolean.parseBoolean(line[4]);
                         map.addEntity(new BasicEnemy(x, y, map, runner, jumper));
                         break;
                     }
                     case "hookable" -> {
-                        int x = Integer.parseInt(line[1]);
-                        int y = Integer.parseInt(line[2]);
                         int radius = Integer.parseInt(line[3]);
 
 
@@ -120,27 +110,26 @@ public class MapLoader {
                         break;
                     }
                     case "flag" -> {
-                        int x = Integer.parseInt(line[1]);
-                        int y = Integer.parseInt(line[2]);
 
                         map.addEntity(new Flag(x, y, map));
                         break;
                     }
                     case "dimension" -> {
-                        int x = Integer.parseInt(line[1]);
-                        int y = Integer.parseInt(line[2]);
                         String dimension = line[3];
                         map.addEntity(new DimensionPortal(x, y, map, dimension));
                         break;
                     }
                     case "corner" -> {
-                        int x = Integer.parseInt(line[1]);
-                        int y = Integer.parseInt(line[2]);
                         int wallWidth = Integer.parseInt(line[3]);
                         int wallHeight = Integer.parseInt(line[4]);
                         double rotation = Double.parseDouble(line[5]);
-                        System.out.println(rotation);
                         map.addCornerWall(x, y, wallWidth, wallHeight, 1, rotation);
+                        break;
+                    }
+                    case "trophy" -> {
+                        String trophyName = line[3];
+
+                        map.addEntity(new Trophy(x, y, map,trophyName));
                         break;
                     }
                 }

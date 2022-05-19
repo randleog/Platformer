@@ -8,6 +8,8 @@ public abstract class GameEntity {
 
     private static final double CRASH_SPEED = 8;
 
+    private static final double COLLISION_AMMOUNT = 0.1;
+
     protected double x;
     protected double y;
 
@@ -20,7 +22,7 @@ public abstract class GameEntity {
     protected double accelX;
     protected double accelY;
 
-    private final int MAX_COLLISIONS = 150;
+    private final int MAX_COLLISIONS = 500;
 
     private final int SPEED_FACTOR = 144;
 
@@ -113,7 +115,7 @@ public abstract class GameEntity {
     }
 
     public void die() {
-        if (this instanceof Player) {
+        if (this.isPlayer()) {
             Main.deaths++;
             map.reset = true;
             this.x = startX;
@@ -136,6 +138,10 @@ public abstract class GameEntity {
 
     }
 
+    public boolean isPlayer() {
+        return false;
+    }
+
     public void setFlagRemoval() {
         flagRemoval = true;
     }
@@ -149,7 +155,12 @@ public abstract class GameEntity {
         velX = velX + accelX / Main.fps;
         velY = velY + accelY / Main.fps;
         velX = velX * Math.pow(currentDrag, 1.0 / Main.fps);
-        velY = velY * Math.pow(Map.BASE_DRAG_Y, 1.0 / Main.fps);
+
+        if (this instanceof Racer) {
+            velY = velY * Math.pow(currentDrag, 1.0 / Main.fps);
+        } else {
+            velY = velY * Math.pow(Map.BASE_DRAG_Y, 1.0 / Main.fps);
+        }
 
 
 
@@ -240,6 +251,7 @@ public abstract class GameEntity {
         if (map.getActions(this).contains(InputAction.Up)) {
             canJump = true;
 
+
         }
         y -= WALL_CLING_RADIUS;
 
@@ -276,7 +288,7 @@ public abstract class GameEntity {
                     canLeftJump = true;
 
                     while (entity.intersect(this)) {
-                        x -= 0.1;
+                        x -= COLLISION_AMMOUNT;
                     }
                     velX = 0;
                     cornerRotation = 0;
@@ -284,7 +296,7 @@ public abstract class GameEntity {
                     canRightJump = true;
 
                     while (entity.intersect(this)) {
-                        x += 0.1;
+                        x += COLLISION_AMMOUNT;
                     }
 
                     velX = 0;
@@ -299,10 +311,11 @@ public abstract class GameEntity {
                     canJump = true;
 
                     while (entity.intersect(this)) {
-                        y -= 0.1;
+                        y -= COLLISION_AMMOUNT;
 
                     }
                     velY = 0;
+
                     cornerRotation = 0;
 
                 } else if (action == InputAction.Down) {
@@ -323,10 +336,10 @@ public abstract class GameEntity {
                     cornerRotation = rotation;
                     rotationTicks = (int)(Main.fps*ROTATE_TIME);
                     while (corner.intersect(this)) {
-                        y += 0.1 * Math.sin(rotation);
+                        y += COLLISION_AMMOUNT * Math.sin(rotation);
 
 
-                        x -= 0.1 * Math.cos(rotation);
+                        x -= COLLISION_AMMOUNT * Math.cos(rotation);
 
                     }
                     double totalVel = Math.sqrt(Math.pow(velY, 2) + Math.pow(velX, 2));

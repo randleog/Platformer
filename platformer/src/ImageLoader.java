@@ -30,7 +30,7 @@ public class ImageLoader {
     public static Image enemy = loadImage("enemy.png", 64);
     public static Image key = loadImage("key.png", 64);
     public static Image gate = loadImage("gateTile.png", 64);
-
+    public static Image trophy = loadImage("trophy.png", 64);
     public static Image flag = loadImage("flag.png", 64);
 
     public static Image dimension = loadImage("dimension.png", 64);

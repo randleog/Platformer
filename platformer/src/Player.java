@@ -39,6 +39,10 @@ public class Player extends GameEntity {
     }
 
 
+    @Override
+    public boolean isPlayer() {
+        return true;
+    }
 
     @Override
     protected void gravity() {
