@@ -65,7 +65,7 @@ public class MapLoader {
                 String[] line = entities.next().split(" ");
 
                 String name = line[0];
-                System.out.println(name);
+
                 int x = Integer.parseInt(line[1]);
                 int y = Integer.parseInt(line[2]);
                 switch (name) {

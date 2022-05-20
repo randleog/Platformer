@@ -244,8 +244,7 @@ public class Main extends Application {
                 int yFactor = (int) (x / (width
                         / (BUTTON_WIDTH + BUTTON_GAP)));
 
-                System.out.println((width
-                        / (BUTTON_WIDTH + BUTTON_GAP)));
+
 
 
 
@@ -284,8 +283,7 @@ public class Main extends Application {
                 int yFactor = (int) (x / (width
                         / (BUTTON_WIDTH + BUTTON_GAP)));
 
-                System.out.println((width
-                        / (BUTTON_WIDTH + BUTTON_GAP)));
+
 
 
 

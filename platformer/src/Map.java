@@ -15,7 +15,7 @@ public class Map {
 
     private static final int MAX_FRAMES = 43200;
 
-    private static final int MAX_SPEED = 16;
+    private static final int MAX_SPEED = 5;
 
     private ArrayList<GameEntity> entities = new ArrayList<>();
     private ArrayList<GameEntity> nextEntities = new ArrayList<>();
@@ -62,6 +62,8 @@ public class Map {
 
     private double speed = 1;
 
+    private double actualSpeed = 1;
+
     GameEntity player = null;
 
     private int sizeX;
@@ -105,6 +107,7 @@ public class Map {
         speed+= ammount;
         speed = Math.max(speed, -MAX_SPEED);
         speed = Math.min(speed,MAX_SPEED);
+        actualSpeed=Math.pow(speed,2)*Math.signum(speed);
     }
 
     public boolean isRadius(double x, double y, double x2, double y2, double radius) {
@@ -201,9 +204,9 @@ public class Map {
         }
     }
 
-    public int getCurrentTick() {
+    public double getCurrentTick() {
 
-        return (int)currentTick;
+        return currentTick;
     }
 
     public void tick() {
@@ -216,7 +219,7 @@ public class Map {
 
             //handle replay speed
             if (isReplay) {
-                currentTick += speed;
+                currentTick += actualSpeed;
                 for (MenuButton button : replayButtons) {
                     button.tick();
                 }
@@ -342,7 +345,7 @@ public class Map {
             }
             g.setFill(Color.color(1, 1, 1));
             g.setFont(new Font(Main.correctUnit(40)));
-            g.fillText("x" + speed, correctUnit(500), correctUnit(800));
+            g.fillText("x" + String.format("%.2f",actualSpeed), correctUnit(500), correctUnit(800));
         }
 
     }
