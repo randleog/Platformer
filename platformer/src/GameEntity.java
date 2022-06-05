@@ -3,6 +3,8 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 
+import java.util.ArrayList;
+
 public abstract class GameEntity {
 
 
@@ -27,7 +29,7 @@ public abstract class GameEntity {
     private final int SPEED_FACTOR = 144;
 
     private final double ROTATE_TIME = 1;
-
+    public static final double WALL_CORNER_SIZE = 5.0;
 
     protected double parallax;
     private static final double DEFAULT_TILE_SIZE = 50;
@@ -35,7 +37,7 @@ public abstract class GameEntity {
     private static final double SQUASH_FACTOR = 1.5;
 
     private static final double WALL_CLING_FORCE = 8;
-    private static final double WALL_CLING_RADIUS = 5;
+    private static final double WALL_CLING_RADIUS = 2;
     protected boolean running;
 
     protected Color color;
@@ -73,6 +75,9 @@ public abstract class GameEntity {
     protected double startVelX;
     protected double startVelY;
 
+
+    protected ArrayList<Square> hitbox = new ArrayList<>();
+
     GameEntity(double x, double y, Map map, InputAction action, FillType fillType, double parallax) {
         flagRemoval = false;
         this.fillType = fillType;
@@ -94,6 +99,8 @@ public abstract class GameEntity {
         this.image = ImageLoader.defaultTile;
 
         cornerRotation = 0;
+
+        loadHitbox();
 
     }
 
@@ -125,6 +132,23 @@ public abstract class GameEntity {
         } else {
             map.removeEntity(this);
         }
+
+    }
+
+
+    protected void loadHitbox() {
+        hitbox = new ArrayList<>();
+        hitbox.add(new Square(x, y, sizeX, sizeY, parallax, action));
+
+
+    }
+
+    protected void loadWallHitbox() {
+        hitbox = new ArrayList<>();
+        hitbox.add(new Square(x + WALL_CORNER_SIZE, y, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Up));
+        hitbox.add(new Square(x + sizeX-1, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Right));
+        hitbox.add(new Square(x + WALL_CORNER_SIZE, y + sizeY - 1, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Down));
+        hitbox.add(new Square(x, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Left));
 
     }
 
@@ -161,8 +185,6 @@ public abstract class GameEntity {
         } else {
             velY = velY * Math.pow(Map.BASE_DRAG_Y, 1.0 / Main.fps);
         }
-
-
 
 
         x += (velX / Main.fps) * SPEED_FACTOR;
@@ -227,6 +249,32 @@ public abstract class GameEntity {
         return action;
     }
 
+    public Square getShape(Square entity) {
+        Square lastShape = null;
+
+        for (Square shape : hitbox) {
+            if (shape.intersect(entity)) {
+               // shape.flag();
+                if (InputAction.isYType(shape.getAction())) {
+                    return shape;
+                } else {
+                    lastShape = shape;
+                }
+            }
+        }
+
+
+        return lastShape;
+    }
+
+
+    public void flagAll() {
+
+        for (Square shape : hitbox) {
+            shape.flag();
+        }
+    }
+
 
     public void setSizeX(double sizeX) {
         this.sizeX = sizeX;
@@ -259,11 +307,18 @@ public abstract class GameEntity {
     }
 
 
+    public boolean isWall() {
+        return false;
+    }
+
+
     protected void collision() {
         if (rotationTicks > 0) {
             rotationTicks--;
         }
-        GameEntity entity = map.intersectionEntity(this);
+
+        boolean hasGoneRight = false;
+        Square entity = map.intersectionWall(this);
         canJump = false;
         canLeftJump = false;
         canCornerJump = false;
@@ -273,35 +328,54 @@ public abstract class GameEntity {
 
 
             int numberOfCollisions = 0;
+            boolean loop = true;
+
+            while (loop) {
 
 
-            while (!(entity.getAction() == InputAction.Default)) {
+
+
 
                 numberOfCollisions++;
                 if (numberOfCollisions > MAX_COLLISIONS) {
+
                     die();
                     numberOfCollisions = 0;
+                    loop = false;
 
                 }
                 InputAction action = entity.getAction();
-                if (action == InputAction.Left) {
-                    canLeftJump = true;
 
-                    while (entity.intersect(this)) {
-                        x -= COLLISION_AMMOUNT;
+                if (action == InputAction.Left) {
+                    if (hasGoneRight) {
+                        while (entity.intersect(getMainShape())) {
+                            y -= COLLISION_AMMOUNT;
+
+                        }
+                        velY = 0;
+
+                        cornerRotation = 0;
+                    } else {
+                        canLeftJump = true;
+
+                        while (entity.intersect(getMainShape())) {
+                            x -= COLLISION_AMMOUNT;
+                        }
+                        velX = 0;
+                        cornerRotation = 0;
                     }
-                    velX = 0;
-                    cornerRotation = 0;
                 } else if (action == InputAction.Right) {
+                    hasGoneRight = true;
                     canRightJump = true;
 
-                    while (entity.intersect(this)) {
+                    while (entity.intersect(getMainShape())) {
                         x += COLLISION_AMMOUNT;
                     }
 
                     velX = 0;
                     cornerRotation = 0;
                 } else if (action == InputAction.Up) {
+
                     if (this instanceof Player || this instanceof BasicEnemy) {
 
                         if (velY > CRASH_SPEED) {
@@ -310,7 +384,7 @@ public abstract class GameEntity {
                     }
                     canJump = true;
 
-                    while (entity.intersect(this)) {
+                    while (entity.intersect(getMainShape())) {
                         y -= COLLISION_AMMOUNT;
 
                     }
@@ -321,21 +395,22 @@ public abstract class GameEntity {
                 } else if (action == InputAction.Down) {
 
 
-                    while (entity.intersect(this)) {
+                    while (entity.intersect(getMainShape())) {
                         y += Map.WALL_CORNER_SIZE;
 
                     }
                     velY = 0;
                     cornerRotation = 0;
                 } else if (action == InputAction.Corner) {
-                    CornerWall corner = ((CornerWall) entity);
 
-                    double rotation = Math.toRadians((corner).getRotation());
+
+                    double rotation =  Math.toRadians(entity.getRotation());
+                    System.out.println(rotation);
                     canCornerJump = true;
                     lastRotation = cornerRotation;
                     cornerRotation = rotation;
-                    rotationTicks = (int)(Main.fps*ROTATE_TIME);
-                    while (corner.intersect(this)) {
+                    rotationTicks = (int) (Main.fps * ROTATE_TIME);
+                    while (entity.intersect(getMainShape())) {
                         y += COLLISION_AMMOUNT * Math.sin(rotation);
 
 
@@ -347,57 +422,14 @@ public abstract class GameEntity {
                     velX = -Math.cos(rotation) * totalVel;
 
 
-                    //down to slide
-                    /*
-                                        while (corner.intersect(this)) {
-                        y += 0.1 * Math.sin(rotation);
-
-
-                        if (this instanceof Player && Main.isKeyDown(InputAction.Down)) {
-                            x -= 0.1 * Math.cos(rotation);
-
-                        }
-
-                    }
-                    if (this instanceof Player && Main.isKeyDown(InputAction.Down)) {
-                        double totalVel = Math.sqrt(Math.pow(velY, 2) + Math.pow(velX, 2));
-                        velY = -Math.sin(rotation) * totalVel;
-                        velX = -Math.cos(rotation) * totalVel;
-                    } else {
-                        velY = velY * 0.9;
-                    }
-
-                     */
-                    /*
-                    slide
-                    while (corner.intersect(this)) {
-                        y += 0.1*Math.sin(rotation);
-                        x-= 0.1*Math.cos(rotation);
-
-                    }
-                    double totalVel = Math.sqrt(Math.pow(velY, 2) + Math.pow(velX, 2));
-                    velY = -Math.sin(rotation)*totalVel;
-                    velX = -Math.cos(rotation)*totalVel;
-
-                     */
-
-                    /*
-                    bounce
-                    while (corner.intersect(this)) {
-                        y += 0.1*Math.sin(rotation);
-                        x-= 0.1*Math.cos(rotation);
-
-                    }
-                    double totalVel = Math.sqrt(Math.pow(velY, 2) + Math.pow(velX, 2));
-                    velY = Math.sin(rotation)*totalVel;
-                    velX = -Math.cos(rotation)*totalVel;
-
-                     */
-
                 }
-                entity = map.intersectionEntity(this);
+                entity = map.intersectionWall(this);
+
+             //   if (action == InputAction.Default) {
+               //     loop = false;
+              //  }
                 if (entity == null) {
-                    entity = new Wall(0, 0, map, 1, 1, InputAction.Default, FillType.Nothing, 1);
+                    loop = false;
                 }
 
             }
@@ -406,7 +438,7 @@ public abstract class GameEntity {
 
 
     public double getRenderRotation() {
-        return Main.interpolate(cornerRotation, lastRotation, Main.fps*ROTATE_TIME, rotationTicks);
+        return Main.interpolate(cornerRotation, lastRotation, Main.fps * ROTATE_TIME, rotationTicks);
     }
 
 
@@ -434,6 +466,9 @@ public abstract class GameEntity {
         return y;
 
     }
+
+
+
 
     public double getRenderSizeX() {
         double sizeX = map.correctUnit(this.sizeX + getVelStretchX() * 2);
@@ -465,9 +500,16 @@ public abstract class GameEntity {
                 g.fillRect(x, y, sizeX, sizeY);
             }
         }
+        for (Square shape : hitbox) {
+            shape.render(g, map.cameraX, map.cameraY, (Player)map.player);
+        }
 
     }
 
+
+    public ArrayList<Square> getHitbox() {
+        return hitbox;
+    }
 
 
     public double getCornerRotation() {
@@ -498,16 +540,26 @@ public abstract class GameEntity {
     }
 
 
-    public boolean intersect(GameEntity entity) {
-
-
-        double x = entity.getX();
-        double y = entity.getY();
-        double sizeX = entity.getSizeX();
-        double sizeY = entity.getSizeY();
-        return x + sizeX > getX() && x < getX() + getSizeX()
-                && y + sizeY > getY() && y < getY() + getSizeY();
+    public Square getMainShape() {
+        return new Square(this.x,this.y,this.sizeX,getSizeY(),parallax,action);
     }
 
 
-}
+    public boolean intersect(GameEntity entity) {
+
+
+        for (Square shape : hitbox) {
+            for (Square shape2 : entity.getHitbox()) {
+                if (shape.intersect(shape2)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+
+
+    }
+

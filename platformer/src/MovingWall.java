@@ -5,8 +5,8 @@ public class MovingWall extends GameEntity {
 
     private MovingWall mainWall;
     private boolean isMainWall;
-
-
+    private final int MAX_COLLISIONS = 500;
+    private static final double COLLISION_AMMOUNT = 0.1;
 
     public MovingWall(double x, double y, Map map, double sizeX, double sizeY, InputAction side, FillType fillType, double velX, double velY) {
         super(x, y, map, side, fillType, 1);
@@ -24,6 +24,14 @@ public class MovingWall extends GameEntity {
             System.out.println("wall is too small");
         }
     }
+
+    @Override
+    public boolean isWall() {
+        return true;
+    }
+
+
+
 
     public MovingWall(double x, double y, Map map, double sizeX, double sizeY, InputAction side, FillType fillType, double velX, double velY, MovingWall mainWall) {
         super(x, y, map, side, fillType, 1);
@@ -46,52 +54,114 @@ public class MovingWall extends GameEntity {
     }
 
     protected void collision() {
-        GameEntity entity = map.intersectionMovingWall(this);
+        if (rotationTicks > 0) {
+            rotationTicks--;
+        }
+        Square entity = map.intersectionWall(this);
+        canJump = false;
+        canLeftJump = false;
+        canCornerJump = false;
+        canRightJump = false;
 
         if (!(entity == null)) {
 
 
-            while (!(entity.getAction() == InputAction.Default)) {
+            int numberOfCollisions = 0;
+            boolean loop = true;
+
+            while (loop) {
+
+
+
+
+
+                numberOfCollisions++;
+                if (numberOfCollisions > MAX_COLLISIONS) {
+
+                    die();
+                    numberOfCollisions = 0;
+                    loop = false;
+
+                }
                 InputAction action = entity.getAction();
+                if (this.action.equals(InputAction.Right)) {
+                    if (map.getActions(this).contains(InputAction.Left)) {
+                        loop = false;
+                    }
+                } else if (this.action.equals(InputAction.Left)) {
+                    if (map.getActions(this).contains(InputAction.Left)) {
+                        loop = false;
+                    }
+                }
 
                 if (action == InputAction.Left) {
+                    canLeftJump = true;
 
-                    while (entity.intersect(this)) {
-                        x -= 0.1;
+                    while (entity.intersect(getMainShape())) {
+                        x -= COLLISION_AMMOUNT;
                     }
                     velX = -velX;
+                    cornerRotation = 0;
                 } else if (action == InputAction.Right) {
+                    canRightJump = true;
 
-
-                    while (entity.intersect(this)) {
-                        x += 0.1;
+                    while (entity.intersect(getMainShape())) {
+                        x += COLLISION_AMMOUNT;
                     }
+
                     velX = -velX;
+                    cornerRotation = 0;
                 } else if (action == InputAction.Up) {
 
-                    while (entity.intersect(this)) {
-                        y -= 0.1;
+
+
+                    while (entity.intersect(getMainShape())) {
+                        y -= COLLISION_AMMOUNT;
 
                     }
                     velY = -velY;
+
+                    cornerRotation = 0;
 
                 } else if (action == InputAction.Down) {
-                    if (runningBefore)
-                        canJump = true;
 
-                    while (entity.intersect(this)) {
-                        y += 0.1;
+
+                    while (entity.intersect(getMainShape())) {
+                        y += COLLISION_AMMOUNT;
+
                     }
-
                     velY = -velY;
+                    cornerRotation = 0;
                 }
-                entity =  map.intersectionMovingWall(this);
-                if (action == null) {
-                    entity = new Wall(0,0,map,1,1,InputAction.Default,FillType.Nothing, 1);
+                entity = map.intersectionWall(this);
 
+                //   if (action == InputAction.Default) {
+                //     loop = false;
+                //  }
+                if (entity == null) {
+                    loop = false;
                 }
+
             }
         }
+    }
+
+    @Override
+    public Square getShape(Square entity) {
+        loadWallHitbox();
+
+
+        Square lastShape = null;
+
+        for (Square shape : hitbox) {
+            if (shape.intersect(entity)) {
+                // shape.flag();
+                lastShape = shape;
+            }
+        }
+
+
+        return lastShape;
     }
 
 
@@ -109,6 +179,9 @@ public class MovingWall extends GameEntity {
     }
 
     public void render(GraphicsContext g) {
+
         renderSquare(g);
+
+
     }
 }

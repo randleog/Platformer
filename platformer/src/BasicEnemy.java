@@ -42,7 +42,7 @@ public class BasicEnemy extends GameEntity {
 
 
     public void tick() {
-        if (map.player.intersect(this)) {
+        if (map.player.getMainShape().intersect(this.getMainShape())) {
             map.player.die();
         }
         if (map.isOutOfBounds(this.x, this.y, this.sizeX, this.sizeY)) {

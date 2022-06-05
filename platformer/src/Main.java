@@ -14,18 +14,22 @@ import javafx.util.Duration;
 
 import java.awt.*;
 import java.io.File;
+
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
 /**
  * the main class that launches the game
- *
+ * @todo: at personal best automatically launches the replay player with text that fades saying you beat your last time or the medal. a button to move on to the next level appears on the task bar
+ * @todo: speedun mode in settings. if activated, a timer starts once you start level 1, and ends + saves time when you beat the last level
  * @version 0.0.3
  *
  * @author William Randle
  */
 public class Main extends Application {
+
 
 
     public static int deaths = 0;
@@ -86,12 +90,20 @@ public class Main extends Application {
     private static ArrayList<MenuButton> currentMenu = new ArrayList<>();
 
 
+
+    public static HashMap<String, Integer> settings = new HashMap<>();
+
+
     /**
      * Load the menus for navigation, and launch the user selection menu.
      *
      * @param primaryStage Stage javafx shows things on.
      */
     public void start(Stage primaryStage) {
+
+        settings.put("debug", 0);
+
+
 
         GridParser.parseAll();
         fpsValues.add(60);
@@ -212,6 +224,19 @@ public class Main extends Application {
     }
 
 
+
+    public static boolean intersect(GameEntity entity, double x, double y, double sizeX, double sizeY) {
+
+
+        double x2 = entity.getX();
+        double y2 = entity.getY();
+        double sizeX2 = entity.getSizeX();
+        double sizeY2 = entity.getSizeY();
+        return x + sizeX > x2 && x < x2 + sizeX2
+                && y + sizeY > y2 && y < y2 + sizeY2;
+    }
+
+
     private static void loadSettingsMenu() {
         settingsMenu = new ArrayList<>();
 
@@ -220,6 +245,8 @@ public class Main extends Application {
         settingsMenu.add(new MenuText(BUTTON_GAP*3,150,"FPS: " + fps, 40, "FPS"));
 
         settingsMenu.add(new IncreaseFpsButton( BUTTON_GAP*6,100,100,100));
+
+        settingsMenu.add(new ToggleButton(BUTTON_GAP, 300, 200,100, "debug"));
 
         settingsMenu.add(new MainMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back"));
         settingsMenu.add(new MenuText(900,100,"settings: ", 55, "Title"));

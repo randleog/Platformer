@@ -7,7 +7,7 @@ public class Racer extends GameEntity {
 
 
     private static final double AIR_ACCELERATION = 5.0;
-    private static final double GROUND_ACCELERATION = 30.0;
+    private static final double GROUND_ACCELERATION = 25.0;
 
     private static final double RUNNING_BOOST = 4;
 

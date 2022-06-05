@@ -9,6 +9,8 @@ public class Wall extends GameEntity {
 
     private ArrayList<int[]> centers = new ArrayList<>();
 
+
+
     public Wall(double x, double y, Map map,  double sizeX, double sizeY, InputAction side, FillType fillType, double parallax) {
         super(x,y,map,side, fillType, parallax);
         this.sizeX = sizeX;
@@ -18,12 +20,30 @@ public class Wall extends GameEntity {
         if (sizeX < 10 && sizeY < 10) {
             System.out.println("wall is too small");
         }
+
+
+
+        loadWallHitbox();
+
         loadCenters();
 
 
 
     }
 
+
+
+
+
+
+
+
+
+
+    @Override
+    public boolean isWall() {
+        return true;
+    }
 
     private void loadCenters() {
         centers = new ArrayList<>();
@@ -82,6 +102,10 @@ public class Wall extends GameEntity {
             g.drawImage(ImageLoader.wallTile2, getRenderX()+map.correctUnit(center[0]*150)+map.correctUnit(50)
                     ,  getRenderY()+map.correctUnit(center[1]*150)+map.correctUnit(50), map.correctUnit(50), map.correctUnit(50));
         }
+
+
+
+
     }
 
 

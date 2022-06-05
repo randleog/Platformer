@@ -15,8 +15,14 @@ public class Gate extends GameEntity {
         if (sizeX < 10 && sizeY < 10) {
             System.out.println("wall is too small");
         }
+
+        loadWallHitbox();
     }
 
+    @Override
+    public boolean isWall() {
+        return true;
+    }
 
     public void tick() {
         if (map.keys.keySet().contains(Integer.valueOf(code))) {
@@ -26,7 +32,9 @@ public class Gate extends GameEntity {
     }
 
     public void render(GraphicsContext g) {
+
         renderSquare(g);
+
     }
 
     public String toString() {

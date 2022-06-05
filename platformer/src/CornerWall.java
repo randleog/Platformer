@@ -1,11 +1,8 @@
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.TriangleMesh;
 
-import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 
 
 public class CornerWall extends GameEntity {
@@ -22,7 +19,14 @@ public class CornerWall extends GameEntity {
         if (sizeX < 10 && sizeY < 10) {
             System.out.println("wall is too small");
         }
+        loadCornerWallHitbox();
     }
+
+    @Override
+    public boolean isWall() {
+        return true;
+    }
+
 
     public double getRotation() {
         return rotation;
@@ -33,23 +37,15 @@ public class CornerWall extends GameEntity {
 
     }
 
-    @Override
-    public boolean intersect(GameEntity entity) {
-
-
-        if (rotation == 225) {
-            Polygon polygon = new Polygon(new int[]{(int) x, (int) x, (int) x + (int) sizeX}, new int[]{(int) y, (int) y + (int) sizeY, (int) y + (int) sizeY}, 3);
-
-            return polygon.intersects(entity.getX(), entity.getY(), entity.getSizeX(), entity.getSizeY());
-        } else {
-            Polygon polygon = new Polygon(new int[]{(int) x, (int) x+ (int) sizeX, (int) x+ (int) sizeX}, new int[]{(int) y+ (int) sizeY, (int) y + (int) sizeY, (int) y}, 3);
-
-            return polygon.intersects(entity.getX(), entity.getY(), entity.getSizeX(), entity.getSizeY());
-        }
-
-
+    protected void loadCornerWallHitbox() {
+        hitbox = new ArrayList<>();
+        hitbox.add(new Square(x , y, sizeX, sizeY, parallax, InputAction.Corner, rotation));
+       // hitbox.add(new Shape(x + sizeX, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Right, rotation));
+     //   hitbox.add(new Shape(x + WALL_CORNER_SIZE, y + sizeY - WALL_CORNER_SIZE-1, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Down, rotation));
+     //   hitbox.add(new Shape(x, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Left, rotation));
 
     }
+
 
     public void render(GraphicsContext g) {
 
@@ -69,6 +65,10 @@ public class CornerWall extends GameEntity {
             renderStill(g);
             g.restore();
         }
+        for (Square shape : hitbox) {
+            shape.render(g, map.cameraX, map.cameraY, (Player)map.player);
+        }
+
 
 
     }

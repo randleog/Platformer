@@ -15,7 +15,7 @@ public class Flag extends GameEntity {
 
     public void tick() {
 
-        if (this.intersect(map.player)) {
+        if (this.getMainShape().intersect(map.player.getMainShape())) {
             map.winGame();
 
         }

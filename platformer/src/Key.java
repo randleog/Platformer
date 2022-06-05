@@ -25,7 +25,7 @@ public class Key extends GameEntity {
     public void tick() {
 
 
-        if(this.intersect(map.player)) {
+        if(this.getMainShape().intersect(map.player.getMainShape())) {
             collectKey();
         }
     }

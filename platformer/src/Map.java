@@ -2,9 +2,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.transform.Affine;
 
-import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -38,22 +36,18 @@ public class Map {
     private boolean isReplay;
 
 
-
-
-
     private MenuButton backButton;
 
 
     public static final double BASE_DRAG_Y = 0.5;
 
-    protected HashMap<Integer,Boolean> keys = new HashMap<>();
+    protected HashMap<Integer, Boolean> keys = new HashMap<>();
 
     private ArrayList<MenuButton> replayButtons = new ArrayList<>();
 
 
     protected double cameraX = 0;
     protected double cameraY = 0;
-
 
 
     private double currentTick = 0;
@@ -81,11 +75,11 @@ public class Map {
         this.sizeY = sizeY;
 
         if (!isReplay) {
-           backButton = new LevelsMenuButton(400,500,200,100);
+            backButton = new LevelsMenuButton(400, 500, 200, 100);
         } else {
-            backButton = new ReplayMenuButton(400,500,200,100);
-            replayButtons.add(new SpeedupButton(100,800,200, 100, "<<", -0.1,this));
-            replayButtons.add(new SpeedupButton(300,800,200, 100, ">>", 0.1,this));
+            backButton = new ReplayMenuButton(400, 500, 200, 100);
+            replayButtons.add(new SpeedupButton(100, 800, 200, 100, "<<", -0.1, this));
+            replayButtons.add(new SpeedupButton(300, 800, 200, 100, ">>", 0.1, this));
         }
 
         frames.add(new Integer[]{Main.fps, 0});
@@ -104,10 +98,10 @@ public class Map {
 
 
     public void increaseSpeed(double ammount) {
-        speed+= ammount;
+        speed += ammount;
         speed = Math.max(speed, -MAX_SPEED);
-        speed = Math.min(speed,MAX_SPEED);
-        actualSpeed=Math.pow(speed,2)*Math.signum(speed);
+        speed = Math.min(speed, MAX_SPEED);
+        actualSpeed = Math.pow(speed, 2) * Math.signum(speed);
     }
 
     public boolean isRadius(double x, double y, double x2, double y2, double radius) {
@@ -115,7 +109,7 @@ public class Map {
     }
 
     public boolean isOutOfBounds(double x, double y, double sizeX, double sizeY) {
-        return (x+sizeX > this.sizeX || x < -this.sizeX || y+sizeY > this.sizeY || y < -this.sizeY);
+        return (x + sizeX > this.sizeX || x < -this.sizeX || y + sizeY > this.sizeY || y < -this.sizeY);
     }
 
     public void removeEntity(GameEntity entity) {
@@ -132,9 +126,6 @@ public class Map {
         Main.playMap(MapLoader.loadMap(name, 1));
 
     }
-
-
-
 
 
     public void removeParticle(GameEntity entity) {
@@ -197,7 +188,7 @@ public class Map {
 
     public void saveReplay() {
         if (!isReplay) {
-            if (UserFileHandler.getUserTime(name, 1) > getTime() || UserFileHandler.getUserTime(name, 1) ==-1) {
+            if (UserFileHandler.getUserTime(name, 1) > getTime() || UserFileHandler.getUserTime(name, 1) == -1) {
                 ReplaySave.saveReplay(frames, name);
             }
 
@@ -210,8 +201,6 @@ public class Map {
     }
 
     public void tick() {
-
-
 
 
         if (Main.getKey(InputAction.Menu) > 0) {
@@ -236,9 +225,6 @@ public class Map {
             }
 
 
-
-
-
             for (GameEntity entity : entities) {
                 entity.tick();
             }
@@ -259,15 +245,15 @@ public class Map {
         }
 
         //camera bounds
-        cameraX = Math.min(cameraX, sizeX-Main.DEFAULT_WIDTH_MAP);
-        cameraX = Math.max(cameraX, -sizeX+ Main.DEFAULT_WIDTH_MAP);
-        cameraY = Math.min(cameraY, sizeY-Main.DEFAULT_HEIGHT_MAP);
-        cameraY = Math.max(cameraY, -sizeY+Main.DEFAULT_HEIGHT_MAP);
+        cameraX = Math.min(cameraX, sizeX - Main.DEFAULT_WIDTH_MAP);
+        cameraX = Math.max(cameraX, -sizeX + Main.DEFAULT_WIDTH_MAP);
+        cameraY = Math.min(cameraY, sizeY - Main.DEFAULT_HEIGHT_MAP);
+        cameraY = Math.max(cameraY, -sizeY + Main.DEFAULT_HEIGHT_MAP);
     }
 
 
     public double getTime() {
-        return (currentTick*1.0)/Main.fps;
+        return (currentTick * 1.0) / Main.fps;
     }
 
     public String getName() {
@@ -296,26 +282,23 @@ public class Map {
          */
 
 
-
-
         for (GameEntity entity : particles) {
             entity.render(g);
         }
         for (GameEntity entity : entities) {
             entity.render(g);
         }
-     //   g.restore();
+        //   g.restore();
         //bounds
-        g.setStroke(Color.color(1,0,0));
+        g.setStroke(Color.color(1, 0, 0));
         g.setLineWidth(10);
-        g.strokeRect(correctUnit(-sizeX-cameraX),correctUnit(-sizeY-cameraY),correctUnit(sizeX*2),correctUnit(sizeY*2));
-
+        g.strokeRect(correctUnit(-sizeX - cameraX), correctUnit(-sizeY - cameraY), correctUnit(sizeX * 2), correctUnit(sizeY * 2));
 
 
         g.setFont(new Font(Main.correctUnit(25)));
         g.setFill(Color.color(1, 1, 1));
         g.fillText("deaths: " + Main.deaths, correctUnit(50), correctUnit(50));
-        g.fillText("time: " + String.format("%.2f",currentTick*1.0/Main.fps), correctUnit(200), correctUnit(50));
+        g.fillText("time: " + String.format("%.2f", currentTick * 1.0 / Main.fps), correctUnit(200), correctUnit(50));
 
 
         if (!(Main.getKey(InputAction.Menu) > 0)) {
@@ -345,7 +328,7 @@ public class Map {
             }
             g.setFill(Color.color(1, 1, 1));
             g.setFont(new Font(Main.correctUnit(40)));
-            g.fillText("x" + String.format("%.2f",actualSpeed), correctUnit(500), correctUnit(800));
+            g.fillText("x" + String.format("%.2f", actualSpeed), correctUnit(500), correctUnit(800));
         }
 
     }
@@ -373,9 +356,6 @@ public class Map {
     }
 
 
-
-
-
     public void crashParticle(double x, double y) {
         for (int i = 0; i < CRASH_PARTICLE_COUNT; i++) {
             Particle particle = new Particle(x, y, this, 10, 10, ImageLoader.particle, true, 1, 1);
@@ -388,28 +368,11 @@ public class Map {
     }
 
 
-
-
     public void addMovingWall(int x, int y, int sizeX, int sizeY, double velY, double velX) {
         MovingWall wallImage = new MovingWall(x, y, this, sizeX, sizeY
                 , InputAction.Default, FillType.Tile, velX, velY);
 
-        MovingWall wallUp = new MovingWall(x + WALL_CORNER_SIZE, y, this
-                , sizeX - WALL_CORNER_SIZE * 2, 1, InputAction.Up, FillType.Nothing, 0, 0, wallImage);
 
-        MovingWall wallRight = new MovingWall(x + sizeX, y + WALL_CORNER_SIZE
-                , this, 1, sizeY - WALL_CORNER_SIZE * 2, InputAction.Right, FillType.Nothing, 0, 0, wallImage);
-
-        MovingWall wallLeft = new MovingWall(x, y + WALL_CORNER_SIZE, this
-                , 1, sizeY - WALL_CORNER_SIZE * 2, InputAction.Left, FillType.Nothing, 0, 0, wallImage);
-
-        MovingWall wallDown = new MovingWall(x + WALL_CORNER_SIZE, y + sizeY - 1, this, sizeX - WALL_CORNER_SIZE * 2, 1, InputAction.Down, FillType.Nothing, 0,0, wallImage);
-
-
-        addEntity(wallUp);
-        addEntity(wallRight);
-        addEntity(wallLeft);
-        addEntity(wallDown);
         addEntity(wallImage);
 
 
@@ -418,16 +381,9 @@ public class Map {
     public void addCornerWall(int x, int y, int sizeX, int sizeY, double parallax, double rotation) {
 
 
-
-
-
-        CornerWall wallImage = new CornerWall(x, y, this, sizeX, sizeY,  InputAction.Corner, FillType.Tile, parallax, rotation);
-
-
+        CornerWall wallImage = new CornerWall(x, y, this, sizeX, sizeY, InputAction.Corner, FillType.Tile, parallax, rotation);
 
         addEntity(wallImage);
-
-
 
 
     }
@@ -436,18 +392,10 @@ public class Map {
     public void addWall(int x, int y, int sizeX, int sizeY, double parallax) {
 
 
-        Wall wallDown = new Wall(x + WALL_CORNER_SIZE, y + sizeY - WALL_CORNER_SIZE-1, this, sizeX - WALL_CORNER_SIZE * 2, 1, InputAction.Down, FillType.Nothing, parallax);
-        Wall wallUp = new Wall(x + WALL_CORNER_SIZE, y, this, sizeX - WALL_CORNER_SIZE * 2, 1, InputAction.Up, FillType.Nothing, parallax);
-        Wall wallRight = new Wall(x + sizeX, y + WALL_CORNER_SIZE, this, 1, sizeY - WALL_CORNER_SIZE * 2, InputAction.Right, FillType.Nothing, parallax);
-        Wall wallLeft = new Wall(x, y + WALL_CORNER_SIZE, this, 1, sizeY - WALL_CORNER_SIZE * 2, InputAction.Left, FillType.Nothing, parallax);
         Wall wallImage = new Wall(x, y, this, sizeX, sizeY, InputAction.Default, FillType.Tile, parallax);
 
-        addEntity(wallUp);
-        addEntity(wallRight);
-        addEntity(wallLeft);
-        addEntity(wallImage);
 
-        addEntity(wallDown);
+        addEntity(wallImage);
 
 
     }
@@ -455,59 +403,17 @@ public class Map {
     public void addGate(int x, int y, int sizeX, int sizeY, double parallax, int code) {
 
 
-        Gate wallDown = new Gate(x + WALL_CORNER_SIZE
-                , y + sizeY - WALL_CORNER_SIZE-1, this
-                , sizeX - WALL_CORNER_SIZE * 2, 1
-                , InputAction.Down, FillType.Nothing, parallax, code);
-
-        Gate wallUp = new Gate(x + WALL_CORNER_SIZE, y, this
-                , sizeX - WALL_CORNER_SIZE * 2, 1
-                , InputAction.Up, FillType.Nothing, parallax, code);
-
-        Gate wallRight = new Gate(x + sizeX, y + WALL_CORNER_SIZE, this
-                , 1, sizeY - WALL_CORNER_SIZE * 2, InputAction.Right
-                , FillType.Nothing, parallax, code);
-
-        Gate wallLeft = new Gate(x, y + WALL_CORNER_SIZE, this, 1
-                , sizeY - WALL_CORNER_SIZE * 2, InputAction.Left
-                , FillType.Nothing, parallax, code);
 
         Gate wallImage = new Gate(x, y, this, sizeX, sizeY
                 , InputAction.Default, FillType.Tile, parallax, code);
 
-        addEntity(wallUp);
-        addEntity(wallRight);
-        addEntity(wallLeft);
         addEntity(wallImage);
 
-        addEntity(wallDown);
+
 
 
     }
 
-    public GameEntity intersectionMovingWall(GameEntity entity) {
-        GameEntity returnEntity = entity;
-        for (GameEntity currentEntity : entities) {
-            if (!(currentEntity instanceof MovingWall)) {
-                if (currentEntity.getParallax() == entity.getParallax()) {
-                    if (!entity.equals(currentEntity)) {
-                        if (currentEntity.intersect(entity)) {
-                            if (InputAction.isYType(currentEntity.getAction())) {
-                                return currentEntity;
-                            } else {
-                                if (InputAction.isXType(currentEntity.getAction())) {
-                                    returnEntity = currentEntity;
-                                }
-                            }
-                        }
-                    }
-
-                }
-            }
-        }
-
-        return returnEntity;
-    }
 
     public ArrayList<InputAction> getActions(GameEntity entity) {
         ArrayList<InputAction> actions = new ArrayList<>();
@@ -515,8 +421,12 @@ public class Map {
         for (GameEntity currentEntity : entities) {
             if (currentEntity.getParallax() == entity.getParallax()) {
                 if (!entity.equals(currentEntity)) {
-                    if (currentEntity.intersect(entity)) {
-                        actions.add(currentEntity.getAction());
+                    if (currentEntity.getMainShape().intersect(entity.getMainShape())) {
+                        currentEntity.flagAll();
+                        if (!(currentEntity.getShape(entity.getMainShape()) == null)) {
+                            actions.add(currentEntity.getShape(entity.getMainShape()).getAction());
+                        }
+
                     }
                 }
 
@@ -527,25 +437,36 @@ public class Map {
         return actions;
     }
 
-    public GameEntity intersectionEntity(GameEntity entity) {
-        GameEntity returnEntity = entity;
-        for (GameEntity currentEntity : entities) {
+    private boolean isValidEntity(GameEntity entity, GameEntity currentEntity) {
+        if (currentEntity.isWall()) {
             if (currentEntity.getParallax() == entity.getParallax()) {
                 if (!entity.equals(currentEntity)) {
-                    if (currentEntity.intersect(entity)) {
-                        if (InputAction.isYType(currentEntity.getAction())) {
-                            return currentEntity;
-                        } else {
-                            if (InputAction.isXType(currentEntity.getAction())) {
-                                returnEntity = currentEntity;
-                            }
-                        }
-                    }
+                    return !(currentEntity.getShape(entity.getMainShape()) == null);
                 }
-
-
             }
         }
+        return false;
+    }
+
+    public Square intersectionWall(GameEntity entity) {
+        Square returnEntity = null;
+        for (GameEntity currentEntity : entities) {
+
+            if (currentEntity.getMainShape().intersect(entity.getMainShape())) {
+                currentEntity.flagAll();
+                if (isValidEntity(entity, currentEntity)) {
+                    if (InputAction.isYType(currentEntity.getShape(entity.getMainShape()).getAction())) {
+
+                        return currentEntity.getShape(entity.getMainShape());
+                    } else {
+
+                        returnEntity = currentEntity.getShape(entity.getMainShape());
+                    }
+
+                }
+            }
+        }
+
 
         return returnEntity;
     }

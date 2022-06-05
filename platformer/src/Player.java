@@ -36,6 +36,7 @@ public class Player extends GameEntity {
         canLeftJump = false;
         canRightJump = false;
 
+
     }
 
 
@@ -200,6 +201,7 @@ public class Player extends GameEntity {
 
             renderSquare(g);
         }
+        getMainShape().render(g, map.cameraX, map.cameraY, this);
 
     }
 }
