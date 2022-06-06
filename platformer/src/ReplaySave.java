@@ -38,6 +38,12 @@ public class ReplaySave {
 
     }
 
+
+    public static Replay getReplay(String mapName) {
+        return new Replay(getFrames(mapName), mapName);
+
+    }
+
     public static void saveReplay(ArrayList<Integer[]> frames, String mapName) {
         try {
 

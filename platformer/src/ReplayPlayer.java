@@ -1,5 +1,6 @@
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 import java.util.ArrayList;
 
@@ -74,6 +75,8 @@ public class ReplayPlayer extends GameEntity {
                     map.resetTimer();
                     currentTick =getCurrentTick();
 
+                } else {
+                    currentTick = 1;
                 }
             }
         }
@@ -152,11 +155,19 @@ public class ReplayPlayer extends GameEntity {
 
     public void render(GraphicsContext g) {
 
+        if (Main.settings.get("show " + type) > 0) {
 
-        g.save();
-        g.setGlobalAlpha(0.5);
-        renderSquare(g);
-        g.restore();
+
+            g.save();
+            g.setGlobalAlpha(0.5);
+            renderSquare(g);
+            g.restore();
+
+
+            g.setFill(Color.WHITE);
+            g.setFont(new Font(20));
+            g.fillText(type, getRenderX(), getRenderY());
+        }
 
     }
 }

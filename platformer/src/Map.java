@@ -43,7 +43,7 @@ public class Map {
 
     protected HashMap<Integer, Boolean> keys = new HashMap<>();
 
-    private ArrayList<MenuButton> replayButtons = new ArrayList<>();
+    private ArrayList<MenuButton> screenMenu = new ArrayList<>();
 
 
     protected double cameraX = 0;
@@ -69,6 +69,7 @@ public class Map {
 
     public Map(int sizeX, int sizeY, String name, boolean isReplay) {
 
+
         this.isReplay = isReplay;
         this.name = name;
         this.sizeX = sizeX;
@@ -76,10 +77,18 @@ public class Map {
 
         if (!isReplay) {
             backButton = new LevelsMenuButton(400, 500, 200, 100);
+            if (Main.settings.get("full speedrun") == 1) {
+                screenMenu.add(new SpeedrunBar(1500, 25, this));
+            }
         } else {
             backButton = new ReplayMenuButton(400, 500, 200, 100);
-            replayButtons.add(new SpeedupButton(100, 800, 200, 100, "<<", -0.1, this));
-            replayButtons.add(new SpeedupButton(300, 800, 200, 100, ">>", 0.1, this));
+            screenMenu.add(new SpeedupButton(100, 800, 200, 100, "<<", -0.1, this));
+            screenMenu.add(new SpeedupButton(300, 800, 200, 100, ">>", 0.1, this));
+
+            screenMenu.add(new ToggleButton(1500, 400, 200,100, "show author"));
+            screenMenu.add(new ToggleButton(1500, 550, 200,100, "show gold"));
+            screenMenu.add(new ToggleButton(1500, 700, 200,100, "show player"));
+            screenMenu.add(new ToggleButton(1500, 850, 200,100, "show full speedrun"));
         }
 
         frames.add(new Integer[]{Main.fps, 0});
@@ -89,9 +98,29 @@ public class Map {
 
     public void winGame() {
         if (!isReplay) {
+            if (Main.settings.get("full speedrun") == 1) {
+                if (Replay.canProgress(Main.currentFull, getName())) {
+
+
+
+
+                    Main.currentFull.add(new Replay(frames, getName()));
+                    System.out.println(Main.currentFull.size());
+
+                    if (getName().equals(Integer.toString(Main.lastLevel))) {
+
+                        if (UserFileHandler.getUserTime("full", 1) > Replay.getTime(Main.currentFull) || UserFileHandler.getUserTime("full", 1) == -1) {
+
+                            Replay.saveReplays(Main.currentFull);
+                            System.out.println("congrats");
+                        }
+                        UserFileHandler.saveUserTime("full", Replay.getTime(Main.currentFull));
+
+                    }
+                }
+            }
             saveReplay();
             UserFileHandler.saveUserTime(name, getTime());
-
         }
         Main.switchMenu(Main.levelMenu);
     }
@@ -123,6 +152,8 @@ public class Map {
     }
 
     private void reset() {
+
+        Main.currentFull = new ArrayList<>();
         Main.playMap(MapLoader.loadMap(name, 1));
 
     }
@@ -188,6 +219,7 @@ public class Map {
 
     public void saveReplay() {
         if (!isReplay) {
+
             if (UserFileHandler.getUserTime(name, 1) > getTime() || UserFileHandler.getUserTime(name, 1) == -1) {
                 ReplaySave.saveReplay(frames, name);
             }
@@ -205,13 +237,13 @@ public class Map {
 
         if (Main.getKey(InputAction.Menu) > 0) {
 
-
+            for (MenuButton button : screenMenu) {
+                button.tick();
+            }
             //handle replay speed
             if (isReplay) {
                 currentTick += actualSpeed;
-                for (MenuButton button : replayButtons) {
-                    button.tick();
-                }
+
             } else {
                 currentTick++;
                 if (Main.isKeyDown(InputAction.Reset)) {
@@ -253,7 +285,7 @@ public class Map {
 
 
     public double getTime() {
-        return (currentTick * 1.0) / Main.fps;
+        return (currentTick ) / Main.fps;
     }
 
     public String getName() {
@@ -300,6 +332,9 @@ public class Map {
         g.fillText("deaths: " + Main.deaths, correctUnit(50), correctUnit(50));
         g.fillText("time: " + String.format("%.2f", currentTick * 1.0 / Main.fps), correctUnit(200), correctUnit(50));
 
+        if (Main.settings.get("full speedrun") == 1) {
+            g.fillText("full speedrun progress: " + Main.currentFull.size(), correctUnit(400), correctUnit(50));
+        }
 
         if (!(Main.getKey(InputAction.Menu) > 0)) {
 
@@ -322,10 +357,11 @@ public class Map {
             currentAction = currentAction + getStringKey(InputAction.Down);
             g.fillText(currentAction, correctUnit(100), correctUnit(400));
         }
+        for (MenuButton button : screenMenu) {
+            button.render(g);
+        }
         if (isReplay) {
-            for (MenuButton button : replayButtons) {
-                button.render(g);
-            }
+
             g.setFill(Color.color(1, 1, 1));
             g.setFont(new Font(Main.correctUnit(40)));
             g.fillText("x" + String.format("%.2f", actualSpeed), correctUnit(500), correctUnit(800));

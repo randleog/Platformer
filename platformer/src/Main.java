@@ -24,7 +24,7 @@ import java.util.Random;
  * the main class that launches the game
  * @todo: at personal best automatically launches the replay player with text that fades saying you beat your last time or the medal. a button to move on to the next level appears on the task bar
  * @todo: speedun mode in settings. if activated, a timer starts once you start level 1, and ends + saves time when you beat the last level
- * @version 0.0.3
+ * @version 0.0.4
  *
  * @author William Randle
  */
@@ -32,12 +32,16 @@ public class Main extends Application {
 
 
 
+    public static final String IS_INT_REGEX = "^([+-]?[0-9]\\d*|0)$";
+
     public static int deaths = 0;
 
     private static final int BUTTON_WIDTH = 292;
     private static final int BUTTON_HEIGHT = 100;
 
     private static final int BUTTON_GAP = 50;
+
+    public static int lastLevel = 5;
 
     public static final double EXPECTED_ASPECT_RATIO = 1.7778;
 
@@ -94,16 +98,26 @@ public class Main extends Application {
     public static HashMap<String, Integer> settings = new HashMap<>();
 
 
+
+    public static ArrayList<Replay> currentFull;
+
+
     /**
      * Load the menus for navigation, and launch the user selection menu.
      *
      * @param primaryStage Stage javafx shows things on.
      */
     public void start(Stage primaryStage) {
+        currentFull = new ArrayList<>();
 
-        settings.put("debug", 0);
+        settings.put("debug", -1);
+        settings.put("full speedrun", -1);
 
 
+        settings.put("show author", 1);
+        settings.put("show gold", 1);
+        settings.put("show player", 1);
+        settings.put("show full speedrun", 1);
 
         GridParser.parseAll();
         fpsValues.add(60);
@@ -246,7 +260,8 @@ public class Main extends Application {
 
         settingsMenu.add(new IncreaseFpsButton( BUTTON_GAP*6,100,100,100));
 
-        settingsMenu.add(new ToggleButton(BUTTON_GAP, 300, 200,100, "debug"));
+        settingsMenu.add(new ToggleButton(BUTTON_GAP, 250, 200,100, "debug"));
+        settingsMenu.add(new ToggleButton(BUTTON_GAP, 400, 200,100, "full speedrun"));
 
         settingsMenu.add(new MainMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back"));
         settingsMenu.add(new MenuText(900,100,"settings: ", 55, "Title"));
@@ -285,6 +300,7 @@ public class Main extends Application {
         }
         replayMenu.add(new MainMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back"));
         replayMenu.add(new MenuText(900,100,"Replay Menu: ", 55, "Title"));
+
     }
 
 
@@ -314,14 +330,27 @@ public class Main extends Application {
 
 
 
-
+                String levelName = levels[i].getName().replace(".txt", "");
+                if (levelName.matches(IS_INT_REGEX)) {
+                    if (Integer.parseInt(levelName) > lastLevel) {
+                        lastLevel = Integer.parseInt(levelName);
+                    }
+                }
                 levelMenu.add(new LevelButton(xFactor * BUTTON_WIDTH + xFactor * BUTTON_GAP + BUTTON_GAP
                         , yFactor * BUTTON_HEIGHT + yFactor * BUTTON_GAP + BUTTON_GAP * 2
-                        , BUTTON_WIDTH, BUTTON_HEIGHT, levels[i].getName().replace(".txt", "")));
+                        , BUTTON_WIDTH, BUTTON_HEIGHT, levelName));
 
             } else {
                 directories++;
             }
+        }
+
+
+        if (UserFileHandler.getUserTime("full", 1) > 0) {
+            levelMenu.add(new MenuText(25,25, "full speedrun best time:  " + String.format("%.2f",UserFileHandler.getUserTime("full", 1)), 15, "full"));
+        }
+        if (UserFileHandler.getCumulative() > 0) {
+            levelMenu.add(new MenuText(25,50, "cumulative best times:    " + String.format("%.2f",UserFileHandler.getCumulative()), 15, "full"));
         }
 
         levelMenu.add(new MainMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back"));
@@ -374,6 +403,21 @@ public class Main extends Application {
     }
 
     public static void playMap(Map newMap) {
+
+
+        if (settings.get("full speedrun") ==1) {
+
+            if (newMap.getName().equals("1")) {
+                currentFull = new ArrayList<>();
+            }
+
+            if (Replay.canProgress(currentFull, newMap.getName())) {
+                System.out.println("canProgress");
+            } else {
+                System.out.println("cantProgress" + newMap.getName());
+                currentFull = new ArrayList<>();
+            }
+        }
 
 
         lastMap = null;

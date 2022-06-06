@@ -29,10 +29,8 @@ public class Wall extends GameEntity {
 
 
 
+
     }
-
-
-
 
 
 
@@ -61,6 +59,7 @@ public class Wall extends GameEntity {
 
 
     public void tick() {
+
 
     }
 

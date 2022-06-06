@@ -27,19 +27,14 @@ public class ToggleButton extends MenuButton {
     private void click() {
         if (Main.mouseDown && mouseOver) {
             Main.mouseDown = false;
-            int currentValue = Main.settings.get(text);
-            if (currentValue == 0) {
-                Main.settings.put(text, 1);
-            } else {
-                Main.settings.put(text, 0);
-            }
+            Main.settings.put(text, -Main.settings.get(text));
 
         }
     }
 
     @Override
     public void render(GraphicsContext g) {
-        if (Main.settings.get(text) == 0) {
+        if (Main.settings.get(text) == -1) {
            // g.setFill(Color.color(1, 0, 0, 0.5));
         } else {
 

@@ -123,6 +123,24 @@ public class UserFileHandler {
     }
 
 
+    public static double getCumulative() {
+        double total = 0;
+        boolean notAll = false;
+
+        for (int i = 1; i < Main.lastLevel+1; i++) {
+            if (getUserTime(Integer.toString(i), 1) == -1) {
+                notAll = true;
+            }
+            total = total + getUserTime(Integer.toString(i), 1);
+        }
+
+        if (notAll) {
+            return -1;
+        }
+        return total;
+    }
+
+
     public static void saveUserTime(String mapName, double time) {
         File file = new File("res\\userData\\levelTimes.txt");
         String text = "";

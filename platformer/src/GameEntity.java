@@ -147,7 +147,7 @@ public abstract class GameEntity {
         hitbox = new ArrayList<>();
         hitbox.add(new Square(x + WALL_CORNER_SIZE, y, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Up));
         hitbox.add(new Square(x + sizeX-1, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Right));
-        hitbox.add(new Square(x + WALL_CORNER_SIZE, y + sizeY - 1, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Down));
+        hitbox.add(new Square(x + WALL_CORNER_SIZE, y + sizeY - 1-WALL_CORNER_SIZE/2, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Down));
         hitbox.add(new Square(x, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Left));
 
     }
@@ -318,11 +318,14 @@ public abstract class GameEntity {
         }
 
         boolean hasGoneRight = false;
+        boolean hasGoneUp = false;
         Square entity = map.intersectionWall(this);
         canJump = false;
         canLeftJump = false;
         canCornerJump = false;
         canRightJump = false;
+
+        double oldVelX = velX;
 
         if (!(entity == null)) {
 
@@ -348,33 +351,19 @@ public abstract class GameEntity {
 
                 if (action == InputAction.Left) {
                     if (hasGoneRight) {
-                        while (entity.intersect(getMainShape())) {
-                            y -= COLLISION_AMMOUNT;
-
-                        }
-                        velY = 0;
-
-                        cornerRotation = 0;
+                        intersectSquareUp(entity);
                     } else {
                         canLeftJump = true;
 
-                        while (entity.intersect(getMainShape())) {
-                            x -= COLLISION_AMMOUNT;
-                        }
-                        velX = 0;
-                        cornerRotation = 0;
+                     intersectSquareLeft(entity);
                     }
                 } else if (action == InputAction.Right) {
                     hasGoneRight = true;
                     canRightJump = true;
 
-                    while (entity.intersect(getMainShape())) {
-                        x += COLLISION_AMMOUNT;
-                    }
-
-                    velX = 0;
-                    cornerRotation = 0;
+                    intersectSquareRight(entity);
                 } else if (action == InputAction.Up) {
+                    hasGoneUp = true;
 
                     if (this instanceof Player || this instanceof BasicEnemy) {
 
@@ -384,23 +373,21 @@ public abstract class GameEntity {
                     }
                     canJump = true;
 
-                    while (entity.intersect(getMainShape())) {
-                        y -= COLLISION_AMMOUNT;
-
-                    }
-                    velY = 0;
-
-                    cornerRotation = 0;
+                    intersectSquareUp(entity);
 
                 } else if (action == InputAction.Down) {
 
+                    if (hasGoneUp) {
 
-                    while (entity.intersect(getMainShape())) {
-                        y += Map.WALL_CORNER_SIZE;
 
+                        if (oldVelX > 0) {
+                            intersectSquareLeft(entity);
+                        } else {
+                            intersectSquareRight(entity);
+                        }
+                    } else {
+                        intersectSquareDown(entity);
                     }
-                    velY = 0;
-                    cornerRotation = 0;
                 } else if (action == InputAction.Corner) {
 
 
@@ -435,6 +422,43 @@ public abstract class GameEntity {
             }
         }
     }
+
+    private void intersectSquareRight(Square square) {
+        while (square.intersect(getMainShape())) {
+            x += COLLISION_AMMOUNT;
+        }
+
+        velX = 0;
+        cornerRotation = 0;
+    }
+
+    private void intersectSquareLeft(Square square) {
+        while (square.intersect(getMainShape())) {
+            x -= COLLISION_AMMOUNT;
+        }
+        velX = 0;
+        cornerRotation = 0;
+    }
+
+    private void intersectSquareDown(Square square) {
+        while (square.intersect(getMainShape())) {
+            y += Map.WALL_CORNER_SIZE / 2;
+
+        }
+        velY = 0;
+        cornerRotation = 0;
+    }
+
+    private void intersectSquareUp(Square square) {
+        while (square.intersect(getMainShape())) {
+            y -= COLLISION_AMMOUNT;
+
+        }
+        velY = 0;
+
+        cornerRotation = 0;
+    }
+
 
 
     public double getRenderRotation() {

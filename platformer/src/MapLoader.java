@@ -6,9 +6,8 @@ public class MapLoader {
 
 
     /**
-     *
      * @param mapName
-     * @param type 0 = empty, 1 = with player, 2 = replay player
+     * @param type    0 = empty, 1 = with player, 2 = replay player
      * @return
      */
     public static Map loadMap(String mapName, int type) {
@@ -35,7 +34,7 @@ public class MapLoader {
 
 
             Scanner background = new Scanner(text[1]);
-          //  System.out.println("wtf");
+            //  System.out.println("wtf");
             background.useDelimiter(";");
             while (background.hasNext()) {
 
@@ -129,7 +128,7 @@ public class MapLoader {
                     case "trophy" -> {
                         String trophyName = line[3];
 
-                        map.addEntity(new Trophy(x, y, map,trophyName));
+                        map.addEntity(new Trophy(x, y, map, trophyName));
                         break;
                     }
                 }
@@ -139,6 +138,8 @@ public class MapLoader {
 
             entities.close();
             boolean isReplay = type == 2;
+
+            //deal with the replays
 
             if ((new File("res\\replays\\gold\\" + mapName + ".txt").exists())) {
                 if ((new File("res\\replays\\" + mapName + ".txt").exists())) {
@@ -162,6 +163,14 @@ public class MapLoader {
                 }
             }
 
+            if ((new File("res\\replays\\full\\" + mapName + ".txt").exists())) {
+
+
+                    map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getFrames("full\\" + mapName), isReplay, "full speedrun"));
+
+
+            }
+
 
             if ((new File("res\\replays\\" + mapName + ".txt").exists())) {
 
@@ -169,7 +178,7 @@ public class MapLoader {
             }
 
 
-            if (type ==1) {
+            if (type == 1) {
                 map.addEntity(new Player(playerX, playerY, map));
             }
             map.setStartEntities();
@@ -180,8 +189,6 @@ public class MapLoader {
             return null;
         }
     }
-
-
 
 
     private static String getFileString(File file) {
