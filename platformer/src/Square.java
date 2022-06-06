@@ -135,7 +135,7 @@ public class Square {
 
     public void render(GraphicsContext g, double cameraX, double cameraY, Player player) {
 
-        if (Main.settings.get("debug") == 1) {
+        if (Settings.get("debug") == 1) {
             double x = getRenderX(cameraX);
             double y = getRenderY(cameraY);
 
@@ -163,7 +163,7 @@ public class Square {
             }
 
             g.setFont(new Font("monospaced", 15));
-            g.fillText(action.toString() + " x:" + this.x + " y:" + this.y, x, y);
+            g.fillText(action.toString() + " x:" + String.format("%.4f", this.x) + " y:" + String.format("%.4f", this.y), x, y);
             flagged = false;
         }
     }

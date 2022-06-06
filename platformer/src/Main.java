@@ -4,16 +4,19 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+
 import java.awt.*;
-import java.io.File;
 
 
 import java.util.ArrayList;
@@ -23,8 +26,7 @@ import java.util.Random;
 /**
  * the main class that launches the game
  * @todo: at personal best automatically launches the replay player with text that fades saying you beat your last time or the medal. a button to move on to the next level appears on the task bar
- * @todo: speedun mode in settings. if activated, a timer starts once you start level 1, and ends + saves time when you beat the last level
- * @version 0.0.4
+ * @version 0.0.5
  *
  * @author William Randle
  */
@@ -36,10 +38,9 @@ public class Main extends Application {
 
     public static int deaths = 0;
 
-    private static final int BUTTON_WIDTH = 292;
-    private static final int BUTTON_HEIGHT = 100;
 
-    private static final int BUTTON_GAP = 50;
+
+
 
     public static int lastLevel = 5;
 
@@ -49,10 +50,15 @@ public class Main extends Application {
 
     private static Canvas canvas;
 
-    public static int fps = 144;
-
     private static double fpstime = 2;
     public static Map lastMap = null;
+
+
+
+
+
+
+
 
 
     public static final double DEFAULT_WIDTH_MAP = 1800;
@@ -61,7 +67,6 @@ public class Main extends Application {
     private static final int GAME_UNIT_SETTING = 1000;
     public static double gameUnit = 1;
 
-    private static boolean menu = true;
 
     public static HashMap<InputAction, Integer> hashMap = new HashMap<>();
 
@@ -71,31 +76,22 @@ public class Main extends Application {
 
     private static Timeline loop;
 
-    private static Map currentMap;
+    public static Map currentMap;
 
     private static Stage primaryStage;
-
-
-    private static int fpsIndex = 2;
-
-    private static ArrayList<Integer> fpsValues = new ArrayList<>();
 
     public static boolean mouseDown = false;
 
     public static double mouseX = 0;
     public static double mouseY = 0;
 
-    public static ArrayList<MenuButton> levelMenu = new ArrayList<>();
-    public static ArrayList<MenuButton> replayMenu = new ArrayList<>();
 
-    public static ArrayList<MenuButton> mainMenu = new ArrayList<>();
-
-    public static ArrayList<MenuButton> settingsMenu = new ArrayList<>();
-    private static ArrayList<MenuButton> currentMenu = new ArrayList<>();
+    public static boolean loaded = false;
 
 
 
-    public static HashMap<String, Integer> settings = new HashMap<>();
+
+
 
 
 
@@ -108,33 +104,26 @@ public class Main extends Application {
      * @param primaryStage Stage javafx shows things on.
      */
     public void start(Stage primaryStage) {
-        currentFull = new ArrayList<>();
-
-        settings.put("debug", -1);
-        settings.put("full speedrun", -1);
 
 
-        settings.put("show author", 1);
-        settings.put("show gold", 1);
-        settings.put("show player", 1);
-        settings.put("show full speedrun", 1);
-
-        GridParser.parseAll();
-        fpsValues.add(60);
-        fpsValues.add(90);
-        fpsValues.add(144);
-        fpsValues.add(160);
-        fpsValues.add(240);
-
-
-
-
-
-        readKeyBind();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         canvas = new Canvas(screenSize.getWidth(), screenSize.getHeight());
+
         gameUnit = screenSize.getHeight() / GAME_UNIT_SETTING;
+
+        renderLoadingStage(canvas.getGraphicsContext2D());
+
+        currentFull = new ArrayList<>();
+
+        Settings.initialiseValues();
+
+        Stats.load();
+
+        GridParser.parseAll();
+
+
+        readKeyBind();
 
 
         BorderPane pane = new BorderPane();
@@ -188,7 +177,8 @@ public class Main extends Application {
         primaryStage.show();
 
 
-        fpstime = 1000.0 / fps;
+
+        fpstime = 1000.0 / Settings.getD("fps");
 
 
         loop = new Timeline(new KeyFrame(Duration.millis(fpstime), (ActionEvent event) -> {
@@ -202,41 +192,38 @@ public class Main extends Application {
 
 
 
+        Menu.loadbuttons();
 
 
-        addbuttons();
 
-        switchMenu(mainMenu);
+        Menu.switchMenu("main");
+
 
         Main.primaryStage = primaryStage;
 
 
+
+
+    }
+
+    private static void renderLoadingStage(GraphicsContext g) {
+
+        canvas.getGraphicsContext2D().fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        g.setFont(new Font(correctUnit(50)));
+        g.setFill(Color.WHITE);
+        g.fillText("loading...", canvas.getWidth()/2.5,canvas.getHeight()/2.5);
+    }
+
+    public static WritableImage getScreenshot() {
+
+        return canvas.snapshot(new SnapshotParameters(), null);
     }
 
 
     public static void exit() {
+
         primaryStage.close();
     }
-
-
-    private static void addbuttons() {
-        mainMenu = new ArrayList<>();
-        mainMenu.add(new ExitButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "exit"));
-        mainMenu.add(new LevelsMenuButton(100, BUTTON_HEIGHT, BUTTON_WIDTH*2, BUTTON_HEIGHT));
-        mainMenu.add(new ReplayMenuButton(100,BUTTON_HEIGHT*2+BUTTON_GAP,BUTTON_WIDTH*2,BUTTON_HEIGHT));
-        mainMenu.add(new SettingsMenuButton(100,BUTTON_HEIGHT*3+BUTTON_GAP*2,BUTTON_WIDTH*2,BUTTON_HEIGHT));
-
-        mainMenu.add(new MenuText(900,100,"Platformer", 55, "Title"));
-
-        loadLevelMenu();
-        loadReplayMenu();
-        loadSettingsMenu();
-
-
-
-
-    }
-
 
 
     public static boolean intersect(GameEntity entity, double x, double y, double sizeX, double sizeY) {
@@ -251,115 +238,10 @@ public class Main extends Application {
     }
 
 
-    private static void loadSettingsMenu() {
-        settingsMenu = new ArrayList<>();
-
-        settingsMenu.add(new DecreaseFpsButton(BUTTON_GAP,100,100,100));
-
-        settingsMenu.add(new MenuText(BUTTON_GAP*3,150,"FPS: " + fps, 40, "FPS"));
-
-        settingsMenu.add(new IncreaseFpsButton( BUTTON_GAP*6,100,100,100));
-
-        settingsMenu.add(new ToggleButton(BUTTON_GAP, 250, 200,100, "debug"));
-        settingsMenu.add(new ToggleButton(BUTTON_GAP, 400, 200,100, "full speedrun"));
-
-        settingsMenu.add(new MainMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back"));
-        settingsMenu.add(new MenuText(900,100,"settings: ", 55, "Title"));
-    }
-
-    private static void loadReplayMenu() {
-        replayMenu = new ArrayList<>();
-        File directory = new File("res\\replays");
-        File[] levels = directory.listFiles();
-        int fileCount = directory.list().length;
-
-        int directories = 0;
-        for (int i = 0; i < fileCount; i++) {
-            if (!levels[i].isDirectory()) {
-                int x = i-directories;
-
-                double width = Main.DEFAULT_WIDTH_MAP - BUTTON_GAP * 2;
-
-                int xFactor = (int) (x % (width
-                        / (BUTTON_WIDTH + BUTTON_GAP)));
-
-                int yFactor = (int) (x / (width
-                        / (BUTTON_WIDTH + BUTTON_GAP)));
-
-
-
-
-
-
-                replayMenu.add(new ReplayButton(xFactor * BUTTON_WIDTH + xFactor * BUTTON_GAP + BUTTON_GAP
-                        , yFactor * BUTTON_HEIGHT + yFactor * BUTTON_GAP + BUTTON_GAP * 2
-                        , BUTTON_WIDTH, BUTTON_HEIGHT, levels[i].getName().replace(".txt", "")));
-            } else {
-                directories++;
-            }
-        }
-        replayMenu.add(new MainMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back"));
-        replayMenu.add(new MenuText(900,100,"Replay Menu: ", 55, "Title"));
-
-    }
-
-
-    private static void loadLevelMenu() {
-        levelMenu = new ArrayList<>();
-
-        File directory = new File("res\\maps");
-        File[] levels = directory.listFiles();
-        int fileCount = directory.list().length;
-
-        int directories = 0;
-
-        for (int i = 0; i < fileCount; i++) {
-
-
-            if (!levels[i].isDirectory()) {
-                int x = i-directories;
-                double width = Main.DEFAULT_WIDTH_MAP - BUTTON_GAP * 2;
-
-                int xFactor = (int) (x % (width
-                        / (BUTTON_WIDTH + BUTTON_GAP)));
-
-                int yFactor = (int) (x / (width
-                        / (BUTTON_WIDTH + BUTTON_GAP)));
-
-
-
-
-
-                String levelName = levels[i].getName().replace(".txt", "");
-                if (levelName.matches(IS_INT_REGEX)) {
-                    if (Integer.parseInt(levelName) > lastLevel) {
-                        lastLevel = Integer.parseInt(levelName);
-                    }
-                }
-                levelMenu.add(new LevelButton(xFactor * BUTTON_WIDTH + xFactor * BUTTON_GAP + BUTTON_GAP
-                        , yFactor * BUTTON_HEIGHT + yFactor * BUTTON_GAP + BUTTON_GAP * 2
-                        , BUTTON_WIDTH, BUTTON_HEIGHT, levelName));
-
-            } else {
-                directories++;
-            }
-        }
-
-
-        if (UserFileHandler.getUserTime("full", 1) > 0) {
-            levelMenu.add(new MenuText(25,25, "full speedrun best time:  " + String.format("%.2f",UserFileHandler.getUserTime("full", 1)), 15, "full"));
-        }
-        if (UserFileHandler.getCumulative() > 0) {
-            levelMenu.add(new MenuText(25,50, "cumulative best times:    " + String.format("%.2f",UserFileHandler.getCumulative()), 15, "full"));
-        }
-
-        levelMenu.add(new MainMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back"));
-        levelMenu.add(new MenuText(900,100,"Levels Menu: ", 55, "Title"));
-
-    }
-
-
     private static void tick() {
+
+
+
 
         gameUnit =  primaryStage.getHeight() /GAME_UNIT_SETTING  ;
         if (!(currentMap == null)) {
@@ -373,8 +255,8 @@ public class Main extends Application {
     public static void resetTimeline() {
         loop.stop();
 
-        fps = fpsValues.get(fpsIndex);
-        fpstime = 1000.0 / fps;
+
+        fpstime = 1000.0 / Settings.getD("fps");
 
 
         loop = new Timeline(new KeyFrame(Duration.millis(fpstime), (ActionEvent event) -> {
@@ -388,43 +270,34 @@ public class Main extends Application {
 
     }
 
-    public static void decreaseFPS() {
-        fpsIndex--;
-        fpsIndex = Math.max(fpsIndex, 0);
 
-
-        resetTimeline();
-    }
-    public static void increaseFPS() {
-        fpsIndex++;
-        fpsIndex = Math.min(fpsIndex, fpsValues.size()-1);
-
-        resetTimeline();
-    }
 
     public static void playMap(Map newMap) {
 
 
-        if (settings.get("full speedrun") ==1) {
+
+        deaths =0;
+        resetTimeline();
+
+
+        if (Settings.get("full speedrun") ==1) {
+
 
             if (newMap.getName().equals("1")) {
                 currentFull = new ArrayList<>();
             }
 
-            if (Replay.canProgress(currentFull, newMap.getName())) {
-                System.out.println("canProgress");
-            } else {
-                System.out.println("cantProgress" + newMap.getName());
-                currentFull = new ArrayList<>();
-            }
+
         }
 
 
         lastMap = null;
         hashMap.put(InputAction.Menu, 2);
         currentMap = newMap;
-        menu = false;
-        currentMenu = new ArrayList<>();
+        Menu.currentlyMenu = false;
+        Menu.setCurrentMenu("");
+
+
 
     }
 
@@ -432,20 +305,10 @@ public class Main extends Application {
         Main.lastMap = Main.currentMap;
         hashMap.put(InputAction.Menu, 2);
         currentMap = newMap;
-        menu = false;
-        currentMenu = new ArrayList<>();
+        Menu.currentlyMenu = false;
+        Menu.setCurrentMenu("");
     }
 
-
-    public static void switchMenu(ArrayList<MenuButton> newMenu) {
-
-        lastMap = null;
-        addbuttons();
-        menu = true;
-        currentMenu = newMenu;
-
-        currentMap = null;
-    }
 
 
     public static void deactivateKey(InputAction action) {
@@ -478,13 +341,13 @@ public class Main extends Application {
             currentMap.render(g);
         }
 
-        for (MenuButton button : currentMenu) {
+        for (MenuButton button : Menu.getCurrentMenu()) {
             button.tick();
             if (button instanceof MenuText) {
                 MenuText menuText = (MenuText)button;
 
                 if (menuText.getUpdateTag().equals("FPS")) {
-                    menuText.setText("FPS: " + fps);
+                    menuText.setText("FPS: " + Settings.get("fps"));
                 }
             }
 
@@ -493,6 +356,8 @@ public class Main extends Application {
         }
         g.setFill(Color.BLACK);
         canvas.getGraphicsContext2D().fillRect(primaryStage.getHeight()*EXPECTED_ASPECT_RATIO,0,primaryStage.getWidth(),primaryStage.getHeight());
+
+
     }
 
 
@@ -567,10 +432,12 @@ public class Main extends Application {
 
     private static void keyDown(KeyCode code) {
         if (code == KeyCode.ESCAPE) {
-            if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) == 2) {
-                hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 0);
-            } else if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) == 0) {
-                hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 1);
+            if (!Menu.currentlyMenu) {
+                if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) == 2) {
+                    hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 0);
+                } else if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) == 0) {
+                    hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 1);
+                }
             }
         } else {
             if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) > -1) {
@@ -581,8 +448,10 @@ public class Main extends Application {
 
     private static void keyReleased(KeyCode code) {
         if (code == KeyCode.ESCAPE) {
-            if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) == 1) {
-                hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 2);
+            if (!Menu.currentlyMenu) {
+                if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) == 1) {
+                    hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 2);
+                }
             }
         } else {
             hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 0);

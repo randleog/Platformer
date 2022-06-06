@@ -19,11 +19,11 @@ public class SpeedrunBar extends MenuButton {
 
 
     public SpeedrunBar(int x, int y, Map map) {
-        super(x, y, 300, (Main.lastLevel + 2) * HEIGHT, "");
+        super(x, y, 300, (Main.lastLevel + 2) * HEIGHT, "", TextType.normal);
         this.map = map;
         oldTime = ReplaySave.getReplay("full\\" + map.getName()).getTime();
 
-        canPlay = Replay.canProgress(Main.currentFull, map.getName());
+        canPlay = (Replay.canProgress(Main.currentFull, map.getName()) || map.getName().equals("1"));
 
         for (Replay replay : Main.currentFull) {
 
@@ -71,7 +71,7 @@ public class SpeedrunBar extends MenuButton {
             }
 
             if (!(map == null)) {
-                double currentTime = (map.getCurrentTick()) / Main.fps;
+                double currentTime = (map.getCurrentTick()) / Settings.getD("fps");
                 String sign = "";
                 if (currentTime < oldTime) {
                     g.setFill(Color.LIME);

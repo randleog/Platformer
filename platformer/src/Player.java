@@ -49,9 +49,9 @@ public class Player extends GameEntity {
     protected void gravity() {
 
         if (Main.isKeyDown(InputAction.Down)) {
-            velY += Map.GRAVITY*CROUCH_GRAVITY  / Main.fps;
+            velY += Map.GRAVITY*CROUCH_GRAVITY  / Settings.getD("fps");
         } else {
-            velY += Map.GRAVITY / Main.fps;
+            velY += Map.GRAVITY / Settings.getD("fps");
         }
 
 
@@ -107,6 +107,8 @@ public class Player extends GameEntity {
 
     private void inputActions() {
 
+        boolean hasJumped = false;
+
         hooking = Main.isKeyDown(InputAction.Hook);
 
         runningBefore = running;
@@ -129,8 +131,9 @@ public class Player extends GameEntity {
         if (canJump) {
             currentDrag = Map.GROUND_DRAG;
             if (Main.isKeyDown(InputAction.Up)) {
+                hasJumped = true;
                 velY = -JUMP_SPEED;
-                Main.deactivateKey(InputAction.Up);
+
 
             }
         } else if (canLeftJump) {
@@ -139,14 +142,14 @@ public class Player extends GameEntity {
                 velY = -JUMP_SPEED;
 
                 velX = -JUMP_SPEED * SIDE_BOOST * baseAccel;
-                Main.deactivateKey(InputAction.Up);
+                hasJumped = true;
             }
         } else if (canRightJump) {
             if (Main.isKeyDown(InputAction.Up)) {
                 velX = JUMP_SPEED * SIDE_BOOST * baseAccel;
                 velY = -JUMP_SPEED ;
 
-                Main.deactivateKey(InputAction.Up);
+                hasJumped = true;
 
             }
         }else if (canCornerJump) {
@@ -164,9 +167,14 @@ public class Player extends GameEntity {
                 }
 
 
-                Main.deactivateKey(InputAction.Up);
+                hasJumped = true;
 
             }
+        }
+
+        if (hasJumped) {
+            Main.deactivateKey(InputAction.Up);
+            Stats.add("total Jumps", 1);
         }
         if (Main.isKeyDown(InputAction.Right) && !Main.isKeyDown(InputAction.Left)) {
             accelX = (accel) * baseAccel;
@@ -181,6 +189,7 @@ public class Player extends GameEntity {
         if (!Main.isKeyDown(InputAction.Left) && !Main.isKeyDown(InputAction.Right)) {
             accelX = 0;
         }
+
 
     }
 

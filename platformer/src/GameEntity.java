@@ -124,6 +124,7 @@ public abstract class GameEntity {
     public void die() {
         if (this.isPlayer()) {
             Main.deaths++;
+            Stats.add("total Deaths", 1);
             map.reset = true;
             this.x = startX;
             this.y = startY;
@@ -158,7 +159,7 @@ public abstract class GameEntity {
 
     protected void gravity() {
 
-        velY += Map.GRAVITY / Main.fps;
+        velY += Map.GRAVITY / Settings.getD("fps");
 
     }
 
@@ -176,19 +177,19 @@ public abstract class GameEntity {
 
 
     protected void physics() {
-        velX = velX + accelX / Main.fps;
-        velY = velY + accelY / Main.fps;
-        velX = velX * Math.pow(currentDrag, 1.0 / Main.fps);
+        velX = velX + accelX / Settings.getD("fps");
+        velY = velY + accelY / Settings.getD("fps");
+        velX = velX * Math.pow(currentDrag, 1.0 / Settings.getD("fps"));
 
         if (this instanceof Racer) {
-            velY = velY * Math.pow(currentDrag, 1.0 / Main.fps);
+            velY = velY * Math.pow(currentDrag, 1.0 / Settings.getD("fps"));
         } else {
-            velY = velY * Math.pow(Map.BASE_DRAG_Y, 1.0 / Main.fps);
+            velY = velY * Math.pow(Map.BASE_DRAG_Y, 1.0 / Settings.getD("fps"));
         }
 
 
-        x += (velX / Main.fps) * SPEED_FACTOR;
-        y += (velY / Main.fps) * SPEED_FACTOR;
+        x += (velX / Settings.getD("fps")) * SPEED_FACTOR;
+        y += (velY / Settings.getD("fps")) * SPEED_FACTOR;
     }
 
     public double getX() {
@@ -285,12 +286,12 @@ public abstract class GameEntity {
         x += WALL_CLING_RADIUS;
         if (map.getActions(this).contains(InputAction.Left)) {
             canLeftJump = true;
-            velX += WALL_CLING_FORCE / Main.fps;
+            velX += WALL_CLING_FORCE / Settings.getD("fps");
         }
         x -= WALL_CLING_RADIUS * 2;
         if (map.getActions(this).contains(InputAction.Right)) {
             canRightJump = true;
-            velX += -WALL_CLING_FORCE / Main.fps;
+            velX += -WALL_CLING_FORCE / Settings.getD("fps");
         }
         x += WALL_CLING_RADIUS;
 
@@ -396,7 +397,7 @@ public abstract class GameEntity {
                     canCornerJump = true;
                     lastRotation = cornerRotation;
                     cornerRotation = rotation;
-                    rotationTicks = (int) (Main.fps * ROTATE_TIME);
+                    rotationTicks = (int) (Settings.getD("fps") * ROTATE_TIME);
                     while (entity.intersect(getMainShape())) {
                         y += COLLISION_AMMOUNT * Math.sin(rotation);
 
@@ -462,7 +463,7 @@ public abstract class GameEntity {
 
 
     public double getRenderRotation() {
-        return Main.interpolate(cornerRotation, lastRotation, Main.fps * ROTATE_TIME, rotationTicks);
+        return Main.interpolate(cornerRotation, lastRotation, Settings.getD("fps") * ROTATE_TIME, rotationTicks);
     }
 
 

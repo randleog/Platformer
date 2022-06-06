@@ -37,8 +37,8 @@ public class Hookable extends GameEntity {
     private void hook(Player player) {
 
 
-        player.setVelY(player.getVelY() + ((this.y - player.getY()))/Main.fps / HOOK_FACTOR);
-        player.setVelX(player.getVelX() + ((this.x - player.getX()))/Main.fps / HOOK_FACTOR);
+        player.setVelY(player.getVelY() + ((this.y - player.getY()))/Settings.getD("fps") / HOOK_FACTOR);
+        player.setVelX(player.getVelX() + ((this.x - player.getX()))/Settings.getD("fps") / HOOK_FACTOR);
 
 
     }
@@ -59,7 +59,7 @@ public class Hookable extends GameEntity {
                 double hookY = map.player.getRenderY();
 
                 g.setStroke(Color.color(0.2, 0.2, 0.2));
-
+                g.setLineDashes(map.correctUnit(10));
                 g.setLineWidth(6);
                 g.strokeLine(x, y, hookX, hookY);
 

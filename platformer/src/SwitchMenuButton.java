@@ -3,10 +3,10 @@ import java.util.ArrayList;
 public class SwitchMenuButton extends MenuButton {
 
 
-    private ArrayList<MenuButton> menu;
+    private String menu;
 
-    public SwitchMenuButton(int x, int y, int width, int height, String text, ArrayList<MenuButton> menu) {
-        super(x,y,width,height, text);
+    public SwitchMenuButton(int x, int y, int width, int height, String text, String menu) {
+        super(x,y,width,height, text, TextType.normal);
 
         this.menu = menu;
     }
@@ -26,7 +26,7 @@ public class SwitchMenuButton extends MenuButton {
     private void click() {
         if (Main.mouseDown && mouseOver) {
             Main.mouseDown = false;
-            Main.switchMenu(menu);
+            Menu.switchMenu(menu);
         }
     }
 }

@@ -4,14 +4,21 @@ import javafx.scene.text.Font;
 
 public class ToggleButton extends MenuButton {
 
-
+    private Color selectColor;
 
 
     public ToggleButton(int x, int y, int width, int height,String text) {
-        super(x,y,width,height, text);
+        super(x,y,width,height, text, TextType.normal);
+
+        selectColor =  Color.color(0, 1, 0, 0.3);
 
     }
 
+
+    public ToggleButton(int x, int y, int width, int height,String text, Color selectColor) {
+        super(x,y,width,height, text, TextType.normal);
+        this.selectColor =  selectColor;
+    }
 
 
     public void tick() {
@@ -27,19 +34,20 @@ public class ToggleButton extends MenuButton {
     private void click() {
         if (Main.mouseDown && mouseOver) {
             Main.mouseDown = false;
-            Main.settings.put(text, -Main.settings.get(text));
+            Settings.put(key, -Settings.get(key));
 
         }
     }
 
     @Override
     public void render(GraphicsContext g) {
-        if (Main.settings.get(text) == -1) {
+        if (Settings.get(key) == -1) {
            // g.setFill(Color.color(1, 0, 0, 0.5));
         } else {
 
-            g.setFill(Color.color(0, 1, 0, 0.3));
-            g.fillRect(Main.correctUnit(x), Main.correctUnit(y), Main.correctUnit(width),Main.correctUnit(height));
+            g.setFill(selectColor);
+            g.fillRect(Main.correctUnit(x+insetWidth), Main.correctUnit(y+insetWidth), Main.correctUnit(width-insetWidth*2),Main.correctUnit(height-insetWidth*2));
+
         }
 
 

@@ -10,7 +10,7 @@ public class ReplayButton extends MenuButton {
     private int currentTick = 0;
 
     public ReplayButton(int x, int y, int width, int height, String name) {
-        super(x,y,width,height, "level: " + name);
+        super(x,y,width,height, "level: " + name, TextType.normal);
         this.name = name;
         double time = UserFileHandler.getUserTime(name, 1);
         if (time == -1) {

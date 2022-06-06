@@ -122,8 +122,85 @@ public class UserFileHandler {
 
     }
 
+    public static String getStat(String name, String stat) {
+        String data = "";
+        File file = new File("res\\userData\\" + name  + ".txt");
+        try {
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String[] line = scanner.nextLine().split(" ");
 
-    public static double getCumulative() {
+                if (line[0].equals(stat.replaceAll(" ", "_"))) {
+                    data = line[1];
+                }
+            }
+
+
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        data = data.replaceAll("_", " ");
+        return data;
+
+    }
+
+    public static void saveStat(String name, String stat, String data)  {
+        stat = stat.replaceAll(" ", "_");
+        data = data.replaceAll(" ", "_");
+        File file = new File("res\\userData\\" + name + ".txt");
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch( IOException e) {
+                e.printStackTrace();
+            }
+        }
+        String text = "";
+        try {
+            Scanner scanner = new Scanner(file);
+            boolean added = false;
+            while (scanner.hasNextLine()) {
+                String lineText = scanner.nextLine();
+                String[] line = lineText.split(" ");
+
+                if (line[0].equals(stat)) {
+
+
+                    text = text + line[0]+ " " + data+ "\n";
+
+                    added = true;
+
+                } else {
+                    text = text + lineText + "\n";
+                }
+                if (!scanner.hasNextLine()) {
+                    text = text.substring(0,text.length()-1);
+                }
+            }
+            if (!added) {
+                text = text + "\n" + stat + " " + data;
+            }
+
+            if (text.charAt(0) == '\n') {
+                text = text.substring(1);
+            }
+
+            FileWriter myWriter = new FileWriter("res\\userData\\" + name + ".txt");
+
+            myWriter.write(text);
+            myWriter.close();
+
+            scanner.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+    public static double getCumulativeBestTimes() {
         double total = 0;
         boolean notAll = false;
 

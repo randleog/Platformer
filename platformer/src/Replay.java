@@ -52,8 +52,14 @@ public class Replay {
     public static boolean canProgress(ArrayList<Replay> actual, String next) {
 
 
-        if (next.equals("1")) {
-            return true;
+        if (!(next.matches(Main.IS_INT_REGEX))) {
+            return false;
+        }
+
+        if (actual.size() ==0) {
+            if (next.equals("1")) {
+                return true;
+            }
         }
 
 
@@ -64,7 +70,7 @@ public class Replay {
         }
 
         boolean can = true;
-        for (int i = 2; i < Integer.parseInt(next); i++) {
+        for (int i = 2; i < Integer.parseInt(next)+1; i++) {
             if (!(hasLast(actual, i))) {
                 can = false;
             }

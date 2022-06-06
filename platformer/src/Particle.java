@@ -37,7 +37,7 @@ public class Particle extends GameEntity {
             physics();
         }
         currentTick++;
-        if (Main.interpolate(1,0,Main.fps *time,currentTick) <=0.01) {
+        if (Main.interpolate(1,0,Settings.getD("fps") *time,currentTick) <=0.01) {
             map.removeParticle(this);
         }
 
@@ -47,7 +47,7 @@ public class Particle extends GameEntity {
     public void render(GraphicsContext g) {
 
         g.save();
-        g.setGlobalAlpha(Main.interpolate(start,0,Main.fps,currentTick));
+        g.setGlobalAlpha(Main.interpolate(start,0,Settings.getD("fps"),currentTick));
         renderSquare(g);
         g.restore();
     }

@@ -6,7 +6,7 @@ public class ExitButton extends MenuButton {
 
 
     public ExitButton(int x, int y, int width, int height, String text) {
-        super(x,y,width,height, text);
+        super(x,y,width,height, text, TextType.normal);
 
     }
 

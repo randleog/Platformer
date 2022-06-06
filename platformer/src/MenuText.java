@@ -12,7 +12,7 @@ public class MenuText extends MenuButton {
     private String updateTag;
 
     public MenuText(int x, int y, String text, int size, String updateTag) {
-        super(x,y,1,1, text);
+        super(x,y,1,1, text, TextType.normal);
         this.size = size;
         this.updateTag = updateTag;
 
