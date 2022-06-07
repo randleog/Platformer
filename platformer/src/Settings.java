@@ -8,9 +8,27 @@ public class Settings {
     private static HashMap<String, String> settingsString = new HashMap<>();
 
 
+    public static final String BEST_REPLAY = "best";
+    public static final String SPEEDRUN_REPLAY = "speedrun";
+    public static final String LAST_REPLAY = "last";
+    public static final String AUTHOR_REPLAY = "author";
+    public static final String GOLD_REPLAY = "gold";
 
+    public static final String ANONYMOUS_NAME = "-";
+
+
+    public static final int MAX_NAME_LENGTH = 21;
+
+    public static final String FONT = "system";
 
     public static void put(String key, String input) {
+        if (key.equals("fps")) {
+            try {
+                throw new Exception();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         settingsString.put(key, input);
     }
 
@@ -49,9 +67,9 @@ public class Settings {
 
     public static void load() {
         loadSetting("debug");
-        loadSetting("full speedrun");
         loadSetting("fps");
         loadSetting("full speedrun");
+        loadSetting("name");
     }
 
     private static void loadSetting(String name) {
@@ -59,7 +77,9 @@ public class Settings {
         if (data.matches(Main.IS_INT_REGEX)) {
             put(name, Integer.parseInt(data));
         } else {
-            put(name, data);
+            if (settingsString.containsKey(name)) {
+                put(name, data);
+            }
         }
 
     }
@@ -67,7 +87,9 @@ public class Settings {
     private static void saveSetting(String name) {
         if (settingsString.containsKey(name)) {
             UserFileHandler.saveStat("settings", name, getStr(name));
+
         } else {
+
             UserFileHandler.saveStat("settings", name, Integer.toString(get(name)));
         }
 
@@ -83,17 +105,20 @@ public class Settings {
         put("debug", -1);
         put("full speedrun", -1);
 
-        put("fps", 144);
+        put("fps", Main.monitorFPS);
 
         put("replay speed", 10);
 
-        put("focus", "player");
+        put("name", ANONYMOUS_NAME);
 
-        put("show author", 1);
-        put("show gold", 1);
-        put("show player", 1);
-        put("show full speedrun", 1);
 
+        put("focus", BEST_REPLAY);
+
+        put("show " + AUTHOR_REPLAY, 1);
+        put("show " + GOLD_REPLAY, 1);
+        put("show " + BEST_REPLAY, 1);
+        put("show " + SPEEDRUN_REPLAY, 1);
+        put("show " + LAST_REPLAY, 1);
         load();
 
 

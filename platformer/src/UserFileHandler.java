@@ -125,6 +125,7 @@ public class UserFileHandler {
     public static String getStat(String name, String stat) {
         String data = "";
         File file = new File("res\\userData\\" + name  + ".txt");
+        checkFileExists(file);
         try {
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
@@ -141,14 +142,15 @@ public class UserFileHandler {
             e.printStackTrace();
         }
         data = data.replaceAll("_", " ");
+
+        if (data.equals("")) {
+            data = "-";
+        }
         return data;
 
     }
 
-    public static void saveStat(String name, String stat, String data)  {
-        stat = stat.replaceAll(" ", "_");
-        data = data.replaceAll(" ", "_");
-        File file = new File("res\\userData\\" + name + ".txt");
+    private static void checkFileExists(File file) {
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -156,6 +158,19 @@ public class UserFileHandler {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void saveStat(String name, String stat, String data)  {
+
+        stat = stat.replaceAll(" ", "_");
+        data = data.replaceAll(" ", "_");
+
+        if (data.equals("")) {
+            data = data + "-";
+        }
+
+        File file = new File("res\\userData\\" + name + ".txt");
+        checkFileExists(file);
         String text = "";
         try {
             Scanner scanner = new Scanner(file);

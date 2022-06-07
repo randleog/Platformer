@@ -24,13 +24,14 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * the main class that launches the game
  * @todo: at personal best automatically launches the replay player with text that fades saying you beat your last time or the medal. a button to move on to the next level appears on the task bar
  * @todo: collision catching on side blocks fix
  * @todo: level editor
- * @version 0.0.6
+ * @version 0.0.7
  *
  * @author William Randle
  */
@@ -38,15 +39,23 @@ public class Main extends Application {
 
 
 
+
+
     public static final String IS_INT_REGEX = "^([+-]?[0-9]\\d*|0)$";
 
     public static int deaths = 0;
 
+    public static final String VERSION = "0.0.7";
 
 
+    public static boolean isVictory = false;
+
+    public static String lastKey = "";
 
 
     public static int lastLevel = 5;
+
+    public static int monitorFPS = 0;
 
     public static final double EXPECTED_ASPECT_RATIO = 1.7778;
 
@@ -109,6 +118,7 @@ public class Main extends Application {
      */
     public void start(Stage primaryStage) {
 
+        monitorFPS = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0].getDisplayMode().getRefreshRate();
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -213,9 +223,9 @@ public class Main extends Application {
     private static void renderLoadingStage(GraphicsContext g) {
 
         canvas.getGraphicsContext2D().fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        g.setFont(new Font(correctUnit(50)));
+        g.setFont(new Font(Settings.FONT,correctUnit(115)));
         g.setFill(Color.WHITE);
-        g.fillText("loading...", canvas.getWidth()/2.5,canvas.getHeight()/2.5);
+        g.fillText("Loading...", canvas.getWidth()/2.8,canvas.getHeight()/2.5);
     }
 
     public static WritableImage getScreenshot() {
@@ -224,9 +234,29 @@ public class Main extends Application {
     }
 
 
+
     public static void exit() {
 
         primaryStage.close();
+    }
+
+    public static void victory(String name, MenuButton button) {
+
+        Settings.put("focus", Settings.LAST_REPLAY);
+
+        Menu.switchMenu("victory", button);
+
+
+        resetTimeline();
+
+
+        hashMap.put(InputAction.Menu, 2);
+        currentMap = MapLoader.loadMap(name, 2);
+        Menu.currentlyMenu = false;
+
+        isVictory = true;
+
+
     }
 
 
@@ -300,8 +330,8 @@ public class Main extends Application {
 
 
     public static void playMap(Map newMap) {
-
-
+        Settings.put("focus", Settings.BEST_REPLAY);
+        isVictory = false;
 
         deaths =0;
         resetTimeline();
@@ -322,6 +352,8 @@ public class Main extends Application {
         hashMap.put(InputAction.Menu, 2);
         currentMap = newMap;
         Menu.currentlyMenu = false;
+
+
         Menu.setCurrentMenu("");
 
 
@@ -459,7 +491,7 @@ public class Main extends Application {
 
     private static void keyDown(KeyCode code) {
         if (code == KeyCode.ESCAPE) {
-            if (!Menu.currentlyMenu) {
+            if (!Menu.currentlyMenu && ! isVictory) {
                 if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) == 2) {
                     hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 0);
                 } else if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) == 0) {
@@ -469,16 +501,23 @@ public class Main extends Application {
         } else {
             if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) > -1) {
                 hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 1);
+
+
             }
         }
+
+        hashMap.put(InputAction.Default, 1);
+        lastKey = code.getName();
     }
 
     private static void keyReleased(KeyCode code) {
         if (code == KeyCode.ESCAPE) {
-            if (!Menu.currentlyMenu) {
+            if (!Menu.currentlyMenu && ! isVictory) {
                 if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) == 1) {
                     hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 2);
                 }
+            } else {
+                Menu.switchMenu("main");
             }
         } else {
             hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 0);

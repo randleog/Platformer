@@ -146,35 +146,43 @@ public class MapLoader {
                     if (UserFileHandler.getUserTime(mapName, 1) < (ReplaySave.getFrames("gold\\" + mapName).size() * 1.0 - 1) / ReplaySave.getFrames(mapName).get(0)[0]) {
                         if ((new File("res\\replays\\author\\" + mapName + ".txt").exists())) {
 
-                            map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getFrames("author\\" + mapName), isReplay, "author"));
+                            map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getFrames("author\\" + mapName), isReplay,  Settings.AUTHOR_REPLAY));
 
                             if (UserFileHandler.getUserTime(mapName, 1) < (ReplaySave.getFrames("author\\" + mapName).size() * 1.0 - 1) / ReplaySave.getFrames(mapName).get(0)[0]) {
-                                map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getFrames("gold\\" + mapName), isReplay, "gold"));
+                                map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getFrames("gold\\" + mapName), isReplay,  Settings.GOLD_REPLAY));
                             }
                         }
                     } else {
 
 
-                        map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getFrames("gold\\" + mapName), isReplay, "gold"));
+                        map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getFrames("gold\\" + mapName), isReplay,  Settings.GOLD_REPLAY));
 
                     }
                 } else {
-                    map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getFrames("gold\\" + mapName), isReplay, "gold"));
+                    map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getFrames("gold\\" + mapName), isReplay, Settings.GOLD_REPLAY));
                 }
             }
 
             if ((new File("res\\replays\\full\\" + mapName + ".txt").exists())) {
 
 
-                    map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getFrames("full\\" + mapName), isReplay, "full speedrun"));
+                    map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getFrames("full\\" + mapName), isReplay, Settings.SPEEDRUN_REPLAY));
 
 
             }
 
 
+            if ((new File("res\\replays\\last\\" + mapName + ".txt").exists())) {
+
+
+                map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getFrames("last\\" + mapName), isReplay,  Settings.LAST_REPLAY));
+
+
+            }
+
             if ((new File("res\\replays\\" + mapName + ".txt").exists())) {
 
-                map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getFrames(mapName), isReplay, "player"));
+                map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getFrames(mapName), isReplay, Settings.BEST_REPLAY));
             }
 
 

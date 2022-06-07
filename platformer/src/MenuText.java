@@ -9,6 +9,8 @@ public class MenuText extends MenuButton {
 
     private int size;
 
+    private String font = Settings.FONT;
+
     private String updateTag;
 
     public MenuText(int x, int y, String text, int size, String updateTag) {
@@ -18,6 +20,14 @@ public class MenuText extends MenuButton {
 
     }
 
+    public MenuText(int x, int y, String text, int size, String updateTag, String font) {
+        super(x,y,1,1, text, TextType.normal);
+        this.size = size;
+        this.updateTag = updateTag;
+
+        this.font = font;
+
+    }
 
 
     public String getUpdateTag() {
@@ -33,7 +43,7 @@ public class MenuText extends MenuButton {
 
 
         g.setFill(Color.WHITE);
-        g.setFont(new Font(Main.correctUnit(size)));
+        g.setFont(new Font(font,Main.correctUnit(size)));
         g.fillText(text, Main.correctUnit(x), Main.correctUnit(y));
     }
 

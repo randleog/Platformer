@@ -27,19 +27,35 @@ public class Wall extends GameEntity {
 
         loadCenters();
 
-        scan();
+
+        if (!(this.map == null) && this.sizeY == this.sizeX) {
+            scan();
+        }
 
 
 
     }
 
 
-
-
-
+    /**
+     * removes hitboxes not needed
+     */
     private void scan() {
 
+        y-=10;
+        if (map.getActions(this).contains(InputAction.Down)) {
+            Square removeSquare = null;
+            for (Square square : hitbox) {
+                if (square.getAction() == InputAction.Up) {
+                    removeSquare = square;
+                }
+            }
 
+            hitbox.remove(removeSquare);
+
+        }
+
+        y+=10;
 
     }
 

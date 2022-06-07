@@ -91,8 +91,8 @@ public abstract class MenuButton {
         }
 
         if (!(textType == TextType.hide)) {
-            g.setFont(new Font(Main.correctUnit(25)));
-            g.fillText(text, Main.correctUnit(x + 10), Main.correctUnit(y + height / 2.0));
+            g.setFont(new Font(Settings.FONT,Main.correctUnit(25)));
+            g.fillText(text, Main.correctUnit(x + 20), Main.correctUnit(y + height / 2.0));
         }
     }
 

@@ -20,7 +20,49 @@ public class Menu {
     public static boolean currentlyMenu = true;
 
     public static void setCurrentMenu(String newMenu) {
+
+       if (newMenu.equals("main")) {
+           System.out.println(Settings.getStr("name"));
+           if (Settings.getStr("name").equals(Settings.ANONYMOUS_NAME)) {
+               currentMenu = "name";
+               return;
+           }
+       }
+
         currentMenu = newMenu;
+    }
+
+    public static void switchMenu(String newMenu, MenuButton message) {
+
+
+        Main.hashMap.put(InputAction.Menu, 2);
+        Settings.save();
+        Stats.save();
+
+
+        Main.lastMap = null;
+        Menu.loadbuttons();
+
+        currentlyMenu = true;
+        setCurrentMenu(newMenu);
+
+        Main.currentMap = null;
+
+        updateTransition(currentMenu);
+
+        updateMessage(message);
+
+        Main.loaded = true;
+        Main.resetTimeline();
+
+        Main.isVictory = false;
+
+    }
+
+
+    private static void updateMessage (MenuButton message) {
+        ArrayList<MenuButton> buttons = menus.get(currentMenu);
+        buttons.add(message);
     }
 
     public static void switchMenu(String newMenu) {
@@ -43,6 +85,8 @@ public class Menu {
 
         Main.loaded = true;
         Main.resetTimeline();
+
+        Main.isVictory = false;
 
     }
 
@@ -85,15 +129,19 @@ public class Menu {
     public static void loadbuttons() {
         ArrayList<MenuButton> mainMenu = new ArrayList<>();
         mainMenu.add(new MenuMap("2"));
-        mainMenu.add(new ExitButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "exit"));
-        mainMenu.add(new SwitchMenuButton(100, BUTTON_HEIGHT, BUTTON_WIDTH*2, BUTTON_HEIGHT, "levels", "levels"));
-        mainMenu.add(new SwitchMenuButton(100,BUTTON_HEIGHT*2+BUTTON_GAP,BUTTON_WIDTH*2,BUTTON_HEIGHT, "replays", "replays"));
-        mainMenu.add(new SwitchMenuButton(100,BUTTON_HEIGHT*3+BUTTON_GAP*2,BUTTON_WIDTH*2,BUTTON_HEIGHT, "settings", "settings"));
+        mainMenu.add(new ExitButton(BUTTON_GAP, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "exit"));
+        mainMenu.add(new SwitchMenuButton(BUTTON_GAP, 200, BUTTON_WIDTH*2, BUTTON_HEIGHT, "levels", "levels"));
+        mainMenu.add(new SwitchMenuButton(BUTTON_GAP,450,BUTTON_WIDTH*2,BUTTON_HEIGHT, "replays", "replays"));
+        mainMenu.add(new SwitchMenuButton(BUTTON_GAP,575,BUTTON_WIDTH*2,BUTTON_HEIGHT, "settings", "settings"));
 
-        mainMenu.add(new SwitchMenuButton(100,BUTTON_HEIGHT*4+BUTTON_GAP*3,BUTTON_WIDTH*2,BUTTON_HEIGHT, "stats", "stats"));
+        mainMenu.add(new SwitchMenuButton(BUTTON_GAP,325,BUTTON_WIDTH*2,BUTTON_HEIGHT, "stats", "stats"));
 
 
-        mainMenu.add(new MenuText(900,100,"Platformer", 55, "Title"));
+
+        mainMenu.add(new MenuText(185,742,Settings.getStr("name"), 35, "name", "Monospaced Regular"));
+        mainMenu.add(new SwitchMenuButton(50,710,120,50, "change", "name"));
+
+        mainMenu.add(new MenuText(BUTTON_GAP,100,"Platformer v" + Main.VERSION, 55, "Title"));
         mainMenu.add(new MenuTransition((Main.loaded) ? NORMAL_TRANSITION_TIME : LOADING_TRANSITION_TIME ));
         menus.put("main", mainMenu);
 
@@ -101,6 +149,8 @@ public class Menu {
         loadReplayMenu();
         loadSettingsMenu();
         loadStatsMenu();
+        loadVictoryMenu();
+        loadName();
 
 
 
@@ -112,17 +162,13 @@ public class Menu {
         ArrayList<MenuButton> settingsMenu = new ArrayList<>();
         settingsMenu.add(new MenuMap("3"));
 
-        settingsMenu.add(new MenuSlider(BUTTON_GAP,100,500,100,"fps", "fps", 300, 10, 144));
-       // settingsMenu.add(new CounterButton(BUTTON_GAP,100,100,100, "fps", -24, 240, 48));
+        settingsMenu.add(new MenuSlider(BUTTON_GAP,100,500,100,"fps", "fps", 300, 10, Main.monitorFPS));
 
-      //  settingsMenu.add(new MenuText(BUTTON_GAP*3,150,"FPS: " + Settings.getD("fps"), 40, "FPS"));
 
-      //  settingsMenu.add(new CounterButton( BUTTON_GAP*6,100,100,100, "fps", 24, 240, 48));
+        settingsMenu.add(new ToggleButton(BUTTON_GAP, 250, 200,100, "enable debug", "disable debug", "debug"));
+        settingsMenu.add(new ToggleButton(BUTTON_GAP, 400, 200,100, "enable full speedrun", "disable full speedrun", "full speedrun"));
 
-        settingsMenu.add(new ToggleButton(BUTTON_GAP, 250, 200,100, "debug"));
-        settingsMenu.add(new ToggleButton(BUTTON_GAP, 400, 200,100, "full speedrun"));
-
-        settingsMenu.add(new SwitchMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back", "main"));
+        settingsMenu.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back", "main"));
         settingsMenu.add(new MenuText(900,100,"settings: ", 55, "Title"));
         settingsMenu.add(new MenuTransition(NORMAL_TRANSITION_TIME));
 
@@ -162,7 +208,7 @@ public class Menu {
                 directories++;
             }
         }
-        replayMenu.add(new SwitchMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back", "main"));
+        replayMenu.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back", "main"));
         replayMenu.add(new MenuText(900,100,"Replay Menu: ", 55, "Title"));
         replayMenu.add(new MenuTransition(NORMAL_TRANSITION_TIME));
         menus.put("replays", replayMenu);
@@ -173,7 +219,7 @@ public class Menu {
     private static void loadStatsMenu() {
         ArrayList<MenuButton> stats = new ArrayList<>();
         stats.add(new MenuMap("1"));
-        stats.add(new SwitchMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back", "main"));
+        stats.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back", "main"));
         stats.add(new MenuText(50, 75, "Stats:", 45, "deaths"));
 
         int i = 0;
@@ -193,6 +239,33 @@ public class Menu {
 
 
         menus.put("stats", stats);
+
+    }
+
+    private static void loadVictoryMenu() {
+        ArrayList<MenuButton> stats = new ArrayList<>();
+        stats.add(new SwitchMenuButton(350, 775, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "main"));
+
+        stats.add(new MenuTransition(NORMAL_TRANSITION_TIME));
+
+
+        menus.put("victory", stats);
+
+    }
+
+
+    private static void loadName() {
+        ArrayList<MenuButton> stats = new ArrayList<>();
+        stats.add(new MenuText(300, 200
+                , "enter name:", 60, "name"));
+
+        stats.add(new MenuTextField(300, 300
+                , "", 50, "name", MenuButton.TextType.normal));
+
+        stats.add(new MenuTransition(NORMAL_TRANSITION_TIME));
+
+
+        menus.put("name", stats);
 
     }
 
@@ -245,8 +318,8 @@ public class Menu {
             levelMenu.add(new MenuText(BUTTON_GAP,55, "cumulative best times:    " + String.format("%.2f",UserFileHandler.getCumulativeBestTimes()), 20, "full"));
         }
 
-        levelMenu.add(new SwitchMenuButton(100, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back", "main"));
-        levelMenu.add(new MenuText(400,55,"Levels Menu: ", 50, "Title"));
+        levelMenu.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back", "main"));
+        levelMenu.add(new MenuText(475,55,"Levels Menu: ", 50, "Title"));
         levelMenu.add(new MenuTransition(NORMAL_TRANSITION_TIME));
         menus.put("levels", levelMenu);
 

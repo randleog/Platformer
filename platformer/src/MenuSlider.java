@@ -85,7 +85,7 @@ public class MenuSlider extends MenuButton {
     @Override
     public void render(GraphicsContext g) {
 
-        g.setFont(new Font(Main.correctUnit(25)));
+        g.setFont(new Font(Settings.FONT,Main.correctUnit(25)));
 
 
 
@@ -102,6 +102,6 @@ public class MenuSlider extends MenuButton {
 
 
         g.setFill(Color.WHITE);
-        g.fillText(text + " " + currentVal + ((currentVal==recommendedValue) ? "(recommended)" : ""), Main.correctUnit(x+width/3.0), Main.correctUnit(y+height/2.0));
+        g.fillText(text + " " + currentVal + ((currentVal==recommendedValue) ? " (recommended)" : ""), Main.correctUnit(x+width/3.0), Main.correctUnit(y+height/2.0));
     }
 }

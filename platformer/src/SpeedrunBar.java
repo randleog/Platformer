@@ -53,7 +53,7 @@ public class SpeedrunBar extends MenuButton {
 
 
             g.setFill(Color.WHITE);
-            g.setFont(new Font(Main.correctUnit(HEIGHT)));
+            g.setFont(new Font(Settings.FONT,Main.correctUnit(HEIGHT)));
             g.fillText("full speedrun progress", Main.correctUnit(x + 5), Main.correctUnit(y + 20));
 
             int height = 0;

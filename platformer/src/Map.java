@@ -63,11 +63,11 @@ public class Map {
     GameEntity player = null;
 
 
-    public ArrayList<String> availableReplays = new ArrayList<>();
+    public HashMap<String, Double> availableReplays = new HashMap<>();
     private ArrayList<String> availableSpeeds = new ArrayList<>();
 
     private double speedButtonGap = 85;
-    private double replayButtonGap = 150;
+    private double replayButtonGap = 175;
 
     private int sizeX;
     private int sizeY;
@@ -126,7 +126,7 @@ public class Map {
 
             backButton = new SwitchMenuButton(400, 500, 200, 100, "back", "replays");
 
-            screenMenu.add(new ToggleButton(25, 775, 200, 100, "playback speed"));
+            screenMenu.add(new ToggleButton(25, 775, 200, 100, "change speed", "hide options", "playback speed"));
 
 
             for (int i = 0; i < availableSpeeds.size(); i++) {
@@ -134,17 +134,25 @@ public class Map {
             }
 
 
-            for (int i = 0; i < availableReplays.size(); i++) {
-                screenMenu.add(new ToggleButton(1425, (int)(25+i*replayButtonGap), 200,100, "show " + availableReplays.get(i), getReplayColor(availableReplays.get(i))));
-                screenMenu.add(new SettingButton(1650, (int)(25+i*replayButtonGap), 100, 100, "focus", availableReplays.get(i), MenuButton.TextType.normal, getReplayColor(availableReplays.get(i))));
+            ArrayList<String> replays = new ArrayList<>(availableReplays.keySet());
+
+            for (int i = 0; i < replays.size(); i++) {
+                screenMenu.add(new ToggleButton(1400, (int)(50+i*replayButtonGap)
+                        , 100,100, "show", "hide", "show " + replays.get(i),  getReplayColor(replays.get(i))));
+
+                screenMenu.add(new MenuText(1400, (int)(35+i*replayButtonGap), replays.get(i) + ": " + Main.formatTime(availableReplays.get(replays.get(i))), 30, "time"));
+
+                screenMenu.add(new SettingButton(1650, (int)(50+i*replayButtonGap)
+                        , 100, 100, "focus", replays.get(i), MenuButton.TextType.normal, getReplayColor(replays.get(i))));
             }
         }
     }
 
     private Color getReplayColor(String replay) {
         return switch (replay) {
-            case "player", "full speedrun" -> Color.color(0.6, 0, 1, 0.5);
-            case "gold" -> Color.color(1, 0.75, 0, 0.5);
+            case Settings.LAST_REPLAY, Settings.BEST_REPLAY -> Color.color(0.6, 0, 1, 0.5);
+            case Settings.SPEEDRUN_REPLAY -> Color.color(0.9, 0.2, 0.4, 0.5);
+            case Settings.GOLD_REPLAY -> Color.color(1, 0.75, 0, 0.5);
             default -> Color.color(0, 1, 0, 0.5);
         };
     }
@@ -152,12 +160,15 @@ public class Map {
     public void winGame() {
         Stats.add("total Time", getTime());
 
+        boolean isPb = isPb();
+
+
+
         if (!isReplay) {
+
+
             if (Settings.get("full speedrun") == 1) {
                 if (Replay.canProgress(Main.currentFull, getName())|| getName().equals("1")) {
-
-
-
 
                     Main.currentFull.add(new Replay(frames, getName()));
                     System.out.println(Main.currentFull.size());
@@ -174,10 +185,28 @@ public class Map {
                     }
                 }
             }
-            saveReplay();
+
+
+
+            ReplaySave.saveReplay(frames, "last\\" + name);
+
+            if (isPb) {
+                saveReplay();
+            }
             UserFileHandler.saveUserTime(name, getTime());
         }
-        Menu.switchMenu("levels");
+        if (Settings.get("full speedrun") == 1) {
+            Menu.switchMenu("levels");
+        } else {
+            String message = ((isPb) ? "New best time: " : "Map completed in: ") + Main.formatTime(getTime());
+            Main.victory(name,new MenuText(475,250, message, 50, "message"));
+        }
+
+
+    }
+
+    public boolean isPb() {
+        return UserFileHandler.getUserTime(name, 1) > getTime() || UserFileHandler.getUserTime(name, 1) == -1;
     }
 
 
@@ -241,9 +270,7 @@ public class Map {
 
     }
 
-    public double reverseCorrectUnit(double input) {
-        return input / Main.gameUnit;
-    }
+
 
     public void addEntity(GameEntity entity) {
         entities.add(entity);
@@ -269,13 +296,12 @@ public class Map {
     }
 
     public void saveReplay() {
-        if (!isReplay) {
 
-            if (UserFileHandler.getUserTime(name, 1) > getTime() || UserFileHandler.getUserTime(name, 1) == -1) {
-                ReplaySave.saveReplay(frames, name);
-            }
 
-        }
+        ReplaySave.saveReplay(frames, name);
+
+
+
     }
 
     public double getCurrentTick() {
@@ -367,26 +393,10 @@ public class Map {
         return name;
     }
 
-    private double rotation = 0;
-
-    private static final double ROTATION_TIME = 0.1;
-
 
     public void render(GraphicsContext g) {
 
-        /*
-        g.save();
-        g.translate(g.getCanvas().getHeight()*Main.EXPECTED_ASPECT_RATIO/2,g.getCanvas().getHeight()/2);
 
-        double playerRotate = -player.getCornerRotation();
-
-        g.rotate(Main.interpolate(rotation, Math.toDegrees(playerRotate), ROTATION_TIME*Main.fps, currentTick%  (ROTATION_TIME*Main.fps)));
-        g.translate(-g.getCanvas().getHeight()*Main.EXPECTED_ASPECT_RATIO/2, -g.getCanvas().getHeight()/2);
-        if (currentTick% (ROTATION_TIME*Main.fps) >(ROTATION_TIME*Main.fps)-1) {
-            rotation = Math.toDegrees(playerRotate);
-        }
-
-         */
 
 
         for (GameEntity entity : particles) {
@@ -399,7 +409,7 @@ public class Map {
 
         }
 
-        //   g.restore();
+
         //bounds
         g.setStroke(Color.color(1, 0, 0));
         g.setLineWidth(10);
@@ -411,7 +421,7 @@ public class Map {
             return;
         }
 
-        g.setFont(new Font(Main.correctUnit(25)));
+        g.setFont(new Font(Settings.FONT, Main.correctUnit(25)));
         g.setFill(Color.color(1, 1, 1));
         g.fillText("possible fps: " + Main.possibleFps, correctUnit(25), correctUnit(50));
         g.fillText("time: " + Main.formatTime(currentTick /  Settings.getD("fps")), correctUnit(350), correctUnit(50));
@@ -426,9 +436,9 @@ public class Map {
             backButton.render(g);
 
             g.setFill(Color.color(1, 1, 1));
-            g.setFont(new Font(Main.correctUnit(40)));
+            g.setFont(new Font(Settings.FONT,Main.correctUnit(40)));
             g.fillText("Paused", correctUnit(100), correctUnit(200));
-            g.setFont(new Font(Main.correctUnit(25)));
+            g.setFont(new Font(Settings.FONT,Main.correctUnit(25)));
             String currentAction = "";
             currentAction = currentAction + getStringKey(InputAction.Up);
             currentAction = currentAction + getStringKey(InputAction.Sprint);
@@ -444,7 +454,7 @@ public class Map {
         if (isReplay) {
 
             g.setFill(Color.color(1, 1, 1));
-            g.setFont(new Font(Main.correctUnit(40)));
+            g.setFont(new Font(Settings.FONT,Main.correctUnit(40)));
             g.fillText("x" + String.format("%.2f", actualSpeed), correctUnit(225), correctUnit(825));
         }
 
@@ -453,6 +463,8 @@ public class Map {
     public ArrayList<GameEntity> getEntities() {
         return entities;
     }
+
+
 
 
     private String getStringKey(InputAction action) {

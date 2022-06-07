@@ -105,7 +105,7 @@ public class LevelButton extends MenuButton {
         g.setFill(getCurrentColour());
         g.fillRect(Main.correctUnit(x), Main.correctUnit(y), Main.correctUnit(width), Main.correctUnit(height));
         g.setFill(Color.WHITE);
-        g.setFont(new Font(Main.correctUnit(25)));
+        g.setFont(new Font(Settings.FONT,Main.correctUnit(25)));
         g.fillText(text, Main.correctUnit(x + 10), Main.correctUnit(y + height / 2.0));
 
         if (celebrationTicks > 0) {

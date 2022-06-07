@@ -29,7 +29,7 @@ public abstract class GameEntity {
     private final int SPEED_FACTOR = 144;
 
     private final double ROTATE_TIME = 1;
-    public static final double WALL_CORNER_SIZE = 5.0;
+    public static final double WALL_CORNER_SIZE = 10.0;
 
     protected double parallax;
     private static final double DEFAULT_TILE_SIZE = 50;
@@ -479,6 +479,8 @@ public abstract class GameEntity {
 
     public double getRenderX() {
         double x = map.correctUnit(this.x - getVelStretchX()) - map.correctUnit(map.cameraX * parallax);
+
+
 
         return x;
 
