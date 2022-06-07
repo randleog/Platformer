@@ -79,7 +79,7 @@ public abstract class MenuButton {
             g.setFill(Color.color(1, 1, 1, 0.4));
 
         } else {
-            g.setFill(Color.color(0, 0, 0, 0.7));
+            g.setFill(Color.color(0, 0, 0, 0.5));
         }
         g.fillRect(Main.correctUnit(x), Main.correctUnit(y), Main.correctUnit(width),Main.correctUnit(height));
         g.setFill(Color.WHITE);

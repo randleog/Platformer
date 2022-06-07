@@ -27,6 +27,7 @@ public class Wall extends GameEntity {
 
         loadCenters();
 
+        scan();
 
 
 
@@ -34,6 +35,13 @@ public class Wall extends GameEntity {
 
 
 
+
+
+    private void scan() {
+
+
+
+    }
 
 
 

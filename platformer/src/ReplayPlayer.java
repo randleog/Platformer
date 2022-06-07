@@ -96,7 +96,6 @@ public class ReplayPlayer extends GameEntity {
 
 
 
-
         alignMap();
     }
 
@@ -128,10 +127,24 @@ public class ReplayPlayer extends GameEntity {
         if (getCurrentTick() < frames.size()-1) {
             double x1 = map.correctUnit(this.x - getVelStretchX()) - map.correctUnit(map.cameraX * parallax);
             double x2 = map.correctUnit(frames.get(getCurrentTick() + 1)[0] - getVelStretchX()) - map.correctUnit(map.cameraX * parallax);
-            x = Main.interpolate(x1, x2, fps/(Settings.getD("fps")), map.getCurrentTick()*fps/(Settings.getD("fps")) - (int) ((map.getCurrentTick()*fps)/Settings.getD("fps")));
+
+            x = Main.interpolate(x1, x2, 1,getCurrent());
         }
 
         return x;
+
+    }
+
+
+
+    private double getCurrent() {
+        double currentTick = (map.getCurrentTick()*fps/(Settings.getD("fps")) - (int) ((map.getCurrentTick()*fps)/Settings.getD("fps")));
+
+        currentTick = Math.min(1,currentTick);
+        currentTick = Math.max(0,currentTick);
+        return currentTick;
+
+
 
     }
 
@@ -141,7 +154,11 @@ public class ReplayPlayer extends GameEntity {
         if (getCurrentTick() < frames.size()-1) {
             double y1 = map.correctUnit(this.y - getVelStretchY()) - map.correctUnit(map.cameraY * parallax);
             double y2 = map.correctUnit(frames.get(getCurrentTick() + 1)[1] - getVelStretchY()) - map.correctUnit(map.cameraY * parallax);
-            y = Main.interpolate(y1, y2, fps/(Settings.getD("fps")), map.getCurrentTick()*fps/(Settings.getD("fps")) - (int) ((map.getCurrentTick()*fps)/Settings.getD("fps")));
+
+            y = Main.interpolate(y1, y2, 1
+                    , getCurrent());
+
+
         }
         return y;
 
@@ -156,10 +173,10 @@ public class ReplayPlayer extends GameEntity {
             double y = this.y;
             if (getCurrentTick() < frames.size() - 1) {
 
-                x = Main.interpolate(x, frames.get(getCurrentTick() + 1)[0], fps / (Settings.get("fps") * 1.0)
-                        , map.getCurrentTick() * fps / (Settings.getD("fps")) - (int) ((map.getCurrentTick() * fps) / Settings.getD("fps")));
-                y = Main.interpolate(y, frames.get(getCurrentTick() + 1)[1], fps / (Settings.get("fps") * 1.0)
-                        , map.getCurrentTick() * fps / (Settings.getD("fps")) - (int) ((map.getCurrentTick() * fps) / Settings.getD("fps")));
+                x = Main.interpolate(x, frames.get(getCurrentTick() + 1)[0], 1
+                        , getCurrent());
+                y = Main.interpolate(y, frames.get(getCurrentTick() + 1)[1], 1
+                        , getCurrent());
 
             }
             if (isReplay) {

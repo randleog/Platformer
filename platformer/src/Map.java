@@ -77,7 +77,7 @@ public class Map {
     private ArrayList<Integer[]> frames = new ArrayList<>();
 
     public Map(int sizeX, int sizeY, String name, boolean isReplay) {
-
+        Settings.put("speed", "1");
         finished = 0;
 
 
@@ -393,7 +393,10 @@ public class Map {
             entity.render(g);
         }
         for (GameEntity entity : entities) {
-            entity.render(g);
+            if (entity.getMainShape().intersect(new Square(cameraX, cameraY, g.getCanvas().getWidth(), g.getCanvas().getHeight(), 1, InputAction.Default))) {
+                entity.render(g);
+            }
+
         }
 
         //   g.restore();
@@ -410,7 +413,8 @@ public class Map {
 
         g.setFont(new Font(Main.correctUnit(25)));
         g.setFill(Color.color(1, 1, 1));
-        g.fillText("time: " + String.format("%.2f", currentTick * 1.0 /  Settings.getD("fps")), correctUnit(200), correctUnit(50));
+        g.fillText("possible fps: " + Main.possibleFps, correctUnit(25), correctUnit(50));
+        g.fillText("time: " + Main.formatTime(currentTick /  Settings.getD("fps")), correctUnit(350), correctUnit(50));
 
 
         if (!(Main.getKey(InputAction.Menu) > 0)) {

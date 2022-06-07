@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class SpeedrunBar extends MenuButton {
 
-    private static final int HEIGHT = 25;
+    private static final int HEIGHT = 20;
 
     private ArrayList<String[]> times = new ArrayList<>();
 
@@ -33,7 +33,7 @@ public class SpeedrunBar extends MenuButton {
             } else {
                 sign = "+";
             }
-            times.add(new String[]{replay.getName() + ", " + String.format("%.2f", replay.getTime()) + ", " + sign + String.format("%.2f", (replay.getTime() - ReplaySave.getReplay("full\\" + replay.getName()).getTime())), sign});
+            times.add(new String[]{replay.getName() + ", " + Main.formatTime(replay.getTime()) + ", " + sign + Main.formatTime((replay.getTime() - ReplaySave.getReplay("full\\" + replay.getName()).getTime())), sign});
         }
 
     }
@@ -80,9 +80,9 @@ public class SpeedrunBar extends MenuButton {
                     g.setFill(Color.RED);
                     sign = "+";
                 }
-                g.fillText(map.getName() + ", " + String.format("%.2f"
-                                , currentTime) + ", " + sign + String.format("%.2f"
-                                , (currentTime - oldTime)), Main.correctUnit(x + 5)
+                g.fillText(map.getName() + ", " + Main.formatTime(currentTime)
+                                + ", " + sign + Main.formatTime((currentTime - oldTime))
+                        , Main.correctUnit(x + 5)
                         , Main.correctUnit(y + height + HEIGHT + 20));
 
             }

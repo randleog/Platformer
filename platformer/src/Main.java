@@ -19,6 +19,8 @@ import javafx.util.Duration;
 import java.awt.*;
 
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -26,7 +28,9 @@ import java.util.Random;
 /**
  * the main class that launches the game
  * @todo: at personal best automatically launches the replay player with text that fades saying you beat your last time or the medal. a button to move on to the next level appears on the task bar
- * @version 0.0.5
+ * @todo: collision catching on side blocks fix
+ * @todo: level editor
+ * @version 0.0.6
  *
  * @author William Randle
  */
@@ -53,9 +57,7 @@ public class Main extends Application {
     private static double fpstime = 2;
     public static Map lastMap = null;
 
-
-
-
+    public static int possibleFps = 0;
 
 
 
@@ -87,6 +89,8 @@ public class Main extends Application {
 
 
     public static boolean loaded = false;
+
+    public static Square screen;
 
 
 
@@ -252,6 +256,9 @@ public class Main extends Application {
     }
 
 
+    private static int totalTime = 0;
+    private static int count = 0;
+
     public static void resetTimeline() {
         loop.stop();
 
@@ -260,14 +267,34 @@ public class Main extends Application {
 
 
         loop = new Timeline(new KeyFrame(Duration.millis(fpstime), (ActionEvent event) -> {
+            long time = System.nanoTime();
+
             tick();
             render(canvas.getGraphicsContext2D());
+
+            totalTime+=(int)((1000000000.0/(System.nanoTime()-time)));
+            count++;
+            if (count > Settings.get("fps")) {
+                possibleFps = totalTime/count;
+                count = 0;
+                totalTime = 0;
+            }
         }));
 
         loop.setCycleCount(Animation.INDEFINITE);
 
         loop.play();
 
+    }
+
+    public static String formatTime(double time) {
+
+
+
+
+        return String.format("%d:%02d:%.2f"
+                , (int)(time / 3600), (int)((time % 3600) / 60)
+                , (time % 60));
     }
 
 
