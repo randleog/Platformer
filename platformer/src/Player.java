@@ -17,10 +17,17 @@ public class Player extends GameEntity {
 
     private static final double CROUCH_GRAVITY = 2;
 
+    private static final double CLING_GRAVITY = 0.05;
+
 
     private static final double SPRINT_HEIGHT_FACTOR = 0.7;
 
+
+
+
     private static final double MAX_WALL_JUMP_FACTOR = 1.5;
+
+
 
     private boolean hooking = false;
 
@@ -48,11 +55,19 @@ public class Player extends GameEntity {
     @Override
     protected void gravity() {
 
+        double force = Map.GRAVITY;
+
         if (Main.isKeyDown(InputAction.Down)) {
-            velY += Map.GRAVITY*CROUCH_GRAVITY  / Settings.getD("fps");
-        } else {
-            velY += Map.GRAVITY / Settings.getD("fps");
+            force = force*CROUCH_GRAVITY  ;
         }
+
+        if (clinging) {
+            force = force*CLING_GRAVITY  ;
+        }
+
+        velY+=force/Settings.getD("fps");
+
+
 
 
     }
@@ -99,6 +114,61 @@ public class Player extends GameEntity {
         return sizeY * sizeBuff;
     }
 
+    @Override
+    public double getVelStretchY() {
+        if (clinging) {
+            return (Math.sqrt(Math.abs(velY)) - Math.sqrt(Math.abs(velX))) * SQUASH_FACTOR;
+        } else {
+            return super.getVelStretchY();
+        }
+
+    }
+
+
+    @Override
+    public double getVelStretchX() {
+
+        if (clinging) {
+            return (Math.sqrt(Math.abs(velX)) - Math.sqrt(Math.abs(velY))) * SQUASH_FACTOR-Math.sqrt(wallCling)*SQUASH_FACTOR;
+        } else {
+            return super.getVelStretchX();
+        }
+
+
+    }
+
+    public double getRenderX() {
+        double x = map.correctUnit(this.x - getVelStretchX()) - map.correctUnit(map.cameraX * parallax);
+
+
+        return x;
+
+    }
+
+
+    @Override
+    public double getRenderY() {
+
+        if (clinging) {
+            return map.correctUnit(wallHeight)- map.correctUnit(map.cameraY * parallax);
+        }
+
+        double y = map.correctUnit(this.y - getVelStretchY()) - map.correctUnit(map.cameraY * parallax);
+
+        return y;
+
+    }
+
+
+    @Override
+    public double getRenderSizeY() {
+        double sizeY = map.correctUnit(getSizeY() + getVelStretchY() * 2);
+
+        if (clinging) {
+            sizeY = sizeY+map.correctUnit(wallCling);
+        }
+        return sizeY;
+    }
 
     public boolean isHooking() {
         return hooking;
@@ -171,6 +241,12 @@ public class Player extends GameEntity {
 
             }
         }
+
+        if (stuck) {
+            currentDrag = currentDrag*STUCK_FACTOR;
+        }
+
+
 
         if (hasJumped) {
             Main.deactivateKey(InputAction.Up);

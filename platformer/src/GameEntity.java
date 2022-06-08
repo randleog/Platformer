@@ -34,7 +34,7 @@ public abstract class GameEntity {
     protected double parallax;
     private static final double DEFAULT_TILE_SIZE = 50;
 
-    private static final double SQUASH_FACTOR = 1.5;
+    protected static final double SQUASH_FACTOR = 1.5;
 
     private static final double WALL_CLING_FORCE = 8;
     private static final double WALL_CLING_RADIUS = 2;
@@ -76,6 +76,15 @@ public abstract class GameEntity {
     protected double startVelY;
 
 
+    protected double wallCling = 0;
+    protected double wallClingRadius = 30;
+    protected boolean clinging = false;
+
+    protected boolean stuck = false;
+
+    protected double wallHeight = 0;
+    protected static final double STUCK_FACTOR = 0.00000001;
+    private static final double WALL_FACTOR = 1;
     protected ArrayList<Square> hitbox = new ArrayList<>();
 
     GameEntity(double x, double y, Map map, InputAction action, FillType fillType, double parallax) {
@@ -147,8 +156,8 @@ public abstract class GameEntity {
     protected void loadWallHitbox() {
         hitbox = new ArrayList<>();
         hitbox.add(new Square(x + WALL_CORNER_SIZE, y, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Up));
-        hitbox.add(new Square(x + sizeX-1, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Right));
-        hitbox.add(new Square(x + WALL_CORNER_SIZE, y + sizeY - 1-WALL_CORNER_SIZE/2, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Down));
+        hitbox.add(new Square(x + sizeX - 1, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Right));
+        hitbox.add(new Square(x + WALL_CORNER_SIZE, y + sizeY - 1 - WALL_CORNER_SIZE / 2, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Down));
         hitbox.add(new Square(x, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Left));
 
     }
@@ -177,15 +186,30 @@ public abstract class GameEntity {
 
 
     protected void physics() {
+
         velX = velX + accelX / Settings.getD("fps");
         velY = velY + accelY / Settings.getD("fps");
+
+
+
         velX = velX * Math.pow(currentDrag, 1.0 / Settings.getD("fps"));
 
+
+
+        double vertDrag = Map.BASE_DRAG_Y;
+
         if (this instanceof Racer) {
-            velY = velY * Math.pow(currentDrag, 1.0 / Settings.getD("fps"));
-        } else {
-            velY = velY * Math.pow(Map.BASE_DRAG_Y, 1.0 / Settings.getD("fps"));
+            vertDrag = currentDrag;
+
+        } else if (stuck) {
+            vertDrag = Map.BASE_DRAG_Y*STUCK_FACTOR;
+
+        } else if (canRightJump || canLeftJump) {
+            vertDrag = Map.BASE_DRAG_Y*WALL_FACTOR;
+
         }
+        velY = velY * Math.pow(vertDrag, 1.0 / Settings.getD("fps"));
+
 
 
         x += (velX / Settings.getD("fps")) * SPEED_FACTOR;
@@ -255,7 +279,7 @@ public abstract class GameEntity {
 
         for (Square shape : hitbox) {
             if (shape.intersect(entity)) {
-               // shape.flag();
+                // shape.flag();
                 if (InputAction.isYType(shape.getAction())) {
                     return shape;
                 } else {
@@ -287,12 +311,24 @@ public abstract class GameEntity {
         if (map.getActions(this).contains(InputAction.Left)) {
             canLeftJump = true;
             velX += WALL_CLING_FORCE / Settings.getD("fps");
+        }else if (map.getActions(this).contains(InputAction.StickyLeft)) {
+            stuck = true;
+
+
         }
+
         x -= WALL_CLING_RADIUS * 2;
+
         if (map.getActions(this).contains(InputAction.Right)) {
             canRightJump = true;
             velX += -WALL_CLING_FORCE / Settings.getD("fps");
+        }else if (map.getActions(this).contains(InputAction.StickyRight)) {
+            stuck = true;
+
+
         }
+
+
         x += WALL_CLING_RADIUS;
 
 
@@ -301,7 +337,13 @@ public abstract class GameEntity {
             canJump = true;
 
 
+        } else if (map.getActions(this).contains(InputAction.StickyUp)) {
+            canJump = true;
+            stuck = true;
+
         }
+
+
         y -= WALL_CLING_RADIUS;
 
 
@@ -317,6 +359,8 @@ public abstract class GameEntity {
         if (rotationTicks > 0) {
             rotationTicks--;
         }
+
+        stuck = false;
 
         boolean hasGoneRight = false;
         boolean hasGoneUp = false;
@@ -337,9 +381,6 @@ public abstract class GameEntity {
             while (loop) {
 
 
-
-
-
                 numberOfCollisions++;
                 if (numberOfCollisions > MAX_COLLISIONS) {
 
@@ -350,20 +391,34 @@ public abstract class GameEntity {
                 }
                 InputAction action = entity.getAction();
 
-                if (action == InputAction.Left) {
+                if (InputAction.isLeftType(action)) {
+
+
+
                     if (hasGoneRight) {
+
+
+
                         intersectSquareUp(entity);
                     } else {
                         canLeftJump = true;
 
-                     intersectSquareLeft(entity);
+                        if (action == InputAction.StickyLeft) {
+                            stuck = true;
+                        }
+
+                        intersectSquareLeft(entity);
                     }
-                } else if (action == InputAction.Right) {
+                } else if (InputAction.isRightType(action)) {
                     hasGoneRight = true;
                     canRightJump = true;
 
+                    if (action == InputAction.StickyRight) {
+                        stuck = true;
+                    }
+
                     intersectSquareRight(entity);
-                } else if (action == InputAction.Up) {
+                } else if (InputAction.isUpType(action)) {
                     hasGoneUp = true;
 
                     if (this instanceof Player || this instanceof BasicEnemy) {
@@ -376,7 +431,7 @@ public abstract class GameEntity {
 
                     intersectSquareUp(entity);
 
-                } else if (action == InputAction.Down) {
+                } else if (InputAction.isDownType(action)) {
 
                     if (hasGoneUp) {
 
@@ -389,10 +444,19 @@ public abstract class GameEntity {
                     } else {
                         intersectSquareDown(entity);
                     }
+
+
+                    if (action == InputAction.StickyDown) {
+
+
+                        clinging = true;
+                        wallHeight = this.y;
+                    }
+
                 } else if (action == InputAction.Corner) {
 
 
-                    double rotation =  Math.toRadians(entity.getRotation());
+                    double rotation = Math.toRadians(entity.getRotation());
                     System.out.println(rotation);
                     canCornerJump = true;
                     lastRotation = cornerRotation;
@@ -413,13 +477,34 @@ public abstract class GameEntity {
                 }
                 entity = map.intersectionWall(this);
 
-             //   if (action == InputAction.Default) {
-               //     loop = false;
-              //  }
+                //   if (action == InputAction.Default) {
+                //     loop = false;
+                //  }
                 if (entity == null) {
                     loop = false;
                 }
 
+            }
+        }
+
+
+        if (clinging) {
+            this.y -= wallCling+Map.WALL_CORNER_SIZE / 2;
+            boolean stillStick = map.getActions(this).contains(InputAction.StickyDown);
+            this.y += wallCling+Map.WALL_CORNER_SIZE / 2;
+            if (stillStick) {
+
+                wallCling = this.y - wallHeight;
+                if (wallCling > wallClingRadius) {
+                    wallCling = 0;
+                    clinging = false;
+                }
+
+
+
+            } else {
+
+                clinging = false;
             }
         }
     }
@@ -461,7 +546,6 @@ public abstract class GameEntity {
     }
 
 
-
     public double getRenderRotation() {
         return Main.interpolate(cornerRotation, lastRotation, Settings.getD("fps") * ROTATE_TIME, rotationTicks);
     }
@@ -481,7 +565,6 @@ public abstract class GameEntity {
         double x = map.correctUnit(this.x - getVelStretchX()) - map.correctUnit(map.cameraX * parallax);
 
 
-
         return x;
 
     }
@@ -493,8 +576,6 @@ public abstract class GameEntity {
         return y;
 
     }
-
-
 
 
     public double getRenderSizeX() {
@@ -528,7 +609,7 @@ public abstract class GameEntity {
             }
         }
         for (Square shape : hitbox) {
-            shape.render(g, map.cameraX, map.cameraY, (Player)map.player);
+            shape.render(g, map.cameraX, map.cameraY, (Player) map.player);
         }
 
     }
@@ -568,7 +649,7 @@ public abstract class GameEntity {
 
 
     public Square getMainShape() {
-        return new Square(this.x,this.y,this.sizeX,getSizeY(),parallax,action);
+        return new Square(this.x, this.y, this.sizeX, getSizeY(), parallax, action);
     }
 
 
@@ -586,7 +667,5 @@ public abstract class GameEntity {
     }
 
 
-
-
-    }
+}
 

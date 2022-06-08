@@ -49,11 +49,49 @@ public enum InputAction {
             return "Reset";
         }
     },
+    StickyDown() {
+        public String toString() {
+            return "StickyDown";
+        }
+    },
+    StickyUp() {
+        public String toString() {
+            return "StickyDown";
+        }
+    },
+    StickyRight() {
+        public String toString() {
+            return "StickyDown";
+        }
+    },
+    StickyLeft() {
+        public String toString() {
+            return "StickyDown";
+        }
+    },
     Corner() {
         public String toString() {
             return "Corner";
         }
+
     };
+
+
+    public static boolean isRightType(InputAction action) {
+        return (action == InputAction.Right|| action == InputAction.StickyRight);
+    }
+    public static boolean isLeftType(InputAction action) {
+        return (action == InputAction.Left || action == InputAction.StickyLeft);
+    }
+
+    public static boolean isDownType(InputAction action) {
+        return (action == InputAction.Down || action == InputAction.StickyDown);
+    }
+
+    public static boolean isUpType(InputAction action) {
+        return (action == InputAction.Up|| action == InputAction.StickyUp);
+    }
+
 
     public static boolean isXType(InputAction action) {
         return(action == InputAction.Right || action == InputAction.Left || action == InputAction.Corner);

@@ -32,6 +32,8 @@ public class Map {
     public static final double AIR_DRAG = 0.4;
     public static final double GROUND_DRAG = 0.0001;
 
+
+
     private static final int CRASH_PARTICLE_COUNT = 10;
 
 

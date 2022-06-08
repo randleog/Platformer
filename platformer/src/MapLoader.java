@@ -74,6 +74,12 @@ public class MapLoader {
                         map.addWall(x, y, wallWidth, wallHeight, 1);
                         break;
                     }
+                    case "stickyWall" -> {
+                        int wallWidth = Integer.parseInt(line[3]);
+                        int wallHeight = Integer.parseInt(line[4]);
+                        map.addEntity(new StickyWall(x, y, map, wallWidth, wallHeight, InputAction.Default, FillType.Tile, 1));
+                        break;
+                    }
                     case "gate" -> {
                         int wallWidth = Integer.parseInt(line[3]);
                         int wallHeight = Integer.parseInt(line[4]);
