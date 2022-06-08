@@ -2,16 +2,19 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ReplaySave {
 
 
-    public static ArrayList<Integer[]> getFrames(String mapName) {
+    public static Replay getReplay(String mapName) {
         ArrayList<Integer[]> frames = new ArrayList<>();
 
         File file = new File("res\\replays\\" + mapName + ".txt");
+
+        String date = "";
 
         if (file.exists()) {
 
@@ -19,8 +22,13 @@ public class ReplaySave {
             try {
                 Scanner scanner = new Scanner(file);
 
+                String[] line = scanner.nextLine().split(" ");
+                frames.add(new Integer[]{Integer.parseInt(line[0]), 0});
+                date = line[1];
+
+
                 while (scanner.hasNextLine()) {
-                    String[] line = scanner.nextLine().split(" ");
+                    line = scanner.nextLine().split(" ");
 
                     frames.add(new Integer[]{Integer.parseInt(line[0]), Integer.parseInt(line[1])});
 
@@ -33,34 +41,44 @@ public class ReplaySave {
             }
         }
 
-        return frames;
+        String name = "";
+
+        if (mapName.contains("author")) {
+            name = Settings.AUTHOR_REPLAY;
+        } else if (mapName.contains("gold")) {
+            name = Settings.GOLD_REPLAY;
+        } else if (mapName.contains("full")) {
+            name = Settings.SPEEDRUN_REPLAY;
+        }else if (mapName.contains("last")) {
+            name = Settings.LAST_REPLAY;
+        }else if (mapName.contains("saves")) {
+            name = Settings.SAVE_REPLAY;
+        } else {
+            name = Settings.BEST_REPLAY;
+        }
+
+        return new Replay(frames, mapName, date, name);
 
 
     }
 
 
-    public static Replay getReplay(String mapName) {
-        return new Replay(getFrames(mapName), mapName);
 
-    }
+
 
     public static void saveReplay(ArrayList<Integer[]> frames, String mapName) {
+
         try {
 
-
-
-
             FileWriter writer = new FileWriter("res\\replays\\"+ mapName + ".txt");
-            String text = "";
-            for (Integer[] frame :frames) {
-                for (int i = 0; i < frame.length; i++) {
-                    text = text + frame[i] + " ";
+            String text = frames.get(0)[0] + " " +  LocalDate.now() + "\n";
+            for (int i = 1; i < frames.size(); i++) {
+                for (int j = 0; j < frames.get(i).length; j++) {
+                    text = text + frames.get(i)[j] + " ";
                 }
                 text = text + "\n";
             }
             writer.write(text);
-
-
 
             writer.close();
 

@@ -97,8 +97,6 @@ public class MenuTextField extends MenuButton {
                     break;
             }
 
-
-
             Main.lastKey = "";
             currentField = currentField + Main.lastKey;
         }
@@ -107,8 +105,6 @@ public class MenuTextField extends MenuButton {
 
 
     }
-
-
 
 
 
@@ -144,8 +140,6 @@ public class MenuTextField extends MenuButton {
 
 
             g.fillText(pos, Main.correctUnit(x), Main.correctUnit(y));
-
-
 
 
 

@@ -28,12 +28,12 @@ public class SpeedrunBar extends MenuButton {
         for (Replay replay : Main.currentFull) {
 
             String sign = "";
-            if (ReplaySave.getReplay("full\\" + replay.getName()).getTime() >= replay.getTime() || ReplaySave.getReplay("full\\" + replay.getName()).getTime() == -1) {
+            if (ReplaySave.getReplay("full\\" + replay.getMapName()).getTime() >= replay.getTime() || ReplaySave.getReplay("full\\" + replay.getMapName()).getTime() == -1) {
                 sign = "-";
             } else {
                 sign = "+";
             }
-            times.add(new String[]{replay.getName() + ", " + Main.formatTime(replay.getTime()) + ", " + sign + Main.formatTime((replay.getTime() - ReplaySave.getReplay("full\\" + replay.getName()).getTime())), sign});
+            times.add(new String[]{replay.getMapName() + ", " + Main.formatTime(replay.getTime()) + ", " + sign + Main.formatTime((replay.getTime() - ReplaySave.getReplay("full\\" + replay.getMapName()).getTime())), sign});
         }
 
     }

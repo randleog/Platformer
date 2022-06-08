@@ -4,22 +4,20 @@ import javafx.scene.text.Font;
 
 public class LevelButton extends MenuButton {
 
-    private static final int TICK_REFRESH = 200;
+
 
 
     private String name;
 
-    private int currentTick = 0;
+
     double timeBefore = 0;
 
-    private int celebrationTicks;
 
-    private static final int CELEBRATION_TIME = 2;
 
     public LevelButton(int x, int y, int width, int height, String name) {
         super(x, y, width, height, "level: " + name, TextType.normal);
         this.name = name;
-        celebrationTicks = 0;
+
         double time = UserFileHandler.getUserTime(name, 1);
         timeBefore = time;
         if (time == -1) {
@@ -30,30 +28,23 @@ public class LevelButton extends MenuButton {
 
     }
 
-    public void refreshTime() {
 
+
+    public LevelButton(String text, int x, int y, int width, int height, String name) {
+        super(x, y, width, height, text, TextType.normal);
+        this.name = name;
 
         double time = UserFileHandler.getUserTime(name, 1);
-        if (time < timeBefore) {
-            celebrationTicks = CELEBRATION_TIME * Settings.get("fps");
-        }
+        timeBefore = time;
 
-        if (time == -1) {
-            text = "level: " + name + "\nbest time: N/A";
-        } else {
-            text = "level: " + name + "\nbest time: " + String.format("%.2f", time);
-        }
+
     }
+
+
 
 
     public void tick() {
 
-        celebrationTicks = Math.max(celebrationTicks--, 0);
-
-        currentTick++;
-        if (currentTick == TICK_REFRESH) {
-            refreshTime();
-        }
         updateMouse();
 
         click();
@@ -108,8 +99,6 @@ public class LevelButton extends MenuButton {
         g.setFont(new Font(Settings.FONT,Main.correctUnit(25)));
         g.fillText(text, Main.correctUnit(x + 10), Main.correctUnit(y + height / 2.0));
 
-        if (celebrationTicks > 0) {
-            g.fillText("NEW PB!", Main.correctUnit(x + 10), Main.correctUnit(y + height / 2.0) - Main.correctUnit(height / 2.0));
-        }
+
     }
 }

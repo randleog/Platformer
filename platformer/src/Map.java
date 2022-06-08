@@ -3,7 +3,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 public class Map {
@@ -63,7 +65,7 @@ public class Map {
     GameEntity player = null;
 
 
-    public HashMap<String, Double> availableReplays = new HashMap<>();
+    public HashMap<String, Replay> availableReplays = new HashMap<>();
     private ArrayList<String> availableSpeeds = new ArrayList<>();
 
     private double speedButtonGap = 85;
@@ -85,6 +87,9 @@ public class Map {
         this.name = name;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
+
+
+
 
 
         frames.add(new Integer[]{Settings.get("fps"), 0});
@@ -130,19 +135,33 @@ public class Map {
 
 
             for (int i = 0; i < availableSpeeds.size(); i++) {
-                screenMenu.add(new SettingButton(25+(int)(i*speedButtonGap), 900, 75, 75, "speed", availableSpeeds.get(i), MenuButton.TextType.choice));
+                screenMenu.add(new SettingButton(25 + (int) (i * speedButtonGap), 900, 75, 75, "speed", availableSpeeds.get(i), MenuButton.TextType.choice));
             }
 
 
             ArrayList<String> replays = new ArrayList<>(availableReplays.keySet());
 
             for (int i = 0; i < replays.size(); i++) {
-                screenMenu.add(new ToggleButton(1400, (int)(50+i*replayButtonGap)
-                        , 100,100, "show", "hide", "show " + replays.get(i),  getReplayColor(replays.get(i))));
 
-                screenMenu.add(new MenuText(1400, (int)(35+i*replayButtonGap), replays.get(i) + ": " + Main.formatTime(availableReplays.get(replays.get(i))), 30, "time"));
 
-                screenMenu.add(new SettingButton(1650, (int)(50+i*replayButtonGap)
+                screenMenu.add(new MenuText(1400, (int) (35 + i * replayButtonGap)
+                        , replays.get(i) + ": ", 30, "time"));
+
+                screenMenu.add(new MenuText(1400, (int) (55 + i * replayButtonGap)
+                        , "time: " + Main.formatTime(availableReplays.get(replays.get(i)).getTime()), 15, "time"));
+
+                screenMenu.add(new MenuText(1400, (int) (70 + i * replayButtonGap)
+                        , "date: " + availableReplays.get(replays.get(i)).getDate(), 15, "time"));
+
+                screenMenu.add(new MenuText(1400, (int) (85 + i * replayButtonGap)
+                        , "fps: " + availableReplays.get(replays.get(i)).getFps(), 15, "time"));
+
+
+                screenMenu.add(new ToggleButton(1525, (int) (50 + i * replayButtonGap)
+                        , 100, 100, "show", "hide", "show " + replays.get(i), getReplayColor(replays.get(i))));
+
+
+                screenMenu.add(new SettingButton(1650, (int) (50 + i * replayButtonGap)
                         , 100, 100, "focus", replays.get(i), MenuButton.TextType.normal, getReplayColor(replays.get(i))));
             }
         }
@@ -163,12 +182,11 @@ public class Map {
         boolean isPb = isPb();
 
 
-
         if (!isReplay) {
 
 
             if (Settings.get("full speedrun") == 1) {
-                if (Replay.canProgress(Main.currentFull, getName())|| getName().equals("1")) {
+                if (Replay.canProgress(Main.currentFull, getName()) || getName().equals("1")) {
 
                     Main.currentFull.add(new Replay(frames, getName()));
                     System.out.println(Main.currentFull.size());
@@ -187,7 +205,6 @@ public class Map {
             }
 
 
-
             ReplaySave.saveReplay(frames, "last\\" + name);
 
             if (isPb) {
@@ -199,7 +216,7 @@ public class Map {
             Menu.switchMenu("levels");
         } else {
             String message = ((isPb) ? "New best time: " : "Map completed in: ") + Main.formatTime(getTime());
-            Main.victory(name,new MenuText(475,250, message, 50, "message"));
+            Main.victory(name, new MenuText(475, 250, message, 50, "message"));
         }
 
 
@@ -208,8 +225,6 @@ public class Map {
     public boolean isPb() {
         return UserFileHandler.getUserTime(name, 1) > getTime() || UserFileHandler.getUserTime(name, 1) == -1;
     }
-
-
 
 
     public boolean isRadius(double x, double y, double x2, double y2, double radius) {
@@ -271,7 +286,6 @@ public class Map {
     }
 
 
-
     public void addEntity(GameEntity entity) {
         entities.add(entity);
     }
@@ -301,7 +315,6 @@ public class Map {
         ReplaySave.saveReplay(frames, name);
 
 
-
     }
 
     public double getCurrentTick() {
@@ -313,16 +326,15 @@ public class Map {
         actualSpeed = Settings.getStrD("speed");
 
 
-            for (MenuButton button : screenMenu) {
-                if (availableSpeeds.contains(button.getText())) {
-                    if (Settings.get("playback speed") < 0) {
-                        button.setHideButton(true);
-                    } else {
-                        button.setHideButton(false);
-                    }
+        for (MenuButton button : screenMenu) {
+            if (availableSpeeds.contains(button.getText())) {
+                if (Settings.get("playback speed") < 0) {
+                    button.setHideButton(true);
+                } else {
+                    button.setHideButton(false);
                 }
             }
-
+        }
 
 
         if (Main.getKey(InputAction.Menu) > 0) {
@@ -332,7 +344,10 @@ public class Map {
             }
             //handle replay speed
             if (isReplay || Menu.currentlyMenu) {
+
                 currentTick += actualSpeed;
+
+
 
             } else {
 
@@ -355,7 +370,6 @@ public class Map {
             for (GameEntity entity : particles) {
                 entity.tick();
             }
-
 
 
             entities.addAll(nextEntities);
@@ -386,7 +400,7 @@ public class Map {
 
 
     public double getTime() {
-        return (currentTick ) / Settings.getD("fps");
+        return (currentTick) / Settings.getD("fps");
     }
 
     public String getName() {
@@ -395,8 +409,6 @@ public class Map {
 
 
     public void render(GraphicsContext g) {
-
-
 
 
         for (GameEntity entity : particles) {
@@ -424,7 +436,7 @@ public class Map {
         g.setFont(new Font(Settings.FONT, Main.correctUnit(25)));
         g.setFill(Color.color(1, 1, 1));
         g.fillText("possible fps: " + Main.possibleFps, correctUnit(25), correctUnit(50));
-        g.fillText("time: " + Main.formatTime(currentTick /  Settings.getD("fps")), correctUnit(350), correctUnit(50));
+        g.fillText("time: " + Main.formatTime(currentTick / Settings.getD("fps")), correctUnit(350), correctUnit(50));
 
 
         if (!(Main.getKey(InputAction.Menu) > 0)) {
@@ -436,9 +448,9 @@ public class Map {
             backButton.render(g);
 
             g.setFill(Color.color(1, 1, 1));
-            g.setFont(new Font(Settings.FONT,Main.correctUnit(40)));
+            g.setFont(new Font(Settings.FONT, Main.correctUnit(40)));
             g.fillText("Paused", correctUnit(100), correctUnit(200));
-            g.setFont(new Font(Settings.FONT,Main.correctUnit(25)));
+            g.setFont(new Font(Settings.FONT, Main.correctUnit(25)));
             String currentAction = "";
             currentAction = currentAction + getStringKey(InputAction.Up);
             currentAction = currentAction + getStringKey(InputAction.Sprint);
@@ -454,7 +466,7 @@ public class Map {
         if (isReplay) {
 
             g.setFill(Color.color(1, 1, 1));
-            g.setFont(new Font(Settings.FONT,Main.correctUnit(40)));
+            g.setFont(new Font(Settings.FONT, Main.correctUnit(40)));
             g.fillText("x" + String.format("%.2f", actualSpeed), correctUnit(225), correctUnit(825));
         }
 
@@ -463,8 +475,6 @@ public class Map {
     public ArrayList<GameEntity> getEntities() {
         return entities;
     }
-
-
 
 
     private String getStringKey(InputAction action) {
@@ -532,13 +542,10 @@ public class Map {
     public void addGate(int x, int y, int sizeX, int sizeY, double parallax, int code) {
 
 
-
         Gate wallImage = new Gate(x, y, this, sizeX, sizeY
                 , InputAction.Default, FillType.Tile, parallax, code);
 
         addEntity(wallImage);
-
-
 
 
     }

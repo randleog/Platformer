@@ -14,6 +14,8 @@ public class Settings {
     public static final String AUTHOR_REPLAY = "author";
     public static final String GOLD_REPLAY = "gold";
 
+    public static final String SAVE_REPLAY = "save";
+
     public static final String ANONYMOUS_NAME = "-";
 
 

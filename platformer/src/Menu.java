@@ -15,9 +15,35 @@ public class Menu {
     private static final double LOADING_TRANSITION_TIME = 1.5;
 
 
-    private static HashMap<String, ArrayList<MenuButton>> menus = new HashMap<>();
+    private static HashMap<String, Menu> menus = new HashMap<>();
 
     public static boolean currentlyMenu = true;
+
+
+    private String branch;
+    private ArrayList<MenuButton> buttons;
+
+
+    public Menu(ArrayList<MenuButton> buttons, String branch) {
+        this.branch = branch;
+        this.buttons = buttons;
+    }
+
+
+
+    public String getBranch() {
+        return branch;
+    }
+
+
+    public void setButtons(ArrayList<MenuButton> buttons) {
+        this.buttons = buttons;
+    }
+
+    public ArrayList<MenuButton> getbuttons() {
+        return buttons;
+    }
+
 
     public static void setCurrentMenu(String newMenu) {
 
@@ -61,8 +87,10 @@ public class Menu {
 
 
     private static void updateMessage (MenuButton message) {
-        ArrayList<MenuButton> buttons = menus.get(currentMenu);
+        ArrayList<MenuButton> buttons = menus.get(currentMenu).getbuttons();
         buttons.add(message);
+        menus.get(currentMenu).setButtons(buttons);
+
     }
 
     public static void switchMenu(String newMenu) {
@@ -91,7 +119,7 @@ public class Menu {
     }
 
     private static void updateTransition(String menu) {
-        for (MenuButton button : menus.get(menu)) {
+        for (MenuButton button : menus.get(menu).getbuttons()) {
             if (button instanceof MenuTransition) {
                 ((MenuTransition) button).loadImage(Main.getScreenshot());
             }else if (button instanceof  MenuZoomTransition) {
@@ -111,7 +139,7 @@ public class Menu {
         }
 
         if (menus.containsKey(currentMenu)) {
-            return menus.get(currentMenu);
+            return menus.get(currentMenu).getbuttons();
         } else {
             ArrayList<MenuButton> errorScreen = new ArrayList<>();
             errorScreen.add(new MenuText(600,575,"invalid menu screen",40,"main menu"));
@@ -143,7 +171,7 @@ public class Menu {
 
         mainMenu.add(new MenuText(BUTTON_GAP,100,"Platformer v" + Main.VERSION, 55, "Title"));
         mainMenu.add(new MenuTransition((Main.loaded) ? NORMAL_TRANSITION_TIME : LOADING_TRANSITION_TIME ));
-        menus.put("main", mainMenu);
+        menus.put("main", new Menu(mainMenu, "main"));
 
         loadLevelMenu();
         loadReplayMenu();
@@ -156,6 +184,8 @@ public class Menu {
 
 
     }
+
+
 
 
     private static void loadSettingsMenu() {
@@ -172,7 +202,7 @@ public class Menu {
         settingsMenu.add(new MenuText(900,100,"settings: ", 55, "Title"));
         settingsMenu.add(new MenuTransition(NORMAL_TRANSITION_TIME));
 
-        menus.put("settings", settingsMenu);
+        menus.put("settings", new Menu(settingsMenu, "main"));
     }
 
 
@@ -209,9 +239,10 @@ public class Menu {
             }
         }
         replayMenu.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back", "main"));
+
         replayMenu.add(new MenuText(900,100,"Replay Menu: ", 55, "Title"));
         replayMenu.add(new MenuTransition(NORMAL_TRANSITION_TIME));
-        menus.put("replays", replayMenu);
+        menus.put("replays", new Menu(replayMenu, "main"));
 
     }
 
@@ -238,19 +269,24 @@ public class Menu {
         stats.add(new MenuTransition(NORMAL_TRANSITION_TIME));
 
 
-        menus.put("stats", stats);
+        menus.put("stats", new Menu(stats, "main"));
 
     }
 
     private static void loadVictoryMenu() {
         ArrayList<MenuButton> stats = new ArrayList<>();
         stats.add(new SwitchMenuButton(350, 775, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "main"));
-
+        stats.add(new LevelButton("play again", 700, 775, BUTTON_WIDTH, BUTTON_HEIGHT, Main.mapName));
         stats.add(new MenuTransition(NORMAL_TRANSITION_TIME));
 
 
-        menus.put("victory", stats);
+        menus.put("victory", new Menu(stats, "levels"));
 
+    }
+
+
+    public static String getBranching() {
+        return menus.get(currentMenu).getBranch();
     }
 
 
@@ -265,7 +301,7 @@ public class Menu {
         stats.add(new MenuTransition(NORMAL_TRANSITION_TIME));
 
 
-        menus.put("name", stats);
+        menus.put("name", new Menu(stats, "main"));
 
     }
 
@@ -321,7 +357,7 @@ public class Menu {
         levelMenu.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back", "main"));
         levelMenu.add(new MenuText(475,55,"Levels Menu: ", 50, "Title"));
         levelMenu.add(new MenuTransition(NORMAL_TRANSITION_TIME));
-        menus.put("levels", levelMenu);
+        menus.put("levels", new Menu(levelMenu, "main"));
 
     }
 

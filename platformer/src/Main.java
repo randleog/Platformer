@@ -31,7 +31,7 @@ import java.util.Set;
  * @todo: at personal best automatically launches the replay player with text that fades saying you beat your last time or the medal. a button to move on to the next level appears on the task bar
  * @todo: collision catching on side blocks fix
  * @todo: level editor
- * @version 0.0.7
+ * @version 0.0.8
  *
  * @author William Randle
  */
@@ -40,12 +40,13 @@ public class Main extends Application {
 
 
 
+    public static String mapName = "-";
 
     public static final String IS_INT_REGEX = "^([+-]?[0-9]\\d*|0)$";
 
     public static int deaths = 0;
 
-    public static final String VERSION = "0.0.7";
+    public static final String VERSION = "0.0.8";
 
 
     public static boolean isVictory = false;
@@ -220,6 +221,8 @@ public class Main extends Application {
 
     }
 
+
+
     private static void renderLoadingStage(GraphicsContext g) {
 
         canvas.getGraphicsContext2D().fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -330,6 +333,7 @@ public class Main extends Application {
 
 
     public static void playMap(Map newMap) {
+        mapName = newMap.getName();
         Settings.put("focus", Settings.BEST_REPLAY);
         isVictory = false;
 
@@ -517,7 +521,7 @@ public class Main extends Application {
                     hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 2);
                 }
             } else {
-                Menu.switchMenu("main");
+                Menu.switchMenu(Menu.getBranching());
             }
         } else {
             hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 0);
