@@ -1,3 +1,5 @@
+import javafx.scene.paint.Color;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -55,6 +57,28 @@ public class Settings {
 
 
         return settings.getOrDefault(key, 0);
+    }
+
+
+    public static ArrayList<String> getReplays() {
+        ArrayList<String> replays = new ArrayList<>();
+        replays.add(AUTHOR_REPLAY);
+        replays.add(GOLD_REPLAY);
+        replays.add(BEST_REPLAY);
+        replays.add(LAST_REPLAY);
+        replays.add(SPEEDRUN_REPLAY);
+
+        return replays;
+    }
+
+
+    public static Color getReplayColor(String replay) {
+        return switch (replay) {
+            case Settings.LAST_REPLAY, Settings.BEST_REPLAY -> Color.color(0.6, 0, 1, 0.5);
+            case Settings.SPEEDRUN_REPLAY -> Color.color(0.9, 0.2, 0.4, 0.5);
+            case Settings.GOLD_REPLAY -> Color.color(1, 0.75, 0, 0.5);
+            default -> Color.color(0, 1, 0, 0.5);
+        };
     }
 
     public static double getD(String key) {

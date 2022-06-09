@@ -36,6 +36,11 @@ public abstract class MenuElement {
     protected double addY = 0;
     protected double addX = 0;
 
+    protected int mouseTicks = 0;
+    public static final double MAX_TIME = 0.15;
+
+    public static final double BUTTON_EXTEND = 0.25;
+
     public MenuElement(int x, int y, int width, int height, String text, TextType textType) {
         this.x = x;
         this.y = y;
@@ -70,7 +75,14 @@ public abstract class MenuElement {
         return Main.correctUnit(y+addY);
     }
     protected double getRenderX() {
-        return Main.correctUnit(x+addX);
+        double width = Main.interpolate(0,1, MAX_TIME, (mouseTicks*1.0/Settings.get("fps")))*BUTTON_EXTEND*this.width;
+        return Main.correctUnit(x+addX + ((x > Main.DEFAULT_WIDTH_MAP/2) ? -width : 0));
+    }
+
+    protected double getRenderWidth() {
+        double width = Main.interpolate(0,1, MAX_TIME, (mouseTicks*1.0/Settings.get("fps")))*BUTTON_EXTEND*this.width;
+
+        return Main.correctUnit(this.width + width);
     }
 
 
@@ -115,7 +127,16 @@ public abstract class MenuElement {
 
         this.text = text;
     }
+    protected void updateMouseTicks() {
+        if (mouseOver) {
+            mouseTicks++;
+            mouseTicks = (int)Math.min(mouseTicks, MAX_TIME*Settings.get("fps"));
+        } else {
+            mouseTicks--;
+            mouseTicks = Math.max(mouseTicks, 0);
+        }
 
+    }
 
     public abstract void tick();
 
@@ -130,7 +151,7 @@ public abstract class MenuElement {
         } else {
             g.setFill(Color.color(0, 0, 0, 0.5));
         }
-        g.fillRect(getRenderX(), getRenderY(), Main.correctUnit(width),Main.correctUnit(height));
+        g.fillRect(getRenderX(), getRenderY(), getRenderWidth(),Main.correctUnit(height));
         g.setFill(Color.WHITE);
 
 
@@ -148,17 +169,20 @@ public abstract class MenuElement {
 
 
     protected void updateMouse() {
+        updateMouseTicks();
         if (hideButton)  {
             return;
         }
         if (Main.mouseUsed) {
+            mouseOver = false;
             return;
         }
 
         mouseOver = (Main.mouseX > getRenderX()
-                && Main.mouseX < getRenderX() + Main.correctUnit(this.width)
+                && Main.mouseX < getRenderX() + getRenderWidth()
                 && Main.mouseY > getRenderY()
                 && Main.mouseY < getRenderY()+Main.correctUnit(this.height));
+
         if (mouseOver) {
             Main.mouseUsed = true;
         }

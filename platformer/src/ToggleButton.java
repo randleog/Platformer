@@ -66,7 +66,7 @@ public class ToggleButton extends MenuElement {
         } else {
 
             g.setFill(selectColor);
-            g.fillRect(getRenderX() + Main.correctUnit(insetWidth), getRenderY()+Main.correctUnit(insetWidth), Main.correctUnit(width-insetWidth*2),Main.correctUnit(height-insetWidth*2));
+            g.fillRect(getRenderX() + Main.correctUnit(insetWidth), getRenderY()+Main.correctUnit(insetWidth), getRenderWidth() -Main.correctUnit(insetWidth*2),Main.correctUnit(height-insetWidth*2));
 
         }
 

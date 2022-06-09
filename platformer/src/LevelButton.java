@@ -94,7 +94,7 @@ public class LevelButton extends MenuElement {
     @Override
     public void render(GraphicsContext g) {
         g.setFill(getCurrentColour());
-        g.fillRect(getRenderX(), getRenderY(), Main.correctUnit(width), Main.correctUnit(height));
+        g.fillRect(getRenderX(), getRenderY(), getRenderWidth(), Main.correctUnit(height));
         g.setFill(Color.WHITE);
         g.setFont(new Font(Settings.FONT,Main.correctUnit(25)));
         g.fillText(text, getRenderX()+ Main.correctUnit(10), getRenderY() +Main.correctUnit( height / 2.0));

@@ -19,19 +19,20 @@ import javafx.util.Duration;
 import java.awt.*;
 
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
 /**
  * the main class that launches the game
- * @todo: leaderboard for full speedrun ranking, then stats page button launches menu for previous records in all the categories: slider to show them
- * @todo: save times for individual users (last, best[and overall too], speedrun[and overall too])
- *
- * @todo: level editor
- * @version 0.0.8
  *
  * @author William Randle
+ * @version 0.0.8
+ * @todo: leaderboard for full speedrun ranking, then stats page button launches menu for previous records in all the categories: slider to show them
+ * @todo: save times for individual users (last, best[and overall too], speedrun[and overall too])
+ * @todo: level editor
  */
 public class Main extends Application {
 
@@ -71,9 +72,6 @@ public class Main extends Application {
     public static boolean mouseUsed = false;
 
 
-
-
-
     public static final double DEFAULT_WIDTH_MAP = 1800;
     public static final double DEFAULT_HEIGHT_MAP = 1100;
 
@@ -104,10 +102,7 @@ public class Main extends Application {
     public static Square screen;
 
 
-
-
-
-
+    private static boolean exit = false;
 
 
     public static ArrayList<Replay> currentFull;
@@ -188,7 +183,7 @@ public class Main extends Application {
 
 
         canvas.setOnScroll(scrollEvent -> {
-            totalScrolls+=scrollEvent.getDeltaY();
+            totalScrolls += scrollEvent.getDeltaY();
 
         });
 
@@ -197,7 +192,6 @@ public class Main extends Application {
 
 
         primaryStage.show();
-
 
 
         fpstime = 1000.0 / Settings.getD("fps");
@@ -213,9 +207,7 @@ public class Main extends Application {
         loop.play();
 
 
-
-        Menu.loadbuttons();
-
+        Menu.loadButtonsStart();
 
 
         Menu.switchMenu("main");
@@ -227,13 +219,16 @@ public class Main extends Application {
     }
 
 
+    public static String getCurrentTime() {
+        return LocalDate.now() + "|" + LocalTime.now().getHour() + ";" + LocalTime.now().getMinute();
+    }
 
     private static void renderLoadingStage(GraphicsContext g) {
 
         canvas.getGraphicsContext2D().fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        g.setFont(new Font(Settings.FONT,correctUnit(115)));
+        g.setFont(new Font(Settings.FONT, correctUnit(115)));
         g.setFill(Color.WHITE);
-        g.fillText("Loading...", canvas.getWidth()/2.8,canvas.getHeight()/2.5);
+        g.fillText("Loading...", canvas.getWidth() / 2.8, canvas.getHeight() / 2.5);
     }
 
     public static WritableImage getScreenshot() {
@@ -242,10 +237,13 @@ public class Main extends Application {
     }
 
 
-
-    public static void exit() {
-
+    private static void exit() {
         primaryStage.close();
+    }
+
+    public static void planExit() {
+        exit = true;
+
     }
 
     public static void victory(String name, MenuElement button) {
@@ -284,10 +282,13 @@ public class Main extends Application {
         mouseUsed = false;
 
 
-
-        gameUnit =  primaryStage.getHeight() /GAME_UNIT_SETTING  ;
+        gameUnit = primaryStage.getHeight() / GAME_UNIT_SETTING;
         if (!(currentMap == null)) {
             currentMap.tick();
+        }
+
+        if (exit) {
+            exit();
         }
 
 
@@ -310,10 +311,10 @@ public class Main extends Application {
             tick();
             render(canvas.getGraphicsContext2D());
 
-            totalTime+=(int)((1000000000.0/(System.nanoTime()-time)));
+            totalTime += (int) ((1000000000.0 / (System.nanoTime() - time)));
             count++;
             if (count > Settings.get("fps")) {
-                possibleFps = totalTime/count;
+                possibleFps = totalTime / count;
                 count = 0;
                 totalTime = 0;
             }
@@ -328,13 +329,21 @@ public class Main extends Application {
     public static String formatTime(double time) {
 
 
+        if (time < 60) {
+            return String.format("%.2f", (time % 60));
+        } else if (time < 3600) {
+            return String.format("%02d:%.2f", (int) ((time % 3600) / 60)
+                    , (time % 60));
 
 
-        return String.format("%d:%02d:%.2f"
-                , (int)(time / 3600), (int)((time % 3600) / 60)
-                , (time % 60));
+        } else {
+            return String.format("%d:%02d:%.2f"
+                    , (int) (time / 3600), (int) ((time % 3600) / 60)
+                    , (time % 60));
+        }
+
+
     }
-
 
 
     public static void playMap(Map newMap) {
@@ -342,11 +351,11 @@ public class Main extends Application {
         Settings.put("focus", Settings.BEST_REPLAY);
         isVictory = false;
 
-        deaths =0;
+        deaths = 0;
         resetTimeline();
 
 
-        if (Settings.get("full speedrun") ==1) {
+        if (Settings.get("full speedrun") == 1) {
 
 
             if (newMap.getName().equals("1")) {
@@ -366,7 +375,6 @@ public class Main extends Application {
         Menu.setCurrentMenu("");
 
 
-
     }
 
     public static void playDimension(Map newMap) {
@@ -376,7 +384,6 @@ public class Main extends Application {
         Menu.currentlyMenu = false;
         Menu.setCurrentMenu("");
     }
-
 
 
     public static void deactivateKey(InputAction action) {
@@ -412,7 +419,7 @@ public class Main extends Application {
         for (MenuElement button : Menu.getCurrentMenu()) {
             button.tick();
             if (button instanceof MenuText) {
-                MenuText menuText = (MenuText)button;
+                MenuText menuText = (MenuText) button;
 
                 if (menuText.getUpdateTag().equals("FPS")) {
                     menuText.setText("FPS: " + Settings.get("fps"));
@@ -423,7 +430,7 @@ public class Main extends Application {
             button.render(canvas.getGraphicsContext2D());
         }
         g.setFill(Color.BLACK);
-        canvas.getGraphicsContext2D().fillRect(primaryStage.getHeight()*EXPECTED_ASPECT_RATIO,0,primaryStage.getWidth(),primaryStage.getHeight());
+        canvas.getGraphicsContext2D().fillRect(primaryStage.getHeight() * EXPECTED_ASPECT_RATIO, 0, primaryStage.getWidth(), primaryStage.getHeight());
 
 
     }
@@ -500,7 +507,7 @@ public class Main extends Application {
 
     private static void keyDown(KeyCode code) {
         if (code == KeyCode.ESCAPE) {
-            if (!Menu.currentlyMenu && ! isVictory) {
+            if (!Menu.currentlyMenu && !isVictory) {
                 if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) == 2) {
                     hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 0);
                 } else if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) == 0) {
@@ -521,7 +528,7 @@ public class Main extends Application {
 
     private static void keyReleased(KeyCode code) {
         if (code == KeyCode.ESCAPE) {
-            if (!Menu.currentlyMenu && ! isVictory) {
+            if (!Menu.currentlyMenu && !isVictory) {
                 if (hashMap.get(inputMap.getOrDefault(code, InputAction.Default)) == 1) {
                     hashMap.put(inputMap.getOrDefault(code, InputAction.Default), 2);
                 }

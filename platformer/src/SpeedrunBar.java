@@ -81,6 +81,7 @@ public class SpeedrunBar extends MenuElement {
                     g.setFill(Color.RED);
                     sign = "+";
                 }
+
                 g.fillText(map.getName() + ", " + Main.formatTime(currentTime)
                                 + ", " + sign + Main.formatTime((currentTime - oldTime))
                         , getRenderX() + Main.correctUnit( 5)

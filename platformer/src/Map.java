@@ -160,23 +160,16 @@ public class Map {
 
 
                 screenMenu.add(new ToggleButton(1525, (int) (50 + i * replayButtonGap)
-                        , 100, 100, "show", "hide", "show " + replays.get(i), getReplayColor(replays.get(i))));
+                        , 100, 100, "show", "hide", "show " + replays.get(i), Settings.getReplayColor(replays.get(i))));
 
 
                 screenMenu.add(new SettingButton(1650, (int) (50 + i * replayButtonGap)
-                        , 100, 100, "focus", replays.get(i), MenuElement.TextType.normal, getReplayColor(replays.get(i))));
+                        , 100, 100, "focus", replays.get(i), MenuElement.TextType.normal, Settings.getReplayColor(replays.get(i))));
             }
         }
     }
 
-    private Color getReplayColor(String replay) {
-        return switch (replay) {
-            case Settings.LAST_REPLAY, Settings.BEST_REPLAY -> Color.color(0.6, 0, 1, 0.5);
-            case Settings.SPEEDRUN_REPLAY -> Color.color(0.9, 0.2, 0.4, 0.5);
-            case Settings.GOLD_REPLAY -> Color.color(1, 0.75, 0, 0.5);
-            default -> Color.color(0, 1, 0, 0.5);
-        };
-    }
+
 
     public void winGame() {
         Stats.add("total Time", getTime());
@@ -200,7 +193,7 @@ public class Map {
                             Replay.saveReplays(Main.currentFull);
                             System.out.println("congrats");
                         }
-                        String data = LocalDate.now() + "";
+                        String data = LocalDate.now() + "|" + Main.getCurrentTime();
 
                         for (Replay replay : Main.currentFull) {
                             data = data + "|" + Main.formatTime(replay.getTime());
@@ -218,12 +211,14 @@ public class Map {
             if (isPb) {
                 saveReplay();
             }
-            UserFileHandler.saveUserTime(name, getTime(), LocalDate.now() + "");
+            UserFileHandler.saveUserTime(name, getTime(), Main.getCurrentTime() );
         }
         if (Settings.get("full speedrun") == 1) {
+
             Menu.switchMenu("levels");
         } else {
             String message = ((isPb) ? "New best time: " : "Map completed in: ") + Main.formatTime(getTime());
+            Stats.add("total Finishes", 1);
             Main.victory(name, new MenuText(475, 250, message, 50, "message"));
         }
 

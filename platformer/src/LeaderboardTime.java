@@ -27,7 +27,7 @@ public class LeaderboardTime implements Comparable {
 
 
     public String toString() {
-        return name + " - " + Main.formatTime(time) + " " + getData();
+        return name + " - " + Main.formatTime(time) + " " + getData().replace("|", " ").replace(";",":");
     }
 
 

@@ -285,6 +285,30 @@ public class UserFileHandler {
     }
 
 
+
+
+
+
+/*
+    private static void saveUserTimeJson(String mapName, double time, String data) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("key", "solve");
+
+
+        jsonObject.put("solves", solvesJ);
+
+        try {
+            FileWriter file = new FileWriter("solves.json");
+            file.write(jsonObject.toJSONString());
+            file.close();
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        }
+    }
+    
+ */
+
     public static void saveUserTime(String mapName, double time, String data) {
         File file = new File("res\\userData\\levelTimes.txt");
         String text = "";

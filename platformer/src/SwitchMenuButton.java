@@ -11,9 +11,11 @@ public class SwitchMenuButton extends MenuElement {
 
 
 
+
     public void tick() {
 
         updateMouse();
+
 
         click();
 

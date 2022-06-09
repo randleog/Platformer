@@ -45,6 +45,10 @@ public class Replay {
        return new ArrayList<>(frames.subList(1,frames.size()-1));
     }
 
+    public ArrayList<Integer[]> getAllFrames() {
+        return frames;
+    }
+
 
 
     public String getName() {
@@ -102,7 +106,7 @@ public class Replay {
     public static void saveReplays(ArrayList<Replay> actual) {
 
         for (Replay replay : actual) {
-            ReplaySave.saveReplay(replay.getFrames(), "full\\" + replay.getMapName());
+            ReplaySave.saveReplay(replay.getAllFrames(), "full\\" + replay.getMapName());
         }
     }
 

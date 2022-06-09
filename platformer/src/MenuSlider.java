@@ -18,12 +18,16 @@ public class MenuSlider extends MenuElement {
 
     boolean vertical = false;
 
-    public MenuSlider(int x, int y, int width, int height, String text, String choice, int max, int min, boolean vertical) {
+    private boolean hideText = false;
+
+    public MenuSlider(int x, int y, int width, int height, String text, String choice, int max, int min, boolean vertical, boolean hideText) {
         super(x, y, width, height, text, TextType.normal);
 
         this.max = max;
         this.min = min;
         fontSize = width;
+        this.hideText = hideText;
+
         this.choice = choice;
 
         currentFactor = (Settings.get(choice) * 1.0) / (max - min);
@@ -61,6 +65,25 @@ public class MenuSlider extends MenuElement {
         boolean changeMouse = false;
         if (mouseOver) {
             changeMouse = true;
+        }
+
+        if (vertical) {
+            if (Main.totalScrolls != 0) {
+                currentVal = currentVal - Main.totalScrolls;
+
+                currentVal = Math.min(max, currentVal);
+                currentVal = Math.max(min, currentVal);
+
+                Main.totalScrolls = 0;
+
+
+                Settings.put(choice, currentVal);
+                currentFactor = (currentVal - min * 1.0) / (max - min);
+
+
+
+
+            }
         }
 
         updateMouse();
@@ -130,12 +153,14 @@ public class MenuSlider extends MenuElement {
             g.fillRect(getRenderX(), getRenderY(), Main.correctUnit(width), Main.correctUnit(currentFactor * height));
         } else {
             g.fillRect(getRenderX(), getRenderY(), Main.correctUnit(currentFactor * width), Main.correctUnit(height));
-            g.setFill(Color.WHITE);
-            g.fillText(text + " " + currentVal + ((currentVal == recommendedValue) ? " (recommended)" : "")
-                    ,getRenderX()+Main.correctUnit( width / 3.0), getRenderY() + Main.correctUnit(height / 2.0));
+
 
         }
-
+        if (!hideText) {
+            g.setFill(Color.WHITE);
+            g.fillText(text + " " + currentVal + ((currentVal == recommendedValue) ? " (recommended)" : "")
+                    , getRenderX() + Main.correctUnit(width / 3.0), getRenderY() + Main.correctUnit(height / 2.0));
+        }
 
     }
 }

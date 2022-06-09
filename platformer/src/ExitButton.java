@@ -25,7 +25,7 @@ public class ExitButton extends MenuElement {
     private void click() {
         if (Main.mouseDown && mouseOver) {
             Main.mouseDown = false;
-            Main.exit();
+            Main.planExit();
         }
     }
 }
