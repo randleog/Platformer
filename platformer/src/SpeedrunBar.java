@@ -83,7 +83,7 @@ public class SpeedrunBar extends MenuElement {
                 }
                 g.fillText(map.getName() + ", " + Main.formatTime(currentTime)
                                 + ", " + sign + Main.formatTime((currentTime - oldTime))
-                        , Main.correctUnit(x + 5)
+                        , getRenderX() + Main.correctUnit( 5)
                         , getRenderY()+Main.correctUnit( height + HEIGHT + 20));
 
             }

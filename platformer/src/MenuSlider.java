@@ -84,9 +84,19 @@ public class MenuSlider extends MenuElement {
             int newVal;
 
             if (vertical) {
+                if (Main.totalScrolls !=0) {
+                    currentVal = currentVal - Main.totalScrolls;
+                    Main.totalScrolls = 0;
+
+
+
+                    Settings.put(choice, currentVal);
+                    currentFactor = (currentVal - min * 1.0) / (max - min);
+
+                }
                 newVal = min + (int) (((Main.mouseY - getRenderY()) / Main.correctUnit((this.height))) * (max - min));
             } else {
-                newVal = min + (int) (((Main.mouseX - Main.correctUnit(x)) / Main.correctUnit((this.width))) * (max - min));
+                newVal = min + (int) (((Main.mouseX - getRenderX()) / Main.correctUnit((this.width))) * (max - min));
             }
 
             newVal = Math.max(newVal, min);
@@ -111,16 +121,18 @@ public class MenuSlider extends MenuElement {
         } else {
             g.setFill(Color.color(0, 0, 0, 0.5));
         }
-        g.fillRect(Main.correctUnit(x - insetWidth), Main.correctUnit(y - insetWidth), Main.correctUnit(width + insetWidth * 2), Main.correctUnit(height + insetWidth * 2));
+        g.fillRect(getRenderX()-Main.correctUnit(insetWidth), Main.correctUnit(y - insetWidth)
+                , Main.correctUnit(width + insetWidth * 2), Main.correctUnit(height + insetWidth * 2));
 
         g.setFill(Color.color(0, 1, 0, 0.5));
 
         if (vertical) {
-            g.fillRect(Main.correctUnit(x), getRenderY(), Main.correctUnit(width), Main.correctUnit(currentFactor * height));
+            g.fillRect(getRenderX(), getRenderY(), Main.correctUnit(width), Main.correctUnit(currentFactor * height));
         } else {
-            g.fillRect(Main.correctUnit(x), getRenderY(), Main.correctUnit(currentFactor * width), Main.correctUnit(height));
+            g.fillRect(getRenderX(), getRenderY(), Main.correctUnit(currentFactor * width), Main.correctUnit(height));
             g.setFill(Color.WHITE);
-            g.fillText(text + " " + currentVal + ((currentVal == recommendedValue) ? " (recommended)" : ""), Main.correctUnit(x + width / 3.0), getRenderY() + Main.correctUnit(height / 2.0));
+            g.fillText(text + " " + currentVal + ((currentVal == recommendedValue) ? " (recommended)" : "")
+                    ,getRenderX()+Main.correctUnit( width / 3.0), getRenderY() + Main.correctUnit(height / 2.0));
 
         }
 

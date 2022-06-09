@@ -34,7 +34,7 @@ public abstract class MenuElement {
     protected boolean hideButton;
 
     protected double addY = 0;
-
+    protected double addX = 0;
 
     public MenuElement(int x, int y, int width, int height, String text, TextType textType) {
         this.x = x;
@@ -53,6 +53,10 @@ public abstract class MenuElement {
         this.addY = addY;
     }
 
+    public void setAddX(double addX) {
+        this.addX = addX;
+    }
+
 
     public double getX() {
         return x;
@@ -65,6 +69,10 @@ public abstract class MenuElement {
     protected double getRenderY() {
         return Main.correctUnit(y+addY);
     }
+    protected double getRenderX() {
+        return Main.correctUnit(x+addX);
+    }
+
 
     public double getWidth() {
         return width;
@@ -122,7 +130,7 @@ public abstract class MenuElement {
         } else {
             g.setFill(Color.color(0, 0, 0, 0.5));
         }
-        g.fillRect(Main.correctUnit(x), getRenderY(), Main.correctUnit(width),Main.correctUnit(height));
+        g.fillRect(getRenderX(), getRenderY(), Main.correctUnit(width),Main.correctUnit(height));
         g.setFill(Color.WHITE);
 
 
@@ -133,7 +141,7 @@ public abstract class MenuElement {
 
         if (!(textType == TextType.hide)) {
             g.setFont(new Font(Settings.FONT,Main.correctUnit(25)));
-            g.fillText(text, Main.correctUnit(x + 20), getRenderY()  +Main.correctUnit( + height / 2.0));
+            g.fillText(text, getRenderX() + Main.correctUnit( + 20), getRenderY()  +Main.correctUnit( + height / 2.0));
         }
     }
 
@@ -143,11 +151,17 @@ public abstract class MenuElement {
         if (hideButton)  {
             return;
         }
+        if (Main.mouseUsed) {
+            return;
+        }
 
-        mouseOver = (Main.mouseX > Main.correctUnit(this.x)
-                && Main.mouseX < Main.correctUnit(this.x+this.width)
+        mouseOver = (Main.mouseX > getRenderX()
+                && Main.mouseX < getRenderX() + Main.correctUnit(this.width)
                 && Main.mouseY > getRenderY()
                 && Main.mouseY < getRenderY()+Main.correctUnit(this.height));
+        if (mouseOver) {
+            Main.mouseUsed = true;
+        }
 
     }
 

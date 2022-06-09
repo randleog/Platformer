@@ -1,5 +1,5 @@
-total_Deaths 19
+total_Deaths 22
 total_Resets 0
-total_Time 191478
-total_Jumps 4254
+total_Time 210128
+total_Jumps 4646
 total_Finishes 0

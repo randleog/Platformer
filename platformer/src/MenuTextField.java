@@ -116,7 +116,7 @@ public class MenuTextField extends MenuElement {
 
             g.setFill(Color.WHITE);
             g.setFont(new Font("Monospaced Regular",Main.correctUnit(50)));
-            g.fillText(currentField, Main.correctUnit(x), getRenderY());
+            g.fillText(currentField, getRenderX(), getRenderY());
 
 
 
@@ -139,7 +139,7 @@ public class MenuTextField extends MenuElement {
             }
 
 
-            g.fillText(pos, Main.correctUnit(x), getRenderY());
+            g.fillText(pos, getRenderX(), getRenderY());
 
 
 

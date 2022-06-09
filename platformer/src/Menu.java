@@ -379,7 +379,7 @@ public class Menu {
         elements.add(new MenuText(5,75, name.replace("full", "speedrun") + " leaderboard: ", 50));
 
 
-        elements.add(new ScrollMenu(50, 150, 750, 600, loadLeaderboardTimes(name), name + " leaderboard scroll"));
+        elements.add(new ScrollMenu(50, 150, 700, 500, loadLeaderboardTimes(name), name + " leaderboard scroll"));
 
 
         menus.put(name + " leaderboard",new Menu(elements, "stats"));
@@ -391,7 +391,7 @@ public class Menu {
 
         int total = UserFileHandler.getLeaderboardSize(name);
         for (int i = 1; i < total+1; i++) {
-            elements.add(new MenuText(5,0+i*40, i  + ": " + LeaderboardTime.constructTime(UserFileHandler.getUserTime(name, i)).toString(), 35));
+            elements.add(new MenuText(5,0+i*40, i  + ": " + LeaderboardTime.constructTime(UserFileHandler.getUserTime(name, i)).toString(), 30, "d", "Monospaced Regular"));
         }
 
 

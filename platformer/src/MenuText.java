@@ -38,6 +38,12 @@ public class MenuText extends MenuElement {
 
     }
 
+    @Override
+    public double getWidth() {
+
+        return this.text.length()*size;
+    }
+
 
     public String getUpdateTag() {
         return updateTag;
@@ -53,7 +59,7 @@ public class MenuText extends MenuElement {
 
         g.setFill(Color.WHITE);
         g.setFont(new Font(font,Main.correctUnit(size)));
-        g.fillText(text, Main.correctUnit(x), getRenderY());
+        g.fillText(text, getRenderX(), getRenderY());
     }
 
 

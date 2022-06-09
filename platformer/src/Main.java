@@ -68,6 +68,9 @@ public class Main extends Application {
     public static int possibleFps = 0;
 
 
+    public static boolean mouseUsed = false;
+
+
 
 
 
@@ -186,7 +189,7 @@ public class Main extends Application {
 
         canvas.setOnScroll(scrollEvent -> {
             totalScrolls+=scrollEvent.getDeltaY();
-            System.out.println(totalScrolls);
+
         });
 
         primaryStage.setFullScreen(true);
@@ -278,7 +281,7 @@ public class Main extends Application {
 
 
     private static void tick() {
-
+        mouseUsed = false;
 
 
 

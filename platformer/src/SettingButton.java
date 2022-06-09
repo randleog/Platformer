@@ -53,7 +53,7 @@ public class SettingButton extends MenuElement {
         }
         if (Settings.getStr(key).equals(choice)) {
             g.setFill(selectColor);
-            g.fillRect(Main.correctUnit(x+insetWidth), getRenderY()+Main.correctUnit(insetWidth), Main.correctUnit(width-insetWidth*2),Main.correctUnit(height-insetWidth*2));
+            g.fillRect(getRenderX() + Main.correctUnit(insetWidth), getRenderY()+Main.correctUnit(insetWidth), Main.correctUnit(width-insetWidth*2),Main.correctUnit(height-insetWidth*2));
         }
 
 

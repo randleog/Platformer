@@ -45,7 +45,7 @@ public class MenuZoomTransition extends MenuElement {
             return;
         }
 
-        double x = Main.interpolate(0,Main.correctUnit(this.x),time*Settings.get("fps"), currentTick);
+        double x = Main.interpolate(0,getRenderX(),time*Settings.get("fps"), currentTick);
         double y = Main.interpolate(0,getRenderY(),time*Settings.get("fps"), currentTick);
 
         double width = Main.interpolate(0,g.getCanvas().getWidth(),time*Settings.get("fps"), currentTick);
