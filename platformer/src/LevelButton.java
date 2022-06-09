@@ -2,7 +2,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-public class LevelButton extends MenuButton {
+public class LevelButton extends MenuElement {
 
 
 
@@ -18,7 +18,7 @@ public class LevelButton extends MenuButton {
         super(x, y, width, height, "level: " + name, TextType.normal);
         this.name = name;
 
-        double time = UserFileHandler.getUserTime(name, 1);
+        double time = UserFileHandler.getTime(name, 1);
         timeBefore = time;
         if (time == -1) {
             text = text + "\nbest time: N/A";
@@ -34,7 +34,7 @@ public class LevelButton extends MenuButton {
         super(x, y, width, height, text, TextType.normal);
         this.name = name;
 
-        double time = UserFileHandler.getUserTime(name, 1);
+        double time = UserFileHandler.getTime(name, 1);
         timeBefore = time;
 
 
@@ -94,10 +94,10 @@ public class LevelButton extends MenuButton {
     @Override
     public void render(GraphicsContext g) {
         g.setFill(getCurrentColour());
-        g.fillRect(Main.correctUnit(x), Main.correctUnit(y), Main.correctUnit(width), Main.correctUnit(height));
+        g.fillRect(Main.correctUnit(x), getRenderY(), Main.correctUnit(width), Main.correctUnit(height));
         g.setFill(Color.WHITE);
         g.setFont(new Font(Settings.FONT,Main.correctUnit(25)));
-        g.fillText(text, Main.correctUnit(x + 10), Main.correctUnit(y + height / 2.0));
+        g.fillText(text, Main.correctUnit(x + 10), getRenderY() +Main.correctUnit( height / 2.0));
 
 
     }

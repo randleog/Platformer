@@ -113,9 +113,8 @@ public class Replay {
 
 
         for (Replay replay : actual) {
-            int fps = replay.getFrames().get(0)[0];
 
-            time = time + ((replay.getFrames().size()-1)*1.0)/fps;
+            time = time + replay.getTime();
         }
 
 

@@ -4,7 +4,7 @@ import javafx.scene.text.Font;
 
 import java.util.ArrayList;
 
-public class SpeedrunBar extends MenuButton {
+public class SpeedrunBar extends MenuElement {
 
     private static final int HEIGHT = 20;
 
@@ -33,7 +33,8 @@ public class SpeedrunBar extends MenuButton {
             } else {
                 sign = "+";
             }
-            times.add(new String[]{replay.getMapName() + ", " + Main.formatTime(replay.getTime()) + ", " + sign + Main.formatTime((replay.getTime() - ReplaySave.getReplay("full\\" + replay.getMapName()).getTime())), sign});
+            times.add(new String[]{replay.getMapName() + ", " + Main.formatTime(replay.getTime()) + ", "
+                    + sign + Main.formatTime((replay.getTime() - ReplaySave.getReplay("full\\" + replay.getMapName()).getTime())), sign});
         }
 
     }
@@ -49,12 +50,12 @@ public class SpeedrunBar extends MenuButton {
 
 
             g.setFill(Color.color(0, 0, 0, 0.5));
-            g.fillRect(Main.correctUnit(x), Main.correctUnit(y), Main.correctUnit(width), Main.correctUnit(height));
+            g.fillRect(Main.correctUnit(x), getRenderY(), Main.correctUnit(width), Main.correctUnit(height));
 
 
             g.setFill(Color.WHITE);
             g.setFont(new Font(Settings.FONT,Main.correctUnit(HEIGHT)));
-            g.fillText("full speedrun progress", Main.correctUnit(x + 5), Main.correctUnit(y + 20));
+            g.fillText("full speedrun progress", Main.correctUnit(x + 5), getRenderY()+Main.correctUnit( 20));
 
             int height = 0;
             for (String[] line : times) {
@@ -66,7 +67,7 @@ public class SpeedrunBar extends MenuButton {
                     g.setFill(Color.RED);
 
                 }
-                g.fillText(line[0], Main.correctUnit(x + 5), Main.correctUnit(y + height + HEIGHT + 20));
+                g.fillText(line[0], Main.correctUnit(x + 5), getRenderY()+Main.correctUnit( height + HEIGHT + 20));
                 height += HEIGHT;
             }
 
@@ -83,7 +84,7 @@ public class SpeedrunBar extends MenuButton {
                 g.fillText(map.getName() + ", " + Main.formatTime(currentTime)
                                 + ", " + sign + Main.formatTime((currentTime - oldTime))
                         , Main.correctUnit(x + 5)
-                        , Main.correctUnit(y + height + HEIGHT + 20));
+                        , getRenderY()+Main.correctUnit( height + HEIGHT + 20));
 
             }
         }

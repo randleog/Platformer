@@ -149,13 +149,13 @@ public class MapLoader {
 
             if ((new File("res\\replays\\gold\\" + mapName + ".txt").exists())) {
                 if ((new File("res\\replays\\" + mapName + ".txt").exists())) {
-                    if (UserFileHandler.getUserTime(mapName, 1) < (ReplaySave.getReplay("gold\\" + mapName).getTime())) {
+                    if (UserFileHandler.getTime(mapName, 1) < (ReplaySave.getReplay("gold\\" + mapName).getTime())) {
 
                         if ((new File("res\\replays\\author\\" + mapName + ".txt").exists())) {
 
                             map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getReplay("author\\" + mapName), isReplay,  Settings.AUTHOR_REPLAY));
 
-                            if (UserFileHandler.getUserTime(mapName, 1) < (ReplaySave.getReplay("author\\" + mapName).getTime())) {
+                            if (UserFileHandler.getTime(mapName, 1) < (ReplaySave.getReplay("author\\" + mapName).getTime())) {
                                 map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getReplay("gold\\" + mapName), isReplay,  Settings.GOLD_REPLAY));
                             }
                         }

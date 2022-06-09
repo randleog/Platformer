@@ -19,7 +19,7 @@ public class Settings {
     public static final String ANONYMOUS_NAME = "-";
 
 
-    public static final int MAX_NAME_LENGTH = 21;
+    public static final int MAX_NAME_LENGTH = 16;
 
     public static final String FONT = "system";
 
@@ -50,7 +50,11 @@ public class Settings {
 
 
     public static Integer get(String key) {
-        return settings.get(key);
+
+
+
+
+        return settings.getOrDefault(key, 0);
     }
 
     public static double getD(String key) {
@@ -121,6 +125,11 @@ public class Settings {
         put("show " + BEST_REPLAY, 1);
         put("show " + SPEEDRUN_REPLAY, 1);
         put("show " + LAST_REPLAY, 1);
+
+
+        put("leaderboard scroll", 0);
+
+
         load();
 
 

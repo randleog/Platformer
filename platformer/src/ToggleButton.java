@@ -1,8 +1,7 @@
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 
-public class ToggleButton extends MenuButton {
+public class ToggleButton extends MenuElement {
 
     private Color selectColor;
 
@@ -67,7 +66,7 @@ public class ToggleButton extends MenuButton {
         } else {
 
             g.setFill(selectColor);
-            g.fillRect(Main.correctUnit(x+insetWidth), Main.correctUnit(y+insetWidth), Main.correctUnit(width-insetWidth*2),Main.correctUnit(height-insetWidth*2));
+            g.fillRect(Main.correctUnit(x+insetWidth), getRenderY()+Main.correctUnit(insetWidth), Main.correctUnit(width-insetWidth*2),Main.correctUnit(height-insetWidth*2));
 
         }
 

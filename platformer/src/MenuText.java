@@ -2,7 +2,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-public class MenuText extends MenuButton {
+public class MenuText extends MenuElement {
 
 
 
@@ -12,6 +12,15 @@ public class MenuText extends MenuButton {
     private String font = Settings.FONT;
 
     private String updateTag;
+
+    public MenuText(int x, int y, String text, int size) {
+        super(x,y,1,1, text, TextType.normal);
+        this.updateTag = "none";
+        this.size = size;
+
+
+    }
+
 
     public MenuText(int x, int y, String text, int size, String updateTag) {
         super(x,y,1,1, text, TextType.normal);
@@ -44,7 +53,7 @@ public class MenuText extends MenuButton {
 
         g.setFill(Color.WHITE);
         g.setFont(new Font(font,Main.correctUnit(size)));
-        g.fillText(text, Main.correctUnit(x), Main.correctUnit(y));
+        g.fillText(text, Main.correctUnit(x), getRenderY());
     }
 
 

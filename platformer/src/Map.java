@@ -4,8 +4,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 public class Map {
@@ -40,14 +40,14 @@ public class Map {
     private boolean isReplay;
 
 
-    private MenuButton backButton;
+    private MenuElement backButton;
 
 
     public static final double BASE_DRAG_Y = 0.5;
 
     protected HashMap<Integer, Boolean> keys = new HashMap<>();
 
-    private ArrayList<MenuButton> screenMenu = new ArrayList<>();
+    private ArrayList<MenuElement> screenMenu = new ArrayList<>();
 
 
     protected double cameraX = 0;
@@ -137,7 +137,7 @@ public class Map {
 
 
             for (int i = 0; i < availableSpeeds.size(); i++) {
-                screenMenu.add(new SettingButton(25 + (int) (i * speedButtonGap), 900, 75, 75, "speed", availableSpeeds.get(i), MenuButton.TextType.choice));
+                screenMenu.add(new SettingButton(25 + (int) (i * speedButtonGap), 900, 75, 75, "speed", availableSpeeds.get(i), MenuElement.TextType.choice));
             }
 
 
@@ -146,16 +146,16 @@ public class Map {
             for (int i = 0; i < replays.size(); i++) {
 
 
-                screenMenu.add(new MenuText(1400, (int) (35 + i * replayButtonGap)
+                screenMenu.add(new MenuText(1400, (int) (65 + i * replayButtonGap)
                         , replays.get(i) + ": ", 30, "time"));
 
-                screenMenu.add(new MenuText(1400, (int) (55 + i * replayButtonGap)
+                screenMenu.add(new MenuText(1400, (int) (85 + i * replayButtonGap)
                         , "time: " + Main.formatTime(availableReplays.get(replays.get(i)).getTime()), 15, "time"));
 
-                screenMenu.add(new MenuText(1400, (int) (70 + i * replayButtonGap)
+                screenMenu.add(new MenuText(1400, (int) (100 + i * replayButtonGap)
                         , "date: " + availableReplays.get(replays.get(i)).getDate(), 15, "time"));
 
-                screenMenu.add(new MenuText(1400, (int) (85 + i * replayButtonGap)
+                screenMenu.add(new MenuText(1400, (int) (115 + i * replayButtonGap)
                         , "fps: " + availableReplays.get(replays.get(i)).getFps(), 15, "time"));
 
 
@@ -164,7 +164,7 @@ public class Map {
 
 
                 screenMenu.add(new SettingButton(1650, (int) (50 + i * replayButtonGap)
-                        , 100, 100, "focus", replays.get(i), MenuButton.TextType.normal, getReplayColor(replays.get(i))));
+                        , 100, 100, "focus", replays.get(i), MenuElement.TextType.normal, getReplayColor(replays.get(i))));
             }
         }
     }
@@ -195,12 +195,18 @@ public class Map {
 
                     if (getName().equals(Integer.toString(Main.lastLevel))) {
 
-                        if (UserFileHandler.getUserTime("full", 1) > Replay.getTime(Main.currentFull) || UserFileHandler.getUserTime("full", 1) == -1) {
+                        if (UserFileHandler.getTime("full", 1) > Replay.getTime(Main.currentFull) || UserFileHandler.getTime("full", 1) == -1) {
 
                             Replay.saveReplays(Main.currentFull);
                             System.out.println("congrats");
                         }
-                        UserFileHandler.saveUserTime("full", Replay.getTime(Main.currentFull));
+                        String data = LocalDate.now() + "";
+
+                        for (Replay replay : Main.currentFull) {
+                            data = data + "|" + Main.formatTime(replay.getTime());
+                        }
+
+                        UserFileHandler.saveUserTime("full", Replay.getTime(Main.currentFull), data);
 
                     }
                 }
@@ -212,7 +218,7 @@ public class Map {
             if (isPb) {
                 saveReplay();
             }
-            UserFileHandler.saveUserTime(name, getTime());
+            UserFileHandler.saveUserTime(name, getTime(), LocalDate.now() + "");
         }
         if (Settings.get("full speedrun") == 1) {
             Menu.switchMenu("levels");
@@ -225,7 +231,7 @@ public class Map {
     }
 
     public boolean isPb() {
-        return UserFileHandler.getUserTime(name, 1) > getTime() || UserFileHandler.getUserTime(name, 1) == -1;
+        return UserFileHandler.getTime(name, 1) > getTime() || UserFileHandler.getTime(name, 1) == -1;
     }
 
 
@@ -328,7 +334,7 @@ public class Map {
         actualSpeed = Settings.getStrD("speed");
 
 
-        for (MenuButton button : screenMenu) {
+        for (MenuElement button : screenMenu) {
             if (availableSpeeds.contains(button.getText())) {
                 if (Settings.get("playback speed") < 0) {
                     button.setHideButton(true);
@@ -341,7 +347,7 @@ public class Map {
 
         if (Main.getKey(InputAction.Menu) > 0) {
 
-            for (MenuButton button : screenMenu) {
+            for (MenuElement button : screenMenu) {
                 button.tick();
             }
             //handle replay speed
@@ -462,7 +468,7 @@ public class Map {
             currentAction = currentAction + getStringKey(InputAction.Down);
             g.fillText(currentAction, correctUnit(100), correctUnit(400));
         }
-        for (MenuButton button : screenMenu) {
+        for (MenuElement button : screenMenu) {
             button.render(g);
         }
         if (isReplay) {

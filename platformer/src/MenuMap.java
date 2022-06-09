@@ -1,10 +1,6 @@
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.effect.Blend;
-import javafx.scene.effect.BlendMode;
-import javafx.scene.effect.GaussianBlur;
-import javafx.scene.paint.Color;
 
-public class MenuMap extends MenuButton {
+public class MenuMap extends MenuElement {
 
     private Map map;
 

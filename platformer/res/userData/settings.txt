@@ -6,8 +6,13 @@ show_author 1
 debug -1
 full_speedrun -1
 playback_speed -1
-fps 294
+fps 200
 show_last 1
 show_best 1
 show_gold 1
 show_speedrun 1
+speedrun_leaderboard_scroll 88
+leaderboard_scroll 0
+full_leaderboard_scroll 0
+1_leaderboard_scroll 5
+2_leaderboard_scroll 39

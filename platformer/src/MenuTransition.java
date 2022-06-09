@@ -1,10 +1,7 @@
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.effect.Blend;
-import javafx.scene.effect.BlendMode;
-import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 
-public class MenuTransition extends MenuButton {
+public class MenuTransition extends MenuElement {
 
     private Image image;
     private int currentTick;

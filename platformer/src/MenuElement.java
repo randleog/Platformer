@@ -2,7 +2,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-public abstract class MenuButton {
+public abstract class MenuElement {
 
     public enum TextType {
         normal,
@@ -33,8 +33,10 @@ public abstract class MenuButton {
 
     protected boolean hideButton;
 
+    protected double addY = 0;
 
-    public MenuButton(int x, int y, int width, int height, String text,TextType textType) {
+
+    public MenuElement(int x, int y, int width, int height, String text, TextType textType) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -44,6 +46,45 @@ public abstract class MenuButton {
         this.textType = textType;
         this.key = text;
         hideButton = false;
+    }
+
+
+    public void setAddY(double addY) {
+        this.addY = addY;
+    }
+
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    protected double getRenderY() {
+        return Main.correctUnit(y+addY);
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public Square getSquare() {
+        return new Square(x, y+addY, width, height, 1, InputAction.Default);
     }
 
     public String getText() {
@@ -81,7 +122,7 @@ public abstract class MenuButton {
         } else {
             g.setFill(Color.color(0, 0, 0, 0.5));
         }
-        g.fillRect(Main.correctUnit(x), Main.correctUnit(y), Main.correctUnit(width),Main.correctUnit(height));
+        g.fillRect(Main.correctUnit(x), getRenderY(), Main.correctUnit(width),Main.correctUnit(height));
         g.setFill(Color.WHITE);
 
 
@@ -92,7 +133,7 @@ public abstract class MenuButton {
 
         if (!(textType == TextType.hide)) {
             g.setFont(new Font(Settings.FONT,Main.correctUnit(25)));
-            g.fillText(text, Main.correctUnit(x + 20), Main.correctUnit(y + height / 2.0));
+            g.fillText(text, Main.correctUnit(x + 20), getRenderY()  +Main.correctUnit( + height / 2.0));
         }
     }
 
@@ -105,8 +146,8 @@ public abstract class MenuButton {
 
         mouseOver = (Main.mouseX > Main.correctUnit(this.x)
                 && Main.mouseX < Main.correctUnit(this.x+this.width)
-                && Main.mouseY > Main.correctUnit(this.y)
-                && Main.mouseY < Main.correctUnit(this.y+this.height));
+                && Main.mouseY > getRenderY()
+                && Main.mouseY < getRenderY()+Main.correctUnit(this.height));
 
     }
 

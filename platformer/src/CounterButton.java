@@ -2,7 +2,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-public class CounterButton extends MenuButton {
+public class CounterButton extends MenuElement {
 
 
     private int count;

@@ -19,17 +19,15 @@ import javafx.util.Duration;
 import java.awt.*;
 
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * the main class that launches the game
- * @todo: at personal best automatically launches the replay player with text that fades saying you beat your last time or the medal. a button to move on to the next level appears on the task bar
- * @todo: collision catching on side blocks fix
+ * @todo: leaderboard for full speedrun ranking, then stats page button launches menu for previous records in all the categories: slider to show them
+ * @todo: save times for individual users (last, best[and overall too], speedrun[and overall too])
+ *
  * @todo: level editor
  * @version 0.0.8
  *
@@ -38,7 +36,7 @@ import java.util.Set;
 public class Main extends Application {
 
 
-
+    public static int totalScrolls = 0;
 
     public static String mapName = "-";
 
@@ -185,6 +183,12 @@ public class Main extends Application {
 
         });
 
+
+        canvas.setOnScroll(scrollEvent -> {
+            totalScrolls+=scrollEvent.getDeltaY();
+            System.out.println(totalScrolls);
+        });
+
         primaryStage.setFullScreen(true);
         primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 
@@ -241,7 +245,7 @@ public class Main extends Application {
         primaryStage.close();
     }
 
-    public static void victory(String name, MenuButton button) {
+    public static void victory(String name, MenuElement button) {
 
         Settings.put("focus", Settings.LAST_REPLAY);
 
@@ -402,7 +406,7 @@ public class Main extends Application {
             currentMap.render(g);
         }
 
-        for (MenuButton button : Menu.getCurrentMenu()) {
+        for (MenuElement button : Menu.getCurrentMenu()) {
             button.tick();
             if (button instanceof MenuText) {
                 MenuText menuText = (MenuText)button;

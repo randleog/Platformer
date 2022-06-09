@@ -1,12 +1,12 @@
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class SettingButton extends MenuButton {
+public class SettingButton extends MenuElement {
 
     private Color selectColor;
 
 
-    public SettingButton(int x, int y, int width, int height,String text, String choice, MenuButton.TextType textType) {
+    public SettingButton(int x, int y, int width, int height,String text, String choice, MenuElement.TextType textType) {
         super(x,y,width,height, text, textType);
         this.choice = choice;
 
@@ -15,7 +15,7 @@ public class SettingButton extends MenuButton {
     }
 
 
-    public SettingButton(int x, int y, int width, int height,String text, String choice, MenuButton.TextType textType, Color selectColor) {
+    public SettingButton(int x, int y, int width, int height, String text, String choice, MenuElement.TextType textType, Color selectColor) {
         super(x,y,width,height, text, textType);
         this.choice = choice;
         this.selectColor =  selectColor;
@@ -53,7 +53,7 @@ public class SettingButton extends MenuButton {
         }
         if (Settings.getStr(key).equals(choice)) {
             g.setFill(selectColor);
-            g.fillRect(Main.correctUnit(x+insetWidth), Main.correctUnit(y+insetWidth), Main.correctUnit(width-insetWidth*2),Main.correctUnit(height-insetWidth*2));
+            g.fillRect(Main.correctUnit(x+insetWidth), getRenderY()+Main.correctUnit(insetWidth), Main.correctUnit(width-insetWidth*2),Main.correctUnit(height-insetWidth*2));
         }
 
 

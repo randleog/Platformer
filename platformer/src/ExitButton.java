@@ -1,6 +1,6 @@
 
 
-public class ExitButton extends MenuButton {
+public class ExitButton extends MenuElement {
 
 
 

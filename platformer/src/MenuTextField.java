@@ -2,7 +2,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-public class MenuTextField extends MenuButton {
+public class MenuTextField extends MenuElement {
 
     String currentField = "";
 
@@ -10,7 +10,7 @@ public class MenuTextField extends MenuButton {
 
     private int carret = 0;
 
-    public MenuTextField(int x, int y,String text, int size, String choice, MenuButton.TextType textType) {
+    public MenuTextField(int x, int y,String text, int size, String choice, MenuElement.TextType textType) {
         super(x,y,100, 100, text, textType);
         this.choice = choice;
         this.size = size;
@@ -116,7 +116,7 @@ public class MenuTextField extends MenuButton {
 
             g.setFill(Color.WHITE);
             g.setFont(new Font("Monospaced Regular",Main.correctUnit(50)));
-            g.fillText(currentField, Main.correctUnit(x), Main.correctUnit(y));
+            g.fillText(currentField, Main.correctUnit(x), getRenderY());
 
 
 
@@ -139,7 +139,7 @@ public class MenuTextField extends MenuButton {
             }
 
 
-            g.fillText(pos, Main.correctUnit(x), Main.correctUnit(y));
+            g.fillText(pos, Main.correctUnit(x), getRenderY());
 
 
 

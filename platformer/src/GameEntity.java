@@ -42,6 +42,10 @@ public abstract class GameEntity {
 
     protected Color color;
 
+
+
+    protected static final double SWIMMING_GRAVITY = 0.1;
+
     protected InputAction action;
 
 
@@ -57,6 +61,9 @@ public abstract class GameEntity {
     protected boolean canLeftJump;
 
     protected boolean canRightJump;
+
+
+    protected boolean swimming = false;
 
     protected boolean canCornerJump;
     protected double lastRotation;
@@ -356,6 +363,8 @@ public abstract class GameEntity {
 
 
     protected void collision() {
+
+        swimming = false;
         if (rotationTicks > 0) {
             rotationTicks--;
         }
@@ -418,6 +427,8 @@ public abstract class GameEntity {
                     }
 
                     intersectSquareRight(entity);
+                } else if (action == InputAction.Swim) {
+                    swimming = true;
                 } else if (InputAction.isUpType(action)) {
                     hasGoneUp = true;
 

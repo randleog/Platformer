@@ -21,10 +21,10 @@ public class Menu {
 
 
     private String branch;
-    private ArrayList<MenuButton> buttons;
+    private ArrayList<MenuElement> buttons;
 
 
-    public Menu(ArrayList<MenuButton> buttons, String branch) {
+    public Menu(ArrayList<MenuElement> buttons, String branch) {
         this.branch = branch;
         this.buttons = buttons;
     }
@@ -36,14 +36,20 @@ public class Menu {
     }
 
 
-    public void setButtons(ArrayList<MenuButton> buttons) {
+    public void setButtons(ArrayList<MenuElement> buttons) {
         this.buttons = buttons;
     }
 
-    public ArrayList<MenuButton> getbuttons() {
+
+    public ArrayList<MenuElement> getbuttons() {
         return buttons;
     }
 
+
+
+    public static String getBranching() {
+        return menus.get(currentMenu).getBranch();
+    }
 
     public static void setCurrentMenu(String newMenu) {
 
@@ -58,7 +64,7 @@ public class Menu {
         currentMenu = newMenu;
     }
 
-    public static void switchMenu(String newMenu, MenuButton message) {
+    public static void switchMenu(String newMenu, MenuElement message) {
 
 
         Main.hashMap.put(InputAction.Menu, 2);
@@ -86,8 +92,8 @@ public class Menu {
     }
 
 
-    private static void updateMessage (MenuButton message) {
-        ArrayList<MenuButton> buttons = menus.get(currentMenu).getbuttons();
+    private static void updateMessage (MenuElement message) {
+        ArrayList<MenuElement> buttons = menus.get(currentMenu).getbuttons();
         buttons.add(message);
         menus.get(currentMenu).setButtons(buttons);
 
@@ -119,7 +125,9 @@ public class Menu {
     }
 
     private static void updateTransition(String menu) {
-        for (MenuButton button : menus.get(menu).getbuttons()) {
+
+
+        for (MenuElement button : menus.get(menu).getbuttons()) {
             if (button instanceof MenuTransition) {
                 ((MenuTransition) button).loadImage(Main.getScreenshot());
             }else if (button instanceof  MenuZoomTransition) {
@@ -131,17 +139,19 @@ public class Menu {
         }
     }
 
-    public static ArrayList<MenuButton> getCurrentMenu() {
+    public static ArrayList<MenuElement> getCurrentMenu() {
 
 
         if (currentMenu.equals("")) {
             return new ArrayList<>();
         }
 
+
+
         if (menus.containsKey(currentMenu)) {
             return menus.get(currentMenu).getbuttons();
         } else {
-            ArrayList<MenuButton> errorScreen = new ArrayList<>();
+            ArrayList<MenuElement> errorScreen = new ArrayList<>();
             errorScreen.add(new MenuText(600,575,"invalid menu screen",40,"main menu"));
             errorScreen.add(new SwitchMenuButton(600,600,400,100,"Return to main menu", "main"));
             return errorScreen;
@@ -155,7 +165,7 @@ public class Menu {
 
 
     public static void loadbuttons() {
-        ArrayList<MenuButton> mainMenu = new ArrayList<>();
+        ArrayList<MenuElement> mainMenu = new ArrayList<>();
         mainMenu.add(new MenuMap("2"));
         mainMenu.add(new ExitButton(BUTTON_GAP, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "exit"));
         mainMenu.add(new SwitchMenuButton(BUTTON_GAP, 200, BUTTON_WIDTH*2, BUTTON_HEIGHT, "levels", "levels"));
@@ -181,6 +191,13 @@ public class Menu {
         loadName();
 
 
+        loadLeaderboard("full");
+        loadLeaderboard("1");
+        loadLeaderboard("2");
+        loadLeaderboard("3");
+        loadLeaderboard("4");
+        loadLeaderboard("5");
+
 
 
     }
@@ -189,10 +206,10 @@ public class Menu {
 
 
     private static void loadSettingsMenu() {
-        ArrayList<MenuButton> settingsMenu = new ArrayList<>();
+        ArrayList<MenuElement> settingsMenu = new ArrayList<>();
         settingsMenu.add(new MenuMap("3"));
 
-        settingsMenu.add(new MenuSlider(BUTTON_GAP,100,500,100,"fps", "fps", 300, 10, Main.monitorFPS));
+        settingsMenu.add(new MenuSlider(BUTTON_GAP,100,500,100,"fps", "fps", 300, 10, false, Main.monitorFPS));
 
 
         settingsMenu.add(new ToggleButton(BUTTON_GAP, 250, 200,100, "enable debug", "disable debug", "debug"));
@@ -207,7 +224,7 @@ public class Menu {
 
 
     private static void loadReplayMenu() {
-        ArrayList<MenuButton> replayMenu = new ArrayList<>();
+        ArrayList<MenuElement> replayMenu = new ArrayList<>();
         replayMenu.add(new MenuMap("4"));
         File directory = new File("res\\replays");
         File[] levels = directory.listFiles();
@@ -245,58 +262,13 @@ public class Menu {
         menus.put("replays", new Menu(replayMenu, "main"));
 
     }
-
-
-    private static void loadStatsMenu() {
-        ArrayList<MenuButton> stats = new ArrayList<>();
-        stats.add(new MenuMap("1"));
-        stats.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back", "main"));
-        stats.add(new MenuText(50, 75, "Stats:", 45, "deaths"));
-
-        int i = 0;
-        for (String stat : Stats.getExpectedStats()) {
-            if ((Stats.doubleStats.contains(stat))) {
-                stats.add(new MenuText(50, 200+i*BUTTON_GAP
-                        , stat + ": " + Main.formatTime(Stats.getD(stat)), 30, stat));
-
-            } else {
-                stats.add(new MenuText(50, 200 + i * BUTTON_GAP
-                        , stat + ": " + Stats.get(stat), 30, stat));
-            }
-            i++;
-        }
-
-        stats.add(new MenuTransition(NORMAL_TRANSITION_TIME));
-
-
-        menus.put("stats", new Menu(stats, "main"));
-
-    }
-
-    private static void loadVictoryMenu() {
-        ArrayList<MenuButton> stats = new ArrayList<>();
-        stats.add(new SwitchMenuButton(350, 775, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "main"));
-        stats.add(new LevelButton("play again", 700, 775, BUTTON_WIDTH, BUTTON_HEIGHT, Main.mapName));
-        stats.add(new MenuTransition(NORMAL_TRANSITION_TIME));
-
-
-        menus.put("victory", new Menu(stats, "levels"));
-
-    }
-
-
-    public static String getBranching() {
-        return menus.get(currentMenu).getBranch();
-    }
-
-
     private static void loadName() {
-        ArrayList<MenuButton> stats = new ArrayList<>();
+        ArrayList<MenuElement> stats = new ArrayList<>();
         stats.add(new MenuText(300, 200
                 , "enter name:", 60, "name"));
 
         stats.add(new MenuTextField(300, 300
-                , "", 50, "name", MenuButton.TextType.normal));
+                , "", 50, "name", MenuElement.TextType.normal));
 
         stats.add(new MenuTransition(NORMAL_TRANSITION_TIME));
 
@@ -306,7 +278,7 @@ public class Menu {
     }
 
     private static void loadLevelMenu() {
-        ArrayList<MenuButton> levelMenu = new ArrayList<>();
+        ArrayList<MenuElement> levelMenu = new ArrayList<>();
         levelMenu.add(new MenuMap("5"));
         File directory = new File("res\\maps");
         File[] levels = directory.listFiles();
@@ -347,8 +319,8 @@ public class Menu {
         }
 
 
-        if (UserFileHandler.getUserTime("full", 1) > 0) {
-            levelMenu.add(new MenuText(BUTTON_GAP,25, "full speedrun best time:  " + String.format("%.2f",UserFileHandler.getUserTime("full", 1)), 20, "full"));
+        if (UserFileHandler.getTime("full", 1) > 0) {
+            levelMenu.add(new MenuText(BUTTON_GAP,25, "full speedrun best time:  " + String.format("%.2f",UserFileHandler.getTime("full", 1)), 20, "full"));
         }
         if (UserFileHandler.getCumulativeBestTimes() > 0) {
             levelMenu.add(new MenuText(BUTTON_GAP,55, "cumulative best times:    " + String.format("%.2f",UserFileHandler.getCumulativeBestTimes()), 20, "full"));
@@ -360,5 +332,109 @@ public class Menu {
         menus.put("levels", new Menu(levelMenu, "main"));
 
     }
+
+    private static void loadStatsMenu() {
+        ArrayList<MenuElement> stats = new ArrayList<>();
+        stats.add(new MenuMap("1"));
+        stats.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back", "main"));
+        stats.add(new MenuText(50, 75, "Stats:", 45, "deaths"));
+
+        int i = 0;
+        for (String stat : Stats.getExpectedStats()) {
+            if ((Stats.doubleStats.contains(stat))) {
+                stats.add(new MenuText(50, 200+i*BUTTON_GAP
+                        , stat + ": " + Main.formatTime(Stats.getD(stat)), 30, stat));
+
+            } else {
+                stats.add(new MenuText(50, 200 + i * BUTTON_GAP
+                        , stat + ": " + Stats.get(stat), 30, stat));
+            }
+            i++;
+        }
+
+
+
+
+
+
+
+        Menu speedrun =getLeaderboardMenu();
+
+        stats.add(new MenuText(1400, 75, "Leaderboards:", 45, "deaths"));
+
+        stats.add(new ScrollMenu(1400, 175, 300, 500, speedrun, "leaderboard scroll"));
+
+
+        stats.add(new MenuTransition(NORMAL_TRANSITION_TIME));
+
+
+        menus.put("stats", new Menu(stats, "main"));
+
+    }
+
+    private static void loadLeaderboard(String name) {
+        ArrayList<MenuElement> elements = new ArrayList<>();
+
+        elements.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH*2, BUTTON_HEIGHT, "back", "stats"));
+        elements.add(new MenuText(5,75, name.replace("full", "speedrun") + " leaderboard: ", 50));
+
+
+        elements.add(new ScrollMenu(50, 150, 750, 600, loadLeaderboardTimes(name), name + " leaderboard scroll"));
+
+
+        menus.put(name + " leaderboard",new Menu(elements, "stats"));
+    }
+
+    private static Menu loadLeaderboardTimes(String name) {
+        ArrayList<MenuElement> elements = new ArrayList<>();
+
+
+        int total = UserFileHandler.getLeaderboardSize(name);
+        for (int i = 1; i < total+1; i++) {
+            elements.add(new MenuText(5,0+i*40, i  + ": " + LeaderboardTime.constructTime(UserFileHandler.getUserTime(name, i)).toString(), 35));
+        }
+
+
+        return new Menu(elements, "stats");
+    }
+
+
+
+
+    private static Menu getLeaderboardMenu() {
+        ArrayList<MenuElement> elements = new ArrayList<>();
+        elements.add(new SwitchMenuButton(0,0, 200, 100, "full speedrun", "full leaderboard"));
+        elements.add(new SwitchMenuButton(0,125, 200, 100, "level 1", "1 leaderboard"));
+        elements.add(new SwitchMenuButton(0,250, 200, 100, "level 2", "2 leaderboard"));
+        elements.add(new SwitchMenuButton(0,375, 200, 100, "level 3", "3 leaderboard"));
+        elements.add(new SwitchMenuButton(0,500, 200, 100, "level 4", "4 leaderboard"));
+        elements.add(new SwitchMenuButton(0,625, 200, 100, "level 5", "5 leaderboard"));
+
+        return new Menu(elements, "stats");
+    }
+
+
+
+
+
+
+
+
+    private static void loadVictoryMenu() {
+        ArrayList<MenuElement> stats = new ArrayList<>();
+        stats.add(new SwitchMenuButton(350, 775, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "main"));
+        stats.add(new LevelButton("play again", 700, 775, BUTTON_WIDTH, BUTTON_HEIGHT, Main.mapName));
+        stats.add(new MenuTransition(NORMAL_TRANSITION_TIME));
+
+
+        menus.put("victory", new Menu(stats, "levels"));
+
+    }
+
+
+
+
+
+
 
 }

@@ -1,10 +1,7 @@
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.effect.Blend;
-import javafx.scene.effect.BlendMode;
-import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 
-public class MenuZoomTransition extends MenuButton {
+public class MenuZoomTransition extends MenuElement {
 
     private Image image;
     private int currentTick;
@@ -49,7 +46,7 @@ public class MenuZoomTransition extends MenuButton {
         }
 
         double x = Main.interpolate(0,Main.correctUnit(this.x),time*Settings.get("fps"), currentTick);
-        double y = Main.interpolate(0,Main.correctUnit(this.y),time*Settings.get("fps"), currentTick);
+        double y = Main.interpolate(0,getRenderY(),time*Settings.get("fps"), currentTick);
 
         double width = Main.interpolate(0,g.getCanvas().getWidth(),time*Settings.get("fps"), currentTick);
         double height = Main.interpolate(0,g.getCanvas().getHeight(),time*Settings.get("fps"), currentTick);

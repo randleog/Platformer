@@ -65,6 +65,10 @@ public class Player extends GameEntity {
             force = force*CLING_GRAVITY  ;
         }
 
+        if (swimming) {
+            force = force*SWIMMING_GRAVITY;
+        }
+
         velY+=force/Settings.getD("fps");
 
 

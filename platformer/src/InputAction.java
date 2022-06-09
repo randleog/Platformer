@@ -56,17 +56,22 @@ public enum InputAction {
     },
     StickyUp() {
         public String toString() {
-            return "StickyDown";
+            return "StickyUp";
         }
     },
     StickyRight() {
         public String toString() {
-            return "StickyDown";
+            return "StickyRight";
         }
     },
     StickyLeft() {
         public String toString() {
-            return "StickyDown";
+            return "StickyLeft";
+        }
+    },
+    Swim() {
+        public String toString() {
+            return "Swim";
         }
     },
     Corner() {

@@ -1,4 +1,3 @@
-import java.awt.event.ItemEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -9,10 +8,13 @@ import java.util.Scanner;
 
 public class UserFileHandler {
 
-    private static final int MAX_LEADERBOARD = 100;
+    private static final int MAX_LEADERBOARD = 50;
+
+    private static final int MAX_LEADERBOARD_REPLAYS = 50;
 
 
-    public static double getUserTime(String mapName, int number) {
+
+    public static double getTime(String mapName, int number) {
         File file = new File("res\\userData\\levelTimes.txt");
         try {
             Scanner scanner = new Scanner(file);
@@ -23,7 +25,7 @@ public class UserFileHandler {
                     if (line.length-1 < number) {
                         return -1;
                     } else {
-                        return Double.parseDouble(line[number]);
+                        return Double.parseDouble(line[number].split(":")[0]);
                     }
                 }
             }
@@ -37,6 +39,56 @@ public class UserFileHandler {
         return -1;
 
     }
+
+    public static String getUserTime(String mapName, int number) {
+        File file = new File("res\\userData\\levelTimes.txt");
+        try {
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String[] line = scanner.nextLine().split(" ");
+
+                if (line[0].equals(mapName)) {
+                    if (line.length-1 < number) {
+                        return "";
+                    } else {
+                        return line[number];
+                    }
+                }
+            }
+
+
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return "";
+
+    }
+
+    public static int getLeaderboardSize(String mapName) {
+
+        File file = new File("res\\userData\\levelTimes.txt");
+        try {
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String[] line = scanner.nextLine().split(" ");
+
+                if (line[0].equals(mapName)) {
+                    return line.length-1;
+                }
+            }
+
+
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+
+    }
+
 
     public static ArrayList<String> getTrophies(String mapName) {
         ArrayList<String> trophies = new ArrayList<>();
@@ -220,10 +272,10 @@ public class UserFileHandler {
         boolean notAll = false;
 
         for (int i = 1; i < Main.lastLevel+1; i++) {
-            if (getUserTime(Integer.toString(i), 1) == -1) {
+            if (getTime(Integer.toString(i), 1) == -1) {
                 notAll = true;
             }
-            total = total + getUserTime(Integer.toString(i), 1);
+            total = total + getTime(Integer.toString(i), 1);
         }
 
         if (notAll) {
@@ -233,12 +285,12 @@ public class UserFileHandler {
     }
 
 
-    public static void saveUserTime(String mapName, double time) {
+    public static void saveUserTime(String mapName, double time, String data) {
         File file = new File("res\\userData\\levelTimes.txt");
         String text = "";
         try {
             Scanner scanner = new Scanner(file);
-            boolean added = false;
+
             while (scanner.hasNextLine()) {
                 String lineText = scanner.nextLine();
                 String[] line = lineText.split(" ");
@@ -247,23 +299,27 @@ public class UserFileHandler {
 
 
                     text = text + line[0]+ " ";
-                    ArrayList<Double> values = new ArrayList<>();
+                    ArrayList<LeaderboardTime> values = new ArrayList<>();
                     for (int i = 1; i < line.length; i++) {
-                        values.add(Double.parseDouble(line[i]));
+
+
+                        values.add(new LeaderboardTime(Double.parseDouble(line[i].split(":")[0]),line[i].split(":")[1],line[i].split(":")[2]));
                     }
-                    values.add(time);
+                    values.add(new LeaderboardTime(time, Settings.getStr("name"), data));
+
+
                     Collections.sort(values);
 
                     int i = 0;
-                    for (Double currenTime : values) {
+                    for (LeaderboardTime currentTime : values) {
 
                         if (i< MAX_LEADERBOARD) {
-                            text = text + currenTime + " ";
+                            text = text + currentTime.getTime() + ":" + currentTime.getName() + ":" + currentTime.getData()+ " ";
                         }
                         i++;
                     }
 
-                    added = true;
+
 
                     text = text + "\n";
                 } else {
@@ -273,9 +329,7 @@ public class UserFileHandler {
                     text = text.substring(0,text.length()-1);
                 }
             }
-            if (!added) {
-                text = text + "\n" + mapName + " " + time;
-            }
+
 
             if (text.charAt(0) == '\n') {
                 text = text.substring(1);

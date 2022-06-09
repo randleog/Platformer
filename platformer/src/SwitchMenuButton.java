@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-
-public class SwitchMenuButton extends MenuButton {
+public class SwitchMenuButton extends MenuElement {
 
 
     private String menu;

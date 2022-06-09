@@ -1,6 +1,6 @@
 
 
-public class ReplayButton extends MenuButton {
+public class ReplayButton extends MenuElement {
 
     private static final int TICK_REFRESH = 200;
 
@@ -12,7 +12,7 @@ public class ReplayButton extends MenuButton {
     public ReplayButton(int x, int y, int width, int height, String name) {
         super(x,y,width,height, "level: " + name, TextType.normal);
         this.name = name;
-        double time = UserFileHandler.getUserTime(name, 1);
+        double time = UserFileHandler.getTime(name, 1);
         if (time == -1) {
             text = text+"\ntime: N/A";
         } else {
@@ -23,7 +23,7 @@ public class ReplayButton extends MenuButton {
 
     public void refreshTime() {
 
-        double time = UserFileHandler.getUserTime(name, 1);
+        double time = UserFileHandler.getTime(name, 1);
         if (time == -1) {
             text = "level: " + name+"\ntime: N/A";
         } else {
