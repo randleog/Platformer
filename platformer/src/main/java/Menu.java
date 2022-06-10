@@ -245,7 +245,7 @@ public class Menu {
         ArrayList<MenuElement> elements = new ArrayList<>();
         elements.add(new MenuMap("3"));
 
-        elements.add(new MenuSlider(BUTTON_GAP,100,500,100,"fps", "fps", 300, 10, false, Main.monitorFPS));
+        elements.add(new MenuSlider(BUTTON_GAP,100,500,100,"fps", "fps", 300, 15, false, Main.monitorFPS));
 
 
         elements.add(new SwitchMenuButton(BUTTON_GAP, 550, BUTTON_WIDTH, BUTTON_HEIGHT, "replay settings", "replay settings"));

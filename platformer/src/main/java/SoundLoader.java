@@ -19,8 +19,11 @@ public class SoundLoader {
 
     private static final String path = "res/sounds/";
 
-    public static final String buttonPress = path + "button_press.wav";
-    public static final String scroll = path + "scroll.wav";
+    public static final AudioClip buttonPress = new AudioClip(new File(path + "button_press.wav").toURI().toString());
+    public static final AudioClip scroll = new AudioClip(new File(path + "scroll.wav").toURI().toString());
+    public static final AudioClip fall = new AudioClip(new File(path + "fall.wav").toURI().toString());
+    public static final AudioClip slime = new AudioClip(new File(path + "slime.wav").toURI().toString());
+    public static final AudioClip stone = new AudioClip(new File(path + "stone.wav").toURI().toString());
     public static final Media music1 = getSound("music1.mp3");
 
 
@@ -50,7 +53,9 @@ public class SoundLoader {
     public static void adjustMusicVolume() {
 
         if (!(music == null)) {
-            music.setVolume(0.100 * (Settings.get("music volume") / 100.00));
+            music.setVolume( ((Settings.get("music volume") *1.000/ 100)));
+
+
         }
 
     }
@@ -71,48 +76,21 @@ public class SoundLoader {
         playSound(SoundLoader.scroll, 1, 0, SoundLoader.getRandomSpeed() * 0.7);
     }
 
+    public static void playFall() {
+        playSound(SoundLoader.fall, 1, 0, SoundLoader.getRandomSpeed() * 0.7);
+    }
 
 
 
-
-    public static void playSound(String media, double volume, double balance, double speed) {
+    public static void playSound(AudioClip mediaPlayer, double volume, double balance, double speed) {
         volume = volume/(100.0/Settings.get("volume"));
-        if (!(sfx[currentSound] == null)) {
-            sfx[currentSound].stop();
 
-            if (sfx[currentSound].getSource().contains(media)) {
-
-                sfx[currentSound].setVolume(volume);
-                sfx[currentSound].setRate(speed);
-                sfx[currentSound].setBalance(balance);
-                sfx[currentSound].play();
-                return;
-            }
-
-        }
-
-
-
-        AudioClip mediaPlayer = new AudioClip(new File(media).toURI().toString());
         mediaPlayer.setVolume(volume);
         mediaPlayer.setRate(speed);
 
         mediaPlayer.setBalance(balance);
-
-
-
         mediaPlayer.play();
 
-
-
-        sfx[currentSound]=mediaPlayer;
-
-
-
-        currentSound++;
-        if (currentSound >= MAX_SOUNDS) {
-            currentSound =0;
-        }
 
     }
 

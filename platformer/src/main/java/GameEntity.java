@@ -46,6 +46,9 @@ public abstract class GameEntity {
 
     protected static final double SWIMMING_GRAVITY = 0.1;
 
+    private double lastInteraction = 0;
+    private double timeBetweenSounds = 500;
+    private int MaxtimeBetweenSounds = 75;
     protected InputAction action;
 
 
@@ -160,14 +163,7 @@ public abstract class GameEntity {
 
     }
 
-    protected void loadWallHitbox() {
-        hitbox = new ArrayList<>();
-        hitbox.add(new Square(x + WALL_CORNER_SIZE, y, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Up));
-        hitbox.add(new Square(x + sizeX - 1, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Right));
-        hitbox.add(new Square(x + WALL_CORNER_SIZE, y + sizeY - 1 - WALL_CORNER_SIZE / 2, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Down));
-        hitbox.add(new Square(x, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Left));
 
-    }
 
     public double getParallax() {
         return parallax;
@@ -363,7 +359,7 @@ public abstract class GameEntity {
 
 
     protected void collision() {
-
+        clinging = false;
         swimming = false;
         if (rotationTicks > 0) {
             rotationTicks--;
@@ -434,8 +430,17 @@ public abstract class GameEntity {
 
                     if (this instanceof Player || this instanceof BasicEnemy) {
 
+                        if (Math.abs(velX/ Settings.getD("fps")) > 0.01) {
+                            playWalk();
+                        }
+
                         if (velY > CRASH_SPEED) {
                             map.crashParticle(this.x + sizeX / 2, this.y + sizeY / 2);
+                            //SoundLoader.playSound(SoundLoader.fall, 1, 0, SoundLoader.getRandomSpeed() * 0.7);
+                        }
+
+                        if (velY > 5) {
+                            SoundLoader.playSound(SoundLoader.fall, velY/25, 0, SoundLoader.getRandomSpeed() * 0.6);
                         }
                     }
                     canJump = true;
@@ -443,7 +448,15 @@ public abstract class GameEntity {
                     intersectSquareUp(entity);
 
                 } else if (InputAction.isDownType(action)) {
+                    if (action == InputAction.StickyDown) {
 
+
+                        if (Math.abs(velY) >2) {
+
+                                SoundLoader.playSound(SoundLoader.slime, 1 , 0, SoundLoader.getRandomSpeed() *1.3);
+
+                        }
+                    }
                     if (hasGoneUp) {
 
 
@@ -460,6 +473,11 @@ public abstract class GameEntity {
                     if (action == InputAction.StickyDown) {
 
 
+
+                        this.velY = -1;
+
+
+
                         clinging = true;
                         wallHeight = this.y;
                     }
@@ -468,7 +486,7 @@ public abstract class GameEntity {
 
 
                     double rotation = Math.toRadians(entity.getRotation());
-                    System.out.println(rotation);
+
                     canCornerJump = true;
                     lastRotation = cornerRotation;
                     cornerRotation = rotation;
@@ -499,24 +517,26 @@ public abstract class GameEntity {
         }
 
 
-        if (clinging) {
-            this.y -= wallCling+Map.WALL_CORNER_SIZE / 2;
-            boolean stillStick = map.getActions(this).contains(InputAction.StickyDown);
-            this.y += wallCling+Map.WALL_CORNER_SIZE / 2;
-            if (stillStick) {
 
-                wallCling = this.y - wallHeight;
-                if (wallCling > wallClingRadius) {
-                    wallCling = 0;
-                    clinging = false;
-                }
+    }
 
+    private void playWalk() {
 
+            if (System.currentTimeMillis() -lastInteraction > Math.max(((1/(Math.abs(velX))))*timeBetweenSounds, MaxtimeBetweenSounds)) {
+                SoundLoader.playSound(SoundLoader.stone, 1, 0, SoundLoader.getRandomSpeed());
+                lastInteraction = System.currentTimeMillis();
+                System.out.println("thing");
 
-            } else {
-
-                clinging = false;
             }
+    }
+
+    private void playSlime() {
+
+        if (System.currentTimeMillis() -lastInteraction > Math.max(((1/(Math.abs(velX))))*timeBetweenSounds, MaxtimeBetweenSounds)) {
+            SoundLoader.playSound(SoundLoader.slime, 1, 0, SoundLoader.getRandomSpeed());
+            lastInteraction = System.currentTimeMillis();
+            System.out.println("thing");
+
         }
     }
 
@@ -539,7 +559,7 @@ public abstract class GameEntity {
 
     private void intersectSquareDown(Square square) {
         while (square.intersect(getMainShape())) {
-            y += Map.WALL_CORNER_SIZE / 2;
+            y += COLLISION_AMMOUNT;
 
         }
         velY = 0;

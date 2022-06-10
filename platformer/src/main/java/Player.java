@@ -62,7 +62,7 @@ public class Player extends GameEntity {
         }
 
         if (clinging) {
-            force = force*CLING_GRAVITY  ;
+            force = -force;
         }
 
         if (swimming) {
@@ -201,6 +201,11 @@ public class Player extends GameEntity {
             accel = AIR_ACCELERATION;
         }
 
+        if (clinging && Main.isKeyDown(InputAction.Up)) {
+            velY = JUMP_SPEED;
+            Main.deactivateKey(InputAction.Up);
+        }
+
         currentDrag = Map.AIR_DRAG;
         if (canJump) {
             currentDrag = Map.GROUND_DRAG;
@@ -254,6 +259,7 @@ public class Player extends GameEntity {
 
         if (hasJumped) {
             Main.deactivateKey(InputAction.Up);
+       //     SoundLoader.playSound(SoundLoader.fall, 1, 0, SoundLoader.getRandomSpeed()*1.1);
             Stats.add("total Jumps", 1);
         }
         if (Main.isKeyDown(InputAction.Right) && !Main.isKeyDown(InputAction.Left)) {

@@ -1,4 +1,4 @@
-name TECHNOBLADE
+name INJATA
 focus best
 speed 1
 replay_speed 25
@@ -25,5 +25,5 @@ full_leaderboard_scroll_X 31
 2_leaderboard_scroll_X 3
 full_leaderboard_scroll_Y 0
 reduced_motion -1
-volume 23
-music_volume 10
+volume 200
+music_volume 2

@@ -64,7 +64,7 @@ public class StickyWall extends GameEntity {
         hitbox = new ArrayList<>();
         hitbox.add(new Square(x + WALL_CORNER_SIZE, y, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.StickyUp));
         hitbox.add(new Square(x + sizeX-1, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.StickyRight));
-        hitbox.add(new Square(x + WALL_CORNER_SIZE, y + sizeY - 1-WALL_CORNER_SIZE/2, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.StickyDown));
+        hitbox.add(new Square(x + WALL_CORNER_SIZE, y + sizeY - 1, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.StickyDown));
         hitbox.add(new Square(x, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.StickyLeft));
 
     }

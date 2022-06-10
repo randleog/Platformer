@@ -1,6 +1,8 @@
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
+
 public class MovingWall extends GameEntity {
 
     private MovingWall mainWall;
@@ -163,7 +165,14 @@ public class MovingWall extends GameEntity {
 
         return lastShape;
     }
+    protected void loadWallHitbox() {
+        hitbox = new ArrayList<>();
+        hitbox.add(new Square(x + WALL_CORNER_SIZE, y, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Up));
+        hitbox.add(new Square(x + sizeX - 1, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Right));
+        hitbox.add(new Square(x + WALL_CORNER_SIZE, y + sizeY - 1 - WALL_CORNER_SIZE / 2, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Down));
+        hitbox.add(new Square(x, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Left));
 
+    }
 
     public void tick() {
 
