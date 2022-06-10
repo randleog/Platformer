@@ -227,10 +227,17 @@ public class Main extends Application {
         Main.primaryStage = primaryStage;
 
 
-        SoundLoader.playSound(SoundLoader.buttonPress, 1, 0);
+        SoundLoader.playButtonPress();
         SoundLoader.playMusic(SoundLoader.music1, 1, 0);
+
+
+        SoundLoader.adjustMusicVolume();
     }
 
+
+    public static double getMemory() {
+        return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+    }
 
 
 

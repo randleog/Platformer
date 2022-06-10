@@ -17,7 +17,7 @@ full_leaderboard_scroll 2
 1_leaderboard_scroll 1750
 2_leaderboard_scroll 39
 leaderboard_scroll_X 0
-leaderboard_scroll_Y 0
+leaderboard_scroll_Y 400
 1_leaderboard_scroll_X 0
 full_leaderboard_scroll_X 31
 1_leaderboard_scroll_Y 0
@@ -25,5 +25,5 @@ full_leaderboard_scroll_X 31
 2_leaderboard_scroll_X 3
 full_leaderboard_scroll_Y 0
 reduced_motion -1
-volume 15
-music_volume 11
+volume 23
+music_volume 10

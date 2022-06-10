@@ -127,7 +127,7 @@ public class Menu {
         Main.isVictory = false;
 
 
-        SoundLoader.adjustSfxVolume();
+
         SoundLoader.adjustMusicVolume();
 
     }

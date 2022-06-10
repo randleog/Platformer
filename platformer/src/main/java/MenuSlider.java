@@ -20,6 +20,12 @@ public class MenuSlider extends MenuElement {
 
     private boolean hideText = false;
 
+
+    private int lastValue = 0;
+
+    private double lastInteraction = 0;
+    private int timeBetweenSounds = 50;
+
     public MenuSlider(int x, int y, int width, int height, String text, String choice, int max, int min, boolean vertical, boolean hideText) {
         super(x, y, width, height, text, TextType.normal);
 
@@ -69,6 +75,9 @@ public class MenuSlider extends MenuElement {
 
         if (vertical) {
             if (Main.totalScrolls != 0) {
+
+
+
                 currentVal = currentVal - Main.totalScrolls;
 
                 currentVal = Math.min(max, currentVal);
@@ -79,7 +88,6 @@ public class MenuSlider extends MenuElement {
 
                 Settings.put(choice, currentVal);
                 currentFactor = (currentVal - min * 1.0) / (max - min);
-
 
 
 
@@ -114,6 +122,7 @@ public class MenuSlider extends MenuElement {
 
             if (vertical) {
                 if (Main.totalScrolls !=0) {
+
                     currentVal = currentVal - Main.totalScrolls;
                     Main.totalScrolls = 0;
 
@@ -121,6 +130,8 @@ public class MenuSlider extends MenuElement {
 
                     Settings.put(choice, currentVal);
                     currentFactor = (currentVal - min * 1.0) / (max - min);
+
+
 
                 }
                 newVal = min + (int) (((Main.mouseY - getRenderY()) / Main.correctUnit((this.height))) * (max - min));
@@ -132,13 +143,31 @@ public class MenuSlider extends MenuElement {
             newVal = Math.min(newVal, max);
             currentFactor = (newVal - min * 1.0) / (max - min);
             currentVal = newVal;
+
+           playSound();
+
+
+
             Settings.put(choice, newVal);
 
             SoundLoader.adjustMusicVolume();
-            SoundLoader.adjustSfxVolume();
+
 
 
         }
+    }
+
+    public void playSound() {
+        if (currentVal != lastValue) {
+            if (System.currentTimeMillis() -lastInteraction > timeBetweenSounds) {
+                SoundLoader.playScroll();
+                lastInteraction = System.currentTimeMillis();
+
+            }
+
+        }
+        lastValue = (currentVal);
+
     }
 
     @Override

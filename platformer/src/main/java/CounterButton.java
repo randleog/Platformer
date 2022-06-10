@@ -37,6 +37,7 @@ public class CounterButton extends MenuElement {
             Main.mouseClicked = false;
             int newVal = Settings.get(text)+count;
             newVal = Math.max(newVal, min);
+            SoundLoader.playButtonPress();
             newVal = Math.min(newVal,max);
             Settings.put(text, newVal);
 

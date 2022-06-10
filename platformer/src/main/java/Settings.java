@@ -101,6 +101,8 @@ public class Settings {
         loadSetting("full speedrun");
         loadSetting("name");
         loadSetting("reduced motion");
+        loadSetting("volume");
+        loadSetting("music volume");
     }
 
     private static void loadSetting(String name) {

@@ -47,7 +47,7 @@ public class ToggleButton extends MenuElement {
     private void click() {
         if (Main.mouseClicked && mouseOver) {
             Main.mouseClicked = false;
-
+            SoundLoader.playButtonPress();
             Settings.put(key, -Settings.get(key));
 
         }

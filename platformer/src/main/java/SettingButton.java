@@ -40,6 +40,7 @@ public class SettingButton extends MenuElement {
             return;
         }
         if (Main.mouseClicked && mouseOver) {
+            SoundLoader.playButtonPress();
             Main.mouseClicked = false;
             Settings.put(key, choice);
 

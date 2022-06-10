@@ -55,6 +55,7 @@ public class LevelButton extends MenuElement {
     private void click() {
         if (Main.mouseClicked && mouseOver) {
             Main.mouseClicked = false;
+            SoundLoader.playButtonPress();
             Main.playMap(MapLoader.loadMap(name, 1));
         }
     }
