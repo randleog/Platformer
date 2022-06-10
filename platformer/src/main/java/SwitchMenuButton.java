@@ -25,6 +25,7 @@ public class SwitchMenuButton extends MenuElement {
 
     private void click() {
         if (Main.mouseClicked && mouseOver) {
+            SoundLoader.playSound(SoundLoader.buttonPress, 1, 0);
             Main.mouseClicked = false;
             Menu.switchMenu(menu);
         }

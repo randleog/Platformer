@@ -100,6 +100,7 @@ public class Settings {
         loadSetting("fps");
         loadSetting("full speedrun");
         loadSetting("name");
+        loadSetting("reduced motion");
     }
 
     private static void loadSetting(String name) {
@@ -136,10 +137,13 @@ public class Settings {
         put("full speedrun", -1);
 
         put("fps", Main.monitorFPS);
-
-        put("replay speed", 10);
+        put("volume", 10);
+        put("music volume", 5);
+        put("replay speed", 25);
 
         put("name", ANONYMOUS_NAME);
+
+        put("reduced motion", 1);
 
 
         put("focus", BEST_REPLAY);

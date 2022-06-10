@@ -3,10 +3,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Menu {
-    private static final int BUTTON_WIDTH = 200;
+    private static final int BUTTON_WIDTH = 230;
     private static final int BUTTON_HEIGHT = 100;
 
-    private static final int BUTTON_GAP = 50;
+    private static final int BUTTON_GAP = 58;
 
 
     private static String currentMenu = "main";
@@ -54,7 +54,7 @@ public class Menu {
     public static void setCurrentMenu(String newMenu) {
 
        if (newMenu.equals("main")) {
-           System.out.println(Settings.getStr("name"));
+
            if (Settings.getStr("name").equals(Settings.ANONYMOUS_NAME)) {
                currentMenu = "name";
                return;
@@ -126,6 +126,10 @@ public class Menu {
 
         Main.isVictory = false;
 
+
+        SoundLoader.adjustSfxVolume();
+        SoundLoader.adjustMusicVolume();
+
     }
 
     private static void updateTransition(String menu) {
@@ -137,7 +141,7 @@ public class Menu {
             }else if (button instanceof  MenuZoomTransition) {
                 ((MenuZoomTransition) button).loadImage(Main.getScreenshot());
             } else if (button instanceof MenuMap) {
-                System.out.println("loading background map");
+
                 ((MenuMap) button).loadMap();
             }
         }
@@ -169,18 +173,23 @@ public class Menu {
     private static void loadMain() {
         ArrayList<MenuElement> mainMenu = new ArrayList<>();
         mainMenu.add(new MenuMap("2"));
-        mainMenu.add(new ExitButton(BUTTON_GAP, 800, BUTTON_WIDTH, BUTTON_HEIGHT, "exit"));
-        mainMenu.add(new SwitchMenuButton(BUTTON_GAP, 200, BUTTON_WIDTH, BUTTON_HEIGHT, "levels", "levels"));
-        mainMenu.add(new SwitchMenuButton(BUTTON_GAP,325,BUTTON_WIDTH,BUTTON_HEIGHT, "replays", "replays"));
-        mainMenu.add(new SwitchMenuButton(BUTTON_GAP,575,BUTTON_WIDTH,BUTTON_HEIGHT, "settings", "settings"));
-
-        mainMenu.add(new SwitchMenuButton(BUTTON_GAP,450,BUTTON_WIDTH,BUTTON_HEIGHT, "stats", "stats"));
-
-
-        mainMenu.add(new MenuText(200,742,Settings.getStr("name"), 35, "name", "Monospaced Regular"));
-        mainMenu.add(new SwitchMenuButton(50,710,120,50, "change", "name"));
-
         mainMenu.add(new MenuText(BUTTON_GAP,100,"Platformer v" + Main.VERSION, 55, "Title"));
+
+
+        mainMenu.add(new SwitchMenuButton(BUTTON_GAP, 200, BUTTON_WIDTH*2+BUTTON_GAP, (int)(BUTTON_HEIGHT*1.5), "levels", "levels"));
+        mainMenu.add(new SwitchMenuButton(BUTTON_GAP,400,BUTTON_WIDTH*2+BUTTON_GAP,(int)(BUTTON_HEIGHT*1.5), "replays", "replays"));
+
+        mainMenu.add(new SwitchMenuButton(BUTTON_GAP,600,BUTTON_WIDTH,BUTTON_HEIGHT, "stats", "stats"));
+        mainMenu.add(new SwitchMenuButton(BUTTON_GAP+BUTTON_WIDTH+BUTTON_GAP,600,BUTTON_WIDTH,BUTTON_HEIGHT, "settings", "settings").getAnimateRight(true));
+
+
+        mainMenu.add(new SwitchMenuButton(BUTTON_GAP,710,BUTTON_WIDTH/2,BUTTON_HEIGHT/2, "change", "name"));
+        mainMenu.add(new MenuText(BUTTON_GAP*2+BUTTON_WIDTH/2,742,Settings.getStr("name"), 35, "name", "Monospaced Regular"));
+        mainMenu.add(new ExitButton(BUTTON_GAP, 800, BUTTON_WIDTH, BUTTON_HEIGHT, "exit"));
+
+
+
+
         mainMenu.add(new MenuTransition((Main.loaded) ? NORMAL_TRANSITION_TIME : LOADING_TRANSITION_TIME ));
         menus.put("main", new Menu(mainMenu, "main"));
     }
@@ -199,6 +208,8 @@ public class Menu {
         loadVictoryMenu();
         loadName();
         loadReplaySettingsMenu();
+
+        loadSoundSettingsMenu();
 
 
         loadLeaderboard("full");
@@ -221,6 +232,8 @@ public class Menu {
             case "replays" -> loadReplayMenu();
             case "levels" -> loadLevelMenu();
             case "victory" -> loadVictoryMenu();
+            case "replay settings" -> loadReplaySettingsMenu();
+            case "sound settings" -> loadSoundSettingsMenu();
             default -> loadLeaderboard(name.replace(" leaderboard", ""));
         }
     }
@@ -235,16 +248,36 @@ public class Menu {
         elements.add(new MenuSlider(BUTTON_GAP,100,500,100,"fps", "fps", 300, 10, false, Main.monitorFPS));
 
 
-        elements.add(new SwitchMenuButton(BUTTON_GAP, 550, 200, 100, "replay settings", "replay settings"));
+        elements.add(new SwitchMenuButton(BUTTON_GAP, 550, BUTTON_WIDTH, BUTTON_HEIGHT, "replay settings", "replay settings"));
+        elements.add(new SwitchMenuButton(BUTTON_GAP*2+BUTTON_WIDTH, 550, BUTTON_WIDTH, BUTTON_HEIGHT
+                , "sound settings", "sound settings").getAnimateRight(true));
 
-        elements.add(new ToggleButton(BUTTON_GAP, 250, 200,100, "enable debug", "disable debug", "debug"));
-        elements.add(new ToggleButton(BUTTON_GAP, 400, 200,100, "enable full speedrun", "disable full speedrun", "full speedrun"));
+        elements.add(new ToggleButton(BUTTON_GAP, 250, BUTTON_WIDTH,BUTTON_HEIGHT, "enable debug", "disable debug", "debug"));
+
+        elements.add(new ToggleButton(BUTTON_GAP*2+BUTTON_WIDTH, 250, BUTTON_WIDTH,BUTTON_HEIGHT, "enable reduced motion", "disable reduced motion", "reduced motion").getAnimateRight(true));
+
+        elements.add(new ToggleButton(BUTTON_GAP, 400, BUTTON_WIDTH,BUTTON_HEIGHT, "enable full speedrun", "disable full speedrun", "full speedrun"));
 
         elements.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "main"));
         elements.add(new MenuText(900,100,"settings: ", 55, "Title"));
         elements.add(new MenuTransition(NORMAL_TRANSITION_TIME));
 
         menus.put("settings", new Menu(elements, "main"));
+    }
+
+    private static void loadSoundSettingsMenu() {
+        ArrayList<MenuElement> elements = new ArrayList<>();
+        elements.add(new MenuMap("3"));
+
+        elements.add(new MenuSlider(BUTTON_GAP,100,500,100,"sfx volume", "volume", 100, 0, false, false));
+
+        elements.add(new MenuSlider(BUTTON_GAP,300,500,100,"music volume", "music volume", 100, 0, false, false));
+
+        elements.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "settings"));
+        elements.add(new MenuText(900,100,"sound settings: ", 55, "Title"));
+        elements.add(new MenuTransition(NORMAL_TRANSITION_TIME));
+
+        menus.put("sound settings", new Menu(elements, "settings"));
     }
 
 
@@ -441,7 +474,7 @@ public class Menu {
         ArrayList<LeaderboardTime> leaderboardTimes = UserFileHandler.getLeaderboard(name);
 
         for (int i = 0; i < leaderboardTimes.size(); i++) {
-            elements.add(new MenuText(5,0+i*40, i  + ": " + leaderboardTimes.get(i).getFormatString(), 30, "d", "Monospaced Regular"));
+            elements.add(new MenuText(5,0+i*40, (i+1)  + ": " + leaderboardTimes.get(i).getFormatString(), 30, "d", "Monospaced Regular"));
         }
 
 

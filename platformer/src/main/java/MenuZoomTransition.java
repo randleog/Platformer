@@ -41,6 +41,10 @@ public class MenuZoomTransition extends MenuElement {
 
     @Override
     public void render(GraphicsContext g) {
+        if (Settings.get("reduced motion") > 0) {
+            hideButton = true;
+            return;
+        }
         if (hideButton) {
             return;
         }

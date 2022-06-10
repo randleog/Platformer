@@ -1,4 +1,6 @@
-
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 public class ReplayButton extends MenuElement {
 
@@ -46,11 +48,34 @@ public class ReplayButton extends MenuElement {
     }
 
 
+    private Color getCurrentColour() {
+
+
+            if (mouseOver) {
+                return  Color.color(1, 1, 1, 0.5);
+
+            } else {
+                return  Color.color(0, 0, 0, 0.5);
+            }
+
+    }
+
 
     private void click() {
         if (Main.mouseClicked && mouseOver) {
             Main.mouseClicked = false;
             Main.playMap(MapLoader.loadMap(name, 2));
         }
+    }
+
+    @Override
+    public void render(GraphicsContext g) {
+        g.setFill(getCurrentColour());
+        g.fillRect(getRenderX(), getRenderY(), getRenderWidth(), Main.correctUnit(height));
+        g.setFill(Color.WHITE);
+        g.setFont(new Font(Settings.FONT,Main.correctUnit(25)));
+        g.fillText(text, getRenderX()+ Main.correctUnit(10), getRenderY() +Main.correctUnit( height / 2.0));
+
+
     }
 }

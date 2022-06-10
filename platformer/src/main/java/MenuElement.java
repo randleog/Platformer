@@ -37,9 +37,19 @@ public abstract class MenuElement {
     protected double addX = 0;
 
     protected int mouseTicks = 0;
+
+    protected boolean animateRight = true;
+
     public static final double MAX_TIME = 0.15;
 
     public static final double BUTTON_EXTEND = 0.25;
+
+
+    protected double fontSize = 10;
+
+
+    private static final double TEXT_PORTION = 0.9;
+
 
     public MenuElement(int x, int y, int width, int height, String text, TextType textType) {
         this.x = x;
@@ -51,6 +61,24 @@ public abstract class MenuElement {
         this.textType = textType;
         this.key = text;
         hideButton = false;
+
+        animateRight = x > Main.DEFAULT_WIDTH_MAP/2;
+
+
+        this.fontSize = (this.height/3.0);
+        if (this.text.length()*fontSize*MenuText.TEXT_WIDTH_FACTOR > width*TEXT_PORTION) {
+            this.fontSize = (((this.width*TEXT_PORTION)/this.text.length())/MenuText.TEXT_WIDTH_FACTOR);
+        }
+    }
+
+
+    protected double getRenderTextX() {
+        return getRenderX()+getRenderWidth()/2.0-Main.correctUnit((text.length()/2.0)*fontSize*MenuText.TEXT_WIDTH_FACTOR);
+    }
+
+
+    public void setAnimateRight(boolean animateRight) {
+        this.animateRight = animateRight;
     }
 
 
@@ -76,7 +104,7 @@ public abstract class MenuElement {
     }
     protected double getRenderX() {
         double width = Main.interpolate(0,1, MAX_TIME, (mouseTicks*1.0/Settings.get("fps")))*BUTTON_EXTEND*this.width;
-        return Main.correctUnit(x+addX + ((x > Main.DEFAULT_WIDTH_MAP/2) ? -width : 0));
+        return Main.correctUnit(x+addX + ((animateRight) ? -width : 0));
     }
 
     protected double getRenderWidth() {
@@ -128,6 +156,10 @@ public abstract class MenuElement {
         this.text = text;
     }
     protected void updateMouseTicks() {
+        if (Settings.get("reduced motion") > 0) {
+            mouseTicks = 0;
+            return;
+        }
         if (mouseOver) {
             mouseTicks++;
             mouseTicks = (int)Math.min(mouseTicks, MAX_TIME*Settings.get("fps"));
@@ -161,8 +193,8 @@ public abstract class MenuElement {
         }
 
         if (!(textType == TextType.hide)) {
-            g.setFont(new Font(Settings.FONT,Main.correctUnit(25)));
-            g.fillText(text, getRenderX() + Main.correctUnit( + 20), getRenderY()  +Main.correctUnit( + height / 2.0));
+            g.setFont(new Font(Settings.FONT,Main.correctUnit(fontSize)));
+            g.fillText(text,getRenderTextX() , getRenderY()  +Main.correctUnit( + height / 2.0));
         }
     }
 
@@ -189,6 +221,9 @@ public abstract class MenuElement {
 
     }
 
-
+    public MenuElement getAnimateRight(boolean animateRight) {
+        this.animateRight = animateRight;
+        return this;
+    }
 
 }

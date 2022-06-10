@@ -13,7 +13,7 @@ public class Map {
     protected boolean reset = false;
 
 
-    private static final int MAX_FRAMES = 43200;
+    private static final int MAX_FRAMES = 100000;
 
     private static final int MAX_SPEED = 50;
 

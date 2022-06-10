@@ -134,6 +134,9 @@ public class MenuSlider extends MenuElement {
             currentVal = newVal;
             Settings.put(choice, newVal);
 
+            SoundLoader.adjustMusicVolume();
+            SoundLoader.adjustSfxVolume();
+
 
         }
     }

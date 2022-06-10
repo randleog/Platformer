@@ -227,7 +227,12 @@ public class Main extends Application {
         Main.primaryStage = primaryStage;
 
 
+        SoundLoader.playSound(SoundLoader.buttonPress, 1, 0);
+        SoundLoader.playMusic(SoundLoader.music1, 1, 0);
     }
+
+
+
 
 
     public static String getCurrentTime() {
