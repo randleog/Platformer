@@ -200,7 +200,7 @@ public class MapLoader {
             return map;
 
         } else {
-            System.out.println("no map found");
+            System.out.println("no map found: " +"res\\maps\\" + mapName + ".txt");
             return null;
         }
     }

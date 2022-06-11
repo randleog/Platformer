@@ -39,6 +39,9 @@ public class Main extends Application {
 
     public static int totalScrolls = 0;
 
+
+    public static boolean isLevelEditor = false;
+
     public static String mapName = "-";
 
     public static final String IS_INT_REGEX = "^([+-]?[0-9]\\d*|0)$";
@@ -285,6 +288,18 @@ public class Main extends Application {
 
         isVictory = true;
 
+
+    }
+
+
+    public static void loadEditor() {
+        resetTimeline();
+        isLevelEditor = true;
+
+
+        currentMap = MapLoader.loadMap("preset\\empty", 0);
+        hashMap.put(InputAction.Menu, 2);
+        Menu.currentlyMenu = false;
 
     }
 

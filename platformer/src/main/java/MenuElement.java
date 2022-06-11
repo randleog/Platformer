@@ -24,6 +24,9 @@ public abstract class MenuElement {
     protected String text;
 
 
+
+    private static final double NORMAL_TEXT_FACTOR =0.5;
+
     protected static final double insetWidth = 10;
 
 
@@ -66,14 +69,14 @@ public abstract class MenuElement {
 
 
         this.fontSize = (this.height/3.0);
-        if (this.text.length()*fontSize*MenuText.TEXT_WIDTH_FACTOR > width*TEXT_PORTION) {
-            this.fontSize = (((this.width*TEXT_PORTION)/this.text.length())/MenuText.TEXT_WIDTH_FACTOR);
+        if (this.text.length()*fontSize*NORMAL_TEXT_FACTOR > width*TEXT_PORTION) {
+            this.fontSize = (((this.width*TEXT_PORTION)/this.text.length())/NORMAL_TEXT_FACTOR);
         }
     }
 
 
     protected double getRenderTextX() {
-        return getRenderX()+getRenderWidth()/2.0-Main.correctUnit((text.length()/2.0)*fontSize*MenuText.TEXT_WIDTH_FACTOR);
+        return getRenderX()+getRenderWidth()/2.0-Main.correctUnit((text.length()/2.0)*fontSize*NORMAL_TEXT_FACTOR);
     }
 
 

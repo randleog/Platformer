@@ -67,6 +67,8 @@ public class Map {
     GameEntity player = null;
 
 
+    private static final int GRID_SIZE = 25;
+
     public HashMap<String, Replay> availableReplays = new HashMap<>();
     private ArrayList<String> availableSpeeds = new ArrayList<>();
 
@@ -327,7 +329,83 @@ public class Map {
         return currentTick;
     }
 
+
+    private GameEntity lastOverlay;
+
+    private double mouseOriginX = 0;
+    private double mouseOriginY = 0;
+
+    private boolean mouseDragging = false;
+    private ArrayList<GameEntity> overlayEntites = new ArrayList<>();
+
+    private void editorControls() {
+
+        overlayEntites = new ArrayList<>();
+        if (Main.isKeyDown(InputAction.Down)) {
+            cameraY+=500.0/Settings.get("fps");
+        }
+        if (Main.isKeyDown(InputAction.Up)) {
+            cameraY-=500.0/Settings.get("fps");
+        }
+        if (Main.isKeyDown(InputAction.Right)) {
+            cameraX+=500.0/Settings.get("fps");
+        }
+
+        if (Main.isKeyDown(InputAction.Left)) {
+            cameraX-=500.0/Settings.get("fps");
+        }
+
+
+
+        if (Main.mouseDown) {
+            if (!mouseDragging) {
+                mouseOriginX = Main.reverseUnit(Main.mouseX)+cameraX;
+                mouseOriginY = Main.reverseUnit(Main.mouseY)+cameraY;
+                System.out.println(mouseOriginX + " " + mouseOriginY);
+            }
+
+            mouseDragging = true;
+            GameEntity toolDisplay = null;
+            if (Settings.getStr("editor tool").equals("wall")) {
+                toolDisplay = new Wall(applyGrid(mouseOriginX)
+                        ,applyGrid(mouseOriginY), this
+                        ,GRID_SIZE+applyGrid((Main.reverseUnit(Main.mouseX))+cameraX-mouseOriginX)
+                        ,GRID_SIZE+applyGrid((Main.reverseUnit(Main.mouseY))+cameraY-mouseOriginY)
+                        , InputAction.Default, FillType.Tile, 1);
+            }
+
+
+            if (toolDisplay != null) {
+                overlayEntites.add(toolDisplay);
+                lastOverlay = toolDisplay;
+            }
+
+        } else {
+            if (mouseDragging) {
+                mouseDragging = false;
+
+                if (!(lastOverlay == null)) {
+                    addEntityLive(lastOverlay);
+                }
+                //activate shit
+            }
+        }
+
+    }
+
+    private int applyGrid(double input) {
+        return ((int)(input/GRID_SIZE))*GRID_SIZE;
+    }
+
+
+
     public void tick() {
+
+        if (Menu.currentMenu.equals("editor")) {
+            editorControls();
+        }
+
+
         actualSpeed = Settings.getStrD("speed");
 
 
@@ -354,7 +432,8 @@ public class Map {
 
 
 
-            } else {
+            } else if (!(Menu.currentMenu.equals("editor"))) {
+
 
                 currentTick++;
                 if (Main.isKeyDown(InputAction.Reset)) {
@@ -424,6 +503,10 @@ public class Map {
                 entity.render(g);
             }
 
+        }
+
+        for (GameEntity entity : overlayEntites) {
+            entity.render(g);
         }
 
 

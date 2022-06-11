@@ -9,7 +9,7 @@ public class Menu {
     private static final int BUTTON_GAP = 58;
 
 
-    private static String currentMenu = "main";
+    public static String currentMenu = "main";
 
     private static final double NORMAL_TRANSITION_TIME = 0.25;
     private static final double LOADING_TRANSITION_TIME = 1.5;
@@ -101,6 +101,8 @@ public class Menu {
 
     public static void switchMenu(String newMenu) {
 
+
+
         if (!Main.hasFinished) {
             Main.currentFull = new ArrayList<>();
         }
@@ -129,6 +131,11 @@ public class Menu {
 
 
         SoundLoader.adjustMusicVolume();
+
+
+        if (newMenu.equals("editor")) {
+            Main.loadEditor();
+        }
 
     }
 
@@ -176,11 +183,15 @@ public class Menu {
         mainMenu.add(new MenuText(BUTTON_GAP,100,"Platformer v" + Main.VERSION, 55, "Title"));
 
 
-        mainMenu.add(new SwitchMenuButton(BUTTON_GAP, 200, BUTTON_WIDTH*2+BUTTON_GAP, (int)(BUTTON_HEIGHT*1.5), "levels", "levels"));
-        mainMenu.add(new SwitchMenuButton(BUTTON_GAP,400,BUTTON_WIDTH*2+BUTTON_GAP,(int)(BUTTON_HEIGHT*1.5), "replays", "replays"));
+        mainMenu.add(new SwitchMenuButton(BUTTON_GAP, 200, BUTTON_WIDTH*2+BUTTON_GAP, (BUTTON_HEIGHT), "levels", "levels"));
 
-        mainMenu.add(new SwitchMenuButton(BUTTON_GAP,600,BUTTON_WIDTH,BUTTON_HEIGHT, "stats", "stats"));
-        mainMenu.add(new SwitchMenuButton(BUTTON_GAP+BUTTON_WIDTH+BUTTON_GAP,600,BUTTON_WIDTH,BUTTON_HEIGHT, "settings", "settings").getAnimateRight(true));
+        mainMenu.add(new SwitchMenuButton(BUTTON_GAP,350,BUTTON_WIDTH,BUTTON_HEIGHT, "replays", "replays"));
+        mainMenu.add(new SwitchMenuButton(BUTTON_GAP+BUTTON_WIDTH+BUTTON_GAP,350,BUTTON_WIDTH,BUTTON_HEIGHT, "level editor", "editor").getAnimateRight(true));
+
+
+
+        mainMenu.add(new SwitchMenuButton(BUTTON_GAP,500,BUTTON_WIDTH,BUTTON_HEIGHT, "stats", "stats"));
+        mainMenu.add(new SwitchMenuButton(BUTTON_GAP+BUTTON_WIDTH+BUTTON_GAP,500,BUTTON_WIDTH,BUTTON_HEIGHT, "settings", "settings").getAnimateRight(true));
 
 
         mainMenu.add(new SwitchMenuButton(BUTTON_GAP,710,BUTTON_WIDTH/2,BUTTON_HEIGHT/2, "change", "name"));
@@ -210,6 +221,8 @@ public class Menu {
         loadReplaySettingsMenu();
 
         loadSoundSettingsMenu();
+
+        loadEditorMenu();
 
 
         loadLeaderboard("full");
@@ -512,6 +525,20 @@ public class Menu {
 
         menus.put("victory", new Menu(stats, "levels"));
 
+    }
+
+
+
+
+    private static void loadEditorMenu() {
+        ArrayList<MenuElement> elements = new ArrayList<>();
+
+        elements.add(new SettingButton(BUTTON_GAP, 650, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "wall", MenuElement.TextType.hide));
+
+        elements.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "main"));
+
+
+        menus.put("editor", new Menu(elements, "main"));
     }
 
 

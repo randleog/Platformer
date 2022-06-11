@@ -148,6 +148,9 @@ public class Settings {
         put("reduced motion", 1);
 
 
+        put("editor tool", "nothing");
+
+
         put("focus", BEST_REPLAY);
 
         put("show " + AUTHOR_REPLAY, 1);

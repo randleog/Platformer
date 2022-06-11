@@ -52,13 +52,16 @@ public class SettingButton extends MenuElement {
         if (hideButton) {
             return;
         }
-        if (Settings.getStr(key).equals(choice)) {
-            g.setFill(selectColor);
-            g.fillRect(getRenderX() + Main.correctUnit(insetWidth), getRenderY()+Main.correctUnit(insetWidth), getRenderWidth() - Main.correctUnit(insetWidth*2),Main.correctUnit(height-insetWidth*2));
-        }
 
 
         super.render(g);
 
+        if (textType == TextType.hide) {
+            g.drawImage(ImageLoader.getImage(choice),getRenderX() + Main.correctUnit(insetWidth), getRenderY()+Main.correctUnit(insetWidth), getRenderWidth() - Main.correctUnit(insetWidth*2),Main.correctUnit(height-insetWidth*2));
+        }
+        if (Settings.getStr(key).equals(choice)) {
+            g.setFill(selectColor);
+            g.fillRect(getRenderX() + Main.correctUnit(insetWidth), getRenderY()+Main.correctUnit(insetWidth), getRenderWidth() - Main.correctUnit(insetWidth*2),Main.correctUnit(height-insetWidth*2));
+        }
     }
 }

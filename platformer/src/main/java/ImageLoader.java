@@ -87,4 +87,15 @@ public class ImageLoader {
 
 
 
+    public static Image getImage(String name) {
+        return switch (name) {
+            case "wall" -> wallTile;
+            case "stickyWall" -> stickyWall;
+            case "flag" -> flag;
+            default -> wallTile;
+
+        };
+    }
+
+
 }
