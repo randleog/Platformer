@@ -135,7 +135,7 @@ public class Square {
 
     public void render(GraphicsContext g, double cameraX, double cameraY, Player player) {
 
-        if (Settings.get("debug") == 1) {
+        if (Settings.get("debug") == 1 || Menu.currentMenu.equals("editor")) {
             double x = getRenderX(cameraX);
             double y = getRenderY(cameraY);
 

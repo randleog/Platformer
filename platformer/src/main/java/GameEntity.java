@@ -115,7 +115,7 @@ public abstract class GameEntity {
         this.map = map;
         this.action = action;
         this.color = Color.color(1, 0, 0);
-        this.image = ImageLoader.defaultTile;
+        this.image = ImageLoader.player;
 
         cornerRotation = 0;
 

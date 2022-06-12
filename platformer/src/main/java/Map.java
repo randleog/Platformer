@@ -95,6 +95,8 @@ public class Map {
         frames.add(new Integer[]{Settings.get("fps"), 0});
 
         initialiseButtons();
+
+
     }
 
     public void initialiseButtons() {
@@ -328,8 +330,8 @@ public class Map {
     private double mouseOriginX = 0;
     private double mouseOriginY = 0;
 
-    private double mouseLastX = 0;
-    private double mouseLastY = 0;
+    private double lastX = 0;
+    private double lastY = 0;
 
     private boolean mouseDragging = false;
     private ArrayList<GameEntity> overlayEntites = new ArrayList<>();
@@ -371,6 +373,18 @@ public class Map {
                 double sizeX = GRID_SIZE + applyGrid((Main.reverseUnit(Main.mouseX)) + cameraX) - mouseOriginX;
                 double sizeY = GRID_SIZE + applyGrid((Main.reverseUnit(Main.mouseY)) + cameraY) - mouseOriginY;
 
+                if ((int)sizeX != (int)lastX) {
+                    SoundLoader.playSound(SoundLoader.stone, 1, 0, 1);
+
+                } else
+                if ((int)sizeY != (int)lastY) {
+                    SoundLoader.playSound(SoundLoader.stone, 1, 0, 1);
+
+                }
+
+                lastX = sizeX;
+                lastY = sizeY;
+
 
                 if (sizeX < 0) {
 
@@ -397,6 +411,15 @@ public class Map {
             } else if (Settings.getStr("editor tool").equals("eraser")) {
 
                 erase();
+            }else if (Settings.getStr("editor tool").equals("player")) {
+
+                playerX = Main.reverseUnit(Main.mouseX)+cameraX;
+            playerY = Main.reverseUnit(Main.mouseY)+cameraY;
+
+            }else if (Settings.getStr("editor tool").equals("flag")) {
+
+                toolDisplay = new Flag(applyGrid(Main.reverseUnit(Main.mouseX))+cameraX, applyGrid(Main.reverseUnit(Main.mouseY))+cameraY, this);
+
             }
 
 
@@ -451,7 +474,7 @@ public class Map {
             wall.setSizeY(wall.getSizeY() - 1);
         }
         collisions = 0;
-        while (getActions(wall).contains(InputAction.Down)) {
+        while (getActions(wall).contains(InputAction.Left)) {
             collisions++;
             if (collisions > maxCollisions) {
                 return null;
@@ -460,6 +483,7 @@ public class Map {
         }
 
         wall.reset();
+
 
         return wall;
     }
@@ -646,7 +670,7 @@ public class Map {
 
         if (Menu.currentMenu.equals("editor")) {
             g.setFill(Color.color(0,1,0,0.2));
-            g.fillRect(Main.correctUnit(playerX-cameraX), Main.correctUnit(playerY-cameraY), Main.correctUnit(100), Main.correctUnit(100));
+            g.drawImage(ImageLoader.player, Main.correctUnit(playerX-cameraX), Main.correctUnit(playerY-cameraY), Main.correctUnit(GRID_SIZE), Main.correctUnit(GRID_SIZE));
         }
 
         if (isReplay) {
@@ -657,7 +681,7 @@ public class Map {
         }
 
 
-        if (Settings.get("debug") > 0) {
+        if (Settings.get("debug") > 0 || Menu.currentMenu.equals("editor")) {
             if (Main.mouseDown) {
 
                 g.setLineWidth(Main.correctUnit(1));

@@ -23,7 +23,7 @@ public class ImageLoader {
     public static Image wallTile2 = loadImage("wallTile2.png", 64);
     public static Image wallTile3 = loadImage("wallTile3.png", 64);
     public static Image wallTile4 = loadImage("wallTile4.png", 64);
-    public static Image defaultTile = loadImage("default.png", 64);
+    public static Image player = loadImage("default.png", 64);
     public static Image particle = loadImage("particle.png", 64);
 
     public static Image speed = loadImage("speed.png", 64);
@@ -95,6 +95,7 @@ public class ImageLoader {
             case "stickyWall" -> stickyWall;
             case "flag" -> flag;
             case "eraser" -> eraser;
+            case "player" -> player;
             default -> wallTile;
 
         };

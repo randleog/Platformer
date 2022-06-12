@@ -532,7 +532,8 @@ public class Menu {
         elements.add(new SettingButton(BUTTON_GAP*2+BUTTON_WIDTH, 800, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "wall", MenuElement.TextType.hide));
 
         elements.add(new SettingButton(BUTTON_GAP*3+BUTTON_HEIGHT+BUTTON_WIDTH, 800, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "eraser", MenuElement.TextType.hide));
-
+        elements.add(new SettingButton(BUTTON_GAP*4+BUTTON_HEIGHT*2+BUTTON_WIDTH, 800, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "player", MenuElement.TextType.hide));
+        elements.add(new SettingButton(BUTTON_GAP*5+BUTTON_HEIGHT*3+BUTTON_WIDTH, 800, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "flag", MenuElement.TextType.hide));
         elements.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "main"));
 
 

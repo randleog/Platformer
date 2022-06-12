@@ -27,4 +27,4 @@ full_leaderboard_scroll_Y 0
 reduced_motion 1
 volume 100
 music_volume 0
-editor_tool nothing
+editor_tool eraser
