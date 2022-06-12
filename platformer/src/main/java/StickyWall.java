@@ -141,7 +141,7 @@ public class StickyWall extends GameEntity {
 
 
     public String toString() {
-        String line = "wall " + (int)x + " " + (int)y + " " + (int)sizeX + " " + (int)sizeY;
+        String line = "stickyWall " + (int)x + " " + (int)y + " " + (int)sizeX + " " + (int)sizeY;
 
         return line;
     }

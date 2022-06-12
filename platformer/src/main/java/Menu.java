@@ -100,7 +100,9 @@ public class Menu {
     }
 
     public static void switchMenu(String newMenu) {
-
+        if (currentMenu.equals("editor")) {
+            MapLoader.saveMap(Main.currentMap, false);
+        }
 
 
         if (!Main.hasFinished) {
@@ -155,13 +157,9 @@ public class Menu {
     }
 
     public static ArrayList<MenuElement> getCurrentMenu() {
-
-
         if (currentMenu.equals("")) {
             return new ArrayList<>();
         }
-
-
 
         if (menus.containsKey(currentMenu)) {
             return menus.get(currentMenu).getbuttons();
@@ -171,8 +169,6 @@ public class Menu {
             errorScreen.add(new SwitchMenuButton(600,600,400,100,"Return to main menu", "main"));
             return errorScreen;
         }
-
-
 
 
     }
@@ -533,7 +529,9 @@ public class Menu {
     private static void loadEditorMenu() {
         ArrayList<MenuElement> elements = new ArrayList<>();
 
-        elements.add(new SettingButton(BUTTON_GAP, 650, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "wall", MenuElement.TextType.hide));
+        elements.add(new SettingButton(BUTTON_GAP*2+BUTTON_WIDTH, 800, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "wall", MenuElement.TextType.hide));
+
+        elements.add(new SettingButton(BUTTON_GAP*3+BUTTON_HEIGHT+BUTTON_WIDTH, 800, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "eraser", MenuElement.TextType.hide));
 
         elements.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "main"));
 

@@ -74,6 +74,12 @@ public enum InputAction {
             return "Swim";
         }
     },
+
+    Control() {
+        public String toString() {
+            return "Control";
+        }
+    },
     Corner() {
         public String toString() {
             return "Corner";

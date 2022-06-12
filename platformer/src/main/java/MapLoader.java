@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class MapLoader {
@@ -203,6 +205,29 @@ public class MapLoader {
             System.out.println("no map found: " +"res\\maps\\" + mapName + ".txt");
             return null;
         }
+    }
+
+
+
+    public static void saveMap(Map map, boolean keepName) {
+
+        File file = new File ("res\\maps\\custom\\" + ((keepName) ? map.getName() :(new File("res\\maps\\custom\\").listFiles().length+1)) + ".txt");
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(map.toString());
+            System.out.println("written");
+
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 

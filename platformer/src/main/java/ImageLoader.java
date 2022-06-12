@@ -33,6 +33,8 @@ public class ImageLoader {
     public static Image trophy = loadImage("trophy.png", 64);
     public static Image flag = loadImage("flag.png", 64);
     public static Image checkpoint = loadImage("checkpoint.png", 64);
+
+    public static Image eraser = loadImage("eraser.png", 64);
     public static Image dimension = loadImage("dimension.png", 64);
     /**
      * Create an input stream to read images.
@@ -92,6 +94,7 @@ public class ImageLoader {
             case "wall" -> wallTile;
             case "stickyWall" -> stickyWall;
             case "flag" -> flag;
+            case "eraser" -> eraser;
             default -> wallTile;
 
         };

@@ -32,6 +32,8 @@ import java.util.Random;
  * @version 0.0.8
  * @todo: leaderboard for full speedrun ranking, then stats page button launches menu for previous records in all the categories: slider to show them
  * @todo: save times for individual users (last, best[and overall too], speedrun[and overall too])
+ * @todo: vanity slots to customise character design (multi layered player model with independantly moving parts)
+ * @todo: water / lava
  * @todo: level editor
  */
 public class Main extends Application {
@@ -500,6 +502,8 @@ public class Main extends Application {
         inputMap.put(KeyCode.ESCAPE, InputAction.Menu);
         inputMap.put(KeyCode.F11, InputAction.FullScreen);
         inputMap.put(KeyCode.BACK_SPACE, InputAction.Reset);
+        inputMap.put(KeyCode.CONTROL, InputAction.Control);
+
 
         inputMap.put(KeyCode.R, InputAction.Hook);
 
@@ -515,6 +519,7 @@ public class Main extends Application {
         hashMap.put(InputAction.Up, 0);
         hashMap.put(InputAction.Left, 0);
         hashMap.put(InputAction.Down, 0);
+        hashMap.put(InputAction.Control, 0);
         hashMap.put(InputAction.Right, 0);
         hashMap.put(InputAction.Sprint, 0);
         hashMap.put(InputAction.Default, 0);

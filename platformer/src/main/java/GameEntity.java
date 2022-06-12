@@ -309,6 +309,11 @@ public abstract class GameEntity {
     }
 
 
+    public void setSizeY(double sizeY) {
+        this.sizeY = sizeY;
+    }
+
+
     protected void jumpCollision() {
         x += WALL_CLING_RADIUS;
         if (map.getActions(this).contains(InputAction.Left)) {

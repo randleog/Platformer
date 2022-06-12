@@ -36,6 +36,13 @@ public class Wall extends GameEntity {
 
     }
 
+    public void reset() {
+
+        loadWallHitbox();
+
+        loadCenters();
+    }
+
     protected void loadWallHitbox() {
         hitbox = new ArrayList<>();
         hitbox.add(new Square(x + WALL_CORNER_SIZE, y, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Up));

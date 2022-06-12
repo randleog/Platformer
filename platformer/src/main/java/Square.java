@@ -162,6 +162,7 @@ public class Square {
                 g.setFill(Color.BLACK);
             }
 
+            g.setFill(Color.WHITE);
             g.setFont(new Font("monospaced", 15));
             g.fillText(action.toString() + " x:" + String.format("%.4f", this.x) + " y:" + String.format("%.4f", this.y), x, y);
             flagged = false;
