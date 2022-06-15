@@ -6,33 +6,47 @@ public class Wave {
     private double velX;
 
 
+    private double acceleration = 0;
+
+
+
+    private static final double SPRING_CONSTANT = 0.025;
+    private static final double DAMPENING_FACTOR = 0.15;
+
+
+    private static final double SPEED = 144;
+
+    private double targetHeight = 10;
+
+
+
+    private static final double MASS = 1; // spring constant/mass = current constant
+
     public Wave() {
         this.amplitude = 0;
         this.velY = 0;
         this.velX = 0;
     }
-    public Wave(double amplitude) {
-        this.amplitude = amplitude;
-        this.velY = 0;
-        this.velX = 0;
-    }
+
 
 
     public void tick(Wave... additional) {
 
 
-        factorVelY(additional);
-        velY = velY +10/ Settings.getD("fps");
-        velY = velY * Math.pow(0.1, 1.0 / Settings.getD("fps"));
+
+
+        double displacement = amplitude-targetHeight;
+        double accel = -SPRING_CONSTANT*displacement -DAMPENING_FACTOR*velY;
+
+        amplitude+=Main.correctFPS(velY);
+        velY+=Main.correctFPS(accel);
 
 
 
-        if (amplitude > 0) {
-            if (velY > 0) {
-                velY = velY * Math.pow(0.01, 1.0 / Settings.getD("fps"));
-            }
-            amplitude = amplitude * Math.pow(0.005, 1.0 / Settings.getD("fps"));
-        }
+
+
+
+
     }
 
 

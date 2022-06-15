@@ -30,8 +30,15 @@ public class Water extends GameEntity {
 
     private Wave[] waves;
 
+    private float[] leftDeltas;
+    private float[] rightDeltas;
 
-    private static final double SPLASH_TIME = 1;
+
+
+    private static final double SPREAD = 0.002;
+
+
+    private static final double SPLASH_TIME = 0.5;
     private static final double SPLASH_INTERVAL = 0.4;
 
     private double lastSplashTime = 0;
@@ -50,11 +57,17 @@ public class Water extends GameEntity {
         }
 
 
-        waves = new Wave[(int) (sizeX / grid)];
+        waves = new Wave[(int) (sizeX / grid)+2];
         for (int i = 0; i < waves.length; i++) {
             waves[i] = new Wave();
         }
 
+
+        leftDeltas = new float[waves.length];
+        Arrays.fill(leftDeltas, 0);
+
+        rightDeltas = new float[waves.length];
+        Arrays.fill(rightDeltas, 0);
 
         loadHitbox();
     }
@@ -75,10 +88,9 @@ public class Water extends GameEntity {
 
     public void tick() {
 
-
+        tickWaves();
         tickSplashes();
 
-        tickWaves();
 
 
     }
@@ -104,23 +116,46 @@ public class Water extends GameEntity {
             return;
         }
 
+
+
+        for (int j = 0; j < 8; j++) {
+            for (int i = 0; i < waves.length; i++) {
+                if (i > 0) {
+                    leftDeltas[i] = (float) (SPREAD * (waves[i].getAmplitude() - waves[i - 1].getAmplitude()));
+                    waves[i - 1].addVelY(Main.correctFPS(leftDeltas[i]));
+                }
+
+                if (i < waves.length - 1) {
+                    rightDeltas[i] = (float) (SPREAD * (waves[i].getAmplitude() - waves[i + 1].getAmplitude()));
+                    waves[i + 1].addVelY(Main.correctFPS(leftDeltas[i]));
+                }
+            }
+
+            for (int i = 0; i < waves.length; i++) {
+                if (i > 0) {
+                    waves[i - 1].addAmplitude(Main.correctFPS(leftDeltas[i]));
+                }
+                if (i < waves.length - 1) {
+                    waves[i + 1].addAmplitude(Main.correctFPS(rightDeltas[i]));
+                }
+            }
+        }
+
+
         if (this.getMainShape().intersect(map.player.getMainShape())) {
             if (Math.abs(map.player.getVelX()) > 1 || Math.abs(map.player.getVelY()) > 1) {
-                for (int i = 0; i < waves.length; i++) {
-
-                    if (new Square(this.x + i * grid, this.y - grid, grid, WAVE_DEPTH, 2, InputAction.Default).intersect(map.player.getMainShape())) {
 
 
-                        waves[i].addVelY(map.player.getVelY() * 0.1);
 
-                        if (this.x + i * grid - grid / 2.0 > map.playerX) {
-                            waves[i].addVelY((Math.abs(map.player.getVelX()) * 0.1));
-                        } else {
-                            waves[i].addVelY(-(Math.abs(map.player.getVelX()) * 0.1));
-                        }
+
+                    if (new Square(this.x, this.y - grid, this.sizeX, WAVE_DEPTH, 2, InputAction.Default).intersect(map.player.getMainShape())) {
+
+                        Wave wave = waves[(int)(((map.playerX-this.x)+0.5)/grid)+1];
+                        wave.addVelY(map.player.getVelY()*0.25);
+                        wave.addVelY(Math.abs(map.player.getVelX())*0.075);
 
                     }
-                }
+
                 if (Math.sqrt(Math.pow(map.player.getVelX(), 2) + Math.pow(map.player.getVelY(), 2)) > 1) {
 
                     if (((System.currentTimeMillis() - lastSplashTime) / Settings.get("fps") > SPLASH_INTERVAL)) {
@@ -143,7 +178,7 @@ public class Water extends GameEntity {
                 currentTick++;
 
 
-                for (int i = 0; i < (sizeX / grid); i++) {
+                for (int i = 0; i < waves.length; i++) {
                     if (map.screenInersect(new Square(this.x + i * grid, this.y, grid, grid, 1, InputAction.Default))) {
 
                         if (i == 0) {
@@ -160,12 +195,7 @@ public class Water extends GameEntity {
                 }
 
 
-                for (int i = 0; i < waves.length; i++) {
-                    double value = (Main.random.nextDouble(10) - 5);
 
-                    waves[i].addAmplitude((Main.random.nextDouble(1) - 0.5));
-
-                }
             }
 
 
@@ -179,7 +209,7 @@ public class Water extends GameEntity {
                     double currentAnimate = Main.correctUnit(Main.interpolate(0, BUBBLE_WIDTH, SPLASH_TIME * Settings.get("fps"), splash[2]));
                     currentAnimate = Math.min(BUBBLE_WIDTH, currentAnimate);
                     g.setLineWidth(Main.correctUnit(1));
-                    g.setStroke(Color.color(1, 1, 1, 1 - ((currentAnimate) / BUBBLE_WIDTH) / 2.0));
+                    g.setStroke(Color.color(1, 1, 1, 1 - ((currentAnimate) / BUBBLE_WIDTH)));
                     g.strokeRect(Main.correctUnit(splash[0] - map.cameraX) - currentAnimate / 2
                             , Main.correctUnit(splash[1] - map.cameraY) - currentAnimate / 2
                             , currentAnimate
@@ -197,49 +227,42 @@ public class Water extends GameEntity {
                 g.setFill(color);
 
 
-                for (int i = 0; i < (sizeX / grid); i++) {
-                    if (map.screenInersect(new Square(this.x + i * grid, this.y - DISTORT, grid, DISTORT, 1, InputAction.Default))) {
+                for (int i = 1; i < waves.length-1; i++) {
+                    int actualPos = i-1;
+
+
+                    if (map.screenInersect(new Square(this.x + actualPos * grid, this.y - DISTORT, grid, DISTORT, 1, InputAction.Default))) {
                         g.setFill(color);
 
 
                         double[] ys = new double[]{y + getRenderSizeY()
-                                , y + Math.min(getRenderSizeY(), Main.correctUnit(waves[i].getAmplitude()))
-                                , y + Math.min(getRenderSizeY(), Main.correctUnit(waves[i].getAmplitude()))
-                                , y + Math.min(getRenderSizeY(), (Main.correctUnit(waves[i].getAmplitude())))
-                                , y + Math.min(getRenderSizeY(), Main.correctUnit(waves[i].getAmplitude()))
+                                , y + Math.min(getRenderSizeY(), Main.correctUnit(waves[i-1].getAmplitude())* 3.0 / 6 + Main.correctUnit(waves[i].getAmplitude() *3.0 / 6))
+                                , y + Math.min(getRenderSizeY(), Main.correctUnit(waves[i-1].getAmplitude())  / 6 + Main.correctUnit(waves[i].getAmplitude() *5 / 6))
+                                , y + Math.min(getRenderSizeY(), (Main.correctUnit(waves[i].getAmplitude())) *5.0 / 6 + (Main.correctUnit(waves[i+1].getAmplitude()) / 6))
+                                , y + Math.min(getRenderSizeY(), Main.correctUnit(waves[i].getAmplitude()) *3.0 / 6 + (Main.correctUnit(waves[i+1].getAmplitude()*3.0 / 6)))
                                 , y + getRenderSizeY()};
 
 
-                        double[] xs = new double[]{(int)(x + i * Main.correctUnit(grid))
-                                , (int)(x + i * Main.correctUnit(grid))
-                                , x + i * Main.correctUnit(grid) + Main.correctUnit(grid) / 3
-                                , x + i * Main.correctUnit(grid) + Main.correctUnit(grid) * 2.0 / 3
-                                , (int)(x + i * Main.correctUnit(grid) + Main.correctUnit(grid))
-                                , (int)(x + i * Main.correctUnit(grid) + Main.correctUnit(grid))};
+                        double[] xs = new double[]{(int)(x + actualPos * Main.correctUnit(grid))
+                                , (int)(x + actualPos * Main.correctUnit(grid))
+                                , x + actualPos * Main.correctUnit(grid) + Main.correctUnit(grid) / 3
+                                , x + actualPos * Main.correctUnit(grid) + Main.correctUnit(grid) * 2.0 / 3
+                                , (int)(x + actualPos * Main.correctUnit(grid) + Main.correctUnit(grid))
+                                , (int)(x + actualPos * Main.correctUnit(grid) + Main.correctUnit(grid))};
 
-                        if (i > 0) {
-                            ys = new double[]{y + getRenderSizeY()
-                                    , y + Math.min(getRenderSizeY(), Main.correctUnit(waves[i-1].getAmplitude()))
-                                    , y + Math.min(getRenderSizeY(), Main.correctUnit(waves[i-1].getAmplitude()) * 2.0 / 3 + Main.correctUnit(waves[i].getAmplitude() / 3))
-                                    , y + Math.min(getRenderSizeY(), (Main.correctUnit(waves[i-1].getAmplitude())) / 3 + (Main.correctUnit(waves[i].getAmplitude()) * 2.0 / 3))
-                                    , y + Math.min(getRenderSizeY(), Main.correctUnit(waves[i].getAmplitude()))
-                                    , y + getRenderSizeY()};
-                        }
+
+
 
 
 
 
                         g.fillPolygon(xs, ys, 6);
 
-
-                        ys = new double[]{ys[1], ys[2],ys[3],ys[4]};
-                        xs = new double[]{x + i * Main.correctUnit(grid)
-                                , x + i * Main.correctUnit(grid) + Main.correctUnit(grid/3.0)
-                                , x + i * Main.correctUnit(grid) + Main.correctUnit(grid*2/3.0)
-                                , x + i * Main.correctUnit(grid) + Main.correctUnit(grid)};
-                        g.setStroke(Color.color(1, 1, 1, 0.7));
+                        g.setStroke(Color.color(1, 1, 1));
                         g.setLineWidth(Main.correctUnit(2));
-                        g.strokePolygon(xs, ys, 4);
+                        g.strokeLine(xs[1], ys[1],xs[2] ,ys[2]);
+                        g.strokeLine(xs[2], ys[2],xs[3] ,ys[3]);
+                        g.strokeLine(xs[3], ys[3],xs[4] ,ys[4]);
 
 
                     }

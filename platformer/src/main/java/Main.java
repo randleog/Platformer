@@ -123,6 +123,9 @@ public class Main extends Application {
 
     public static boolean hasFinished = true;
 
+
+    private static final double BASE_FPS = 144;
+
     /**
      * Load the menus for navigation, and launch the user selection menu.
      *
@@ -347,6 +350,11 @@ public class Main extends Application {
 
 
 
+    }
+
+
+    public static double correctFPS(double val) {
+        return (val/Settings.get("fps"))*BASE_FPS;
     }
 
     public static WritableImage getScreenshot() {

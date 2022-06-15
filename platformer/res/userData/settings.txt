@@ -35,7 +35,7 @@ save save
 main_level_scroll_Y 0
 main_level_scroll_X 0
 level main
-level_scroll_Y 0
+level_scroll_Y 40
 main\full_leaderboard_scroll_X 2
 main\4_leaderboard_scroll_X 2
 main\2_leaderboard_scroll_Y 240
