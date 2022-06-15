@@ -25,8 +25,6 @@ public class StickyWall extends GameEntity {
 
         loadStickyWallHitbox();
 
-        loadCenters();
-
 
         if (!(this.map == null) && this.sizeY == this.sizeX) {
             scan();

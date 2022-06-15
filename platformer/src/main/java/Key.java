@@ -1,5 +1,6 @@
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 public class Key extends GameEntity {
 
@@ -21,17 +22,35 @@ public class Key extends GameEntity {
         map.keys.put(Integer.valueOf(code), true);
     }
 
+    public void setCode(int code) {
+        this.code = code;
+    }
+
 
     public void tick() {
 
 
+        if (map.player == null) {
+            return;
+        }
         if(this.getMainShape().intersect(map.player.getMainShape())) {
             collectKey();
         }
     }
 
     public void render(GraphicsContext g) {
+
         renderSquare(g);
+    if (Menu.currentMenu.equals("editor")) {
+        g.setFill(Color.WHITE);
+        g.setFont(new Font("monospaced", 20));
+        g.fillText("code: " + code, getRenderX(), getRenderY()+getRenderSizeY());
+    }
+
+    }
+
+    public int getCode() {
+        return code;
     }
 
     public String toString() {

@@ -88,6 +88,10 @@ public enum InputAction {
     };
 
 
+    public static boolean isUnactionable(InputAction action) {
+        return (action == InputAction.Default|| action == InputAction.Swim);
+    }
+
     public static boolean isRightType(InputAction action) {
         return (action == InputAction.Right|| action == InputAction.StickyRight);
     }

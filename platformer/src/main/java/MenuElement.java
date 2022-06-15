@@ -135,7 +135,7 @@ public abstract class MenuElement {
     }
 
     public Square getSquare() {
-        return new Square(x, y+addY, width, height, 1, InputAction.Default);
+        return new Square(x+addX, y+addY, width, height, 1, InputAction.Default);
     }
 
     public String getText() {

@@ -296,15 +296,20 @@ public class UserFileHandler {
     }
 
 
-    public static double getCumulativeBestTimes() {
+    public static double getCumulativeBestTimes(String world) {
         double total = 0;
         boolean notAll = false;
 
-        for (int i = 1; i < Main.lastLevel + 1; i++) {
-            if (getTime(Integer.toString(i), 1) == -1) {
+
+
+
+        for (String level : getLevels(world)) {
+            if (getTime(level, 1) == -1) {
                 notAll = true;
             }
-            total = total + getTime(Integer.toString(i), 1);
+
+            total = total + getTime(level, 1);
+
         }
 
         if (notAll) {
@@ -313,13 +318,71 @@ public class UserFileHandler {
         return total;
     }
 
+    public static ArrayList<String> getLevels(String world) {
+        File file = new File("res\\userData\\levelTimes.txt");
+        ArrayList<String> levels = new ArrayList<>();
+
+
+        try {
+            Scanner scanner = new Scanner(file);
+
+            while (scanner.hasNextLine()) {
+                String lineText = scanner.nextLine();
+                String[] line = lineText.split(" ");
+                if (line[0].contains(world)) {
+                    if (line[0].replace(world + "\\", "").matches(Main.IS_INT_REGEX)) {
+                        levels.add(line[0]);
+                    }
+
+                }
+
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return levels;
+    }
+
+    public static int getLastLevel(String world) {
+        File file = new File("res\\userData\\levelTimes.txt");
+        int lastLevel = 0;
+
+
+        try {
+            Scanner scanner = new Scanner(file);
+
+            while (scanner.hasNextLine()) {
+                String lineText = scanner.nextLine();
+                String[] line = lineText.split(" ");
+                if (line[0].contains(world)) {
+                    if (line[0].replace(world + "\\", "").matches(Main.IS_INT_REGEX)) {
+                        if (Integer.parseInt(line[0].replace(world + "\\", "")) > lastLevel) {
+                            lastLevel =Integer.parseInt(line[0].replace(world + "\\", ""));
+                        }
+
+                    }
+
+                }
+
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return lastLevel;
+    }
 
 
 
+    public static void saveUserTime(String world, String mapName, double time, String data) {
 
-    public static void saveUserTime(String mapName, double time, String data) {
         File file = new File("res\\userData\\levelTimes.txt");
         String text = "";
+
+        boolean hasAdded = false;
         try {
             Scanner scanner = new Scanner(file);
 
@@ -327,7 +390,7 @@ public class UserFileHandler {
                 String lineText = scanner.nextLine();
                 String[] line = lineText.split(" ");
 
-                if (line[0].equals(mapName)) {
+                if (line[0].equals(world + "\\" + mapName)) {
 
 
                     text = text + line[0] + " ";
@@ -338,6 +401,7 @@ public class UserFileHandler {
                         values.add(new LeaderboardTime(Double.parseDouble(line[i].split(":")[0]), line[i].split(":")[1], line[i].split(":")[2]));
                     }
                     values.add(new LeaderboardTime(time, Settings.getStr("name"), data));
+                    hasAdded = true;
 
 
                     Collections.sort(values);
@@ -356,9 +420,15 @@ public class UserFileHandler {
                 } else {
                     text = text + lineText + "\n";
                 }
+
+
                 if (!scanner.hasNextLine()) {
                     text = text.substring(0, text.length() - 1);
                 }
+            }
+
+            if (!hasAdded) {
+                text = text +"\n" + world + "\\" + mapName + " " + new LeaderboardTime(time, Settings.getStr("name"), data).toString();
             }
 
 

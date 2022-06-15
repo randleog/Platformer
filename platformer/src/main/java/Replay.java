@@ -71,14 +71,14 @@ public class Replay {
 
 
     public static boolean canProgress(ArrayList<Replay> actual, String next) {
+        String level = next.split("\\\\")[1];
 
-
-        if (!(next.matches(Main.IS_INT_REGEX))) {
+        if (!(level .matches(Main.IS_INT_REGEX))) {
             return false;
         }
 
         if (actual.size() ==0) {
-            if (next.equals("1")) {
+            if (level.equals("1")) {
                 return true;
             }
         }
@@ -91,7 +91,7 @@ public class Replay {
         }
 
         boolean can = true;
-        for (int i = 2; i < Integer.parseInt(next)+1; i++) {
+        for (int i = 2; i < Integer.parseInt(level)+1; i++) {
             if (!(hasLast(actual, i))) {
                 can = false;
             }
@@ -106,7 +106,7 @@ public class Replay {
     public static void saveReplays(ArrayList<Replay> actual) {
 
         for (Replay replay : actual) {
-            ReplaySave.saveReplay(replay.getAllFrames(), "full\\" + replay.getMapName());
+            ReplaySave.saveReplay(replay.getAllFrames(),  Main.getWorld(replay.getMapName()) + "\\full\\" + Main.getLevel( replay.getMapName()));
         }
     }
 
@@ -132,7 +132,7 @@ public class Replay {
 
         boolean can = false;
         for (Replay replay : actual) {
-            if (replay.getMapName().equals(Integer.toString(next-1))) {
+            if (Main.getLevel(replay.getMapName()).equals(Integer.toString(next-1))) {
                 can = true;
             }
         }

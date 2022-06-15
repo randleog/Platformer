@@ -12,10 +12,15 @@ public class Map {
 
     protected boolean reset = false;
 
+    private int currentCode = 0;
+
 
     private static final int MAX_FRAMES = 100000;
 
     private static final int MAX_SPEED = 50;
+
+
+    private static final int MAX_PARTICLES = 500;
 
     private ArrayList<GameEntity> entities = new ArrayList<>();
     private ArrayList<GameEntity> nextEntities = new ArrayList<>();
@@ -31,9 +36,11 @@ public class Map {
 
     public static final double AIR_DRAG = 0.4;
     public static final double GROUND_DRAG = 0.0001;
-
+    public static final double SWIMMING_DRAG = 0.0001;
 
     private static final int CRASH_PARTICLE_COUNT = 10;
+
+    private String world;
 
 
     private boolean isReplay;
@@ -63,11 +70,13 @@ public class Map {
 
     private double actualSpeed = 1;
 
+    private boolean fullSpeedrun = false;
+
     GameEntity player = null;
 
 
-    private static final int SMALLER_GRID = 25;
-    private static final int GRID_SIZE = 50;
+    public static final int SMALLER_GRID = 25;
+    public static final int GRID_SIZE = 50;
     public HashMap<String, Replay> availableReplays = new HashMap<>();
     private ArrayList<String> availableSpeeds = new ArrayList<>();
 
@@ -81,15 +90,21 @@ public class Map {
 
     private ArrayList<Integer[]> frames = new ArrayList<>();
 
-    public Map(int sizeX, int sizeY, String name, boolean isReplay) {
+    public Map(int sizeX, int sizeY, String name, boolean isReplay, String world) {
         Settings.put("speed", "1");
         finished = 0;
+
+        this.world = world;
 
 
         this.isReplay = isReplay;
         this.name = name;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
+
+        if (!Menu.currentMenu.equals("editor")) {
+            fullSpeedrun = (Settings.get("full speedrun") == 1);
+        }
 
 
         frames.add(new Integer[]{Settings.get("fps"), 0});
@@ -123,8 +138,8 @@ public class Map {
 
         screenMenu = new ArrayList<>();
         if (!isReplay) {
-            backButton = new SwitchMenuButton(400, 500, 200, 100, "back", "levels");
-            if (Settings.get("full speedrun") == 1) {
+            backButton = new SwitchMenuButton(400, 500, 200, 100, "back", world + " levels");
+            if (fullSpeedrun) {
                 screenMenu.add(new SpeedrunBar(1500, 25, this));
             }
         } else {
@@ -179,18 +194,18 @@ public class Map {
         if (!isReplay) {
 
 
-            if (Settings.get("full speedrun") == 1) {
+            if (fullSpeedrun) {
                 if (Replay.canProgress(Main.currentFull, getName()) || getName().equals("1")) {
 
                     Main.currentFull.add(new Replay(frames, getName()));
-                    System.out.println(Main.currentFull.size());
 
-                    if (getName().equals(Integer.toString(Main.lastLevel))) {
 
-                        if (UserFileHandler.getTime("full", 1) > Replay.getTime(Main.currentFull) || UserFileHandler.getTime("full", 1) == -1) {
+                    if (getName().equals(Integer.toString(UserFileHandler.getLastLevel(getWorld())))) {
+
+                        if (UserFileHandler.getTime(world + "\\full", 1) > Replay.getTime(Main.currentFull) || UserFileHandler.getTime(world + "\\full", 1) == -1) {
 
                             Replay.saveReplays(Main.currentFull);
-                            System.out.println("congrats");
+
                         }
                         String data = LocalDate.now() + "|" + Main.getCurrentTime();
 
@@ -198,27 +213,27 @@ public class Map {
                             data = data + "|" + Main.formatTime(replay.getTime());
                         }
 
-                        UserFileHandler.saveUserTime("full", Replay.getTime(Main.currentFull), data);
+                        UserFileHandler.saveUserTime(world , "full", Replay.getTime(Main.currentFull), data);
 
                     }
                 }
             }
 
 
-            ReplaySave.saveReplay(frames, "last\\" + name);
+            ReplaySave.saveReplay(frames, world + "\\" + "last\\" + name);
 
             if (isPb) {
                 saveReplay();
             }
-            UserFileHandler.saveUserTime(name, getTime(), Main.getCurrentTime());
+            UserFileHandler.saveUserTime(world, name, getTime(), Main.getCurrentTime());
         }
-        if (Settings.get("full speedrun") == 1) {
+        if (fullSpeedrun) {
 
-            Menu.switchMenu("levels");
+            Menu.switchMenu( world + " levels");
         } else {
             String message = ((isPb) ? "New best time: " : "Map completed in: ") + Main.formatTime(getTime());
             Stats.add("total Finishes", 1);
-            Main.victory(name, new MenuText(475, 250, message, 50, "message"));
+            Main.victory(world + "\\" +name, new MenuText(475, 250, message, 50, "message"));
         }
 
 
@@ -250,7 +265,7 @@ public class Map {
     private void reset() {
         Stats.add("total Time", getTime());
         Main.currentFull = new ArrayList<>();
-        Main.playMap(MapLoader.loadMap(name, 1));
+        Main.playMap(MapLoader.loadMap(world + "\\" +name, 1));
 
     }
 
@@ -302,6 +317,9 @@ public class Map {
 
 
     public void addParticleLive(GameEntity entity) {
+        if (nextParticles.size()+particles.size() > MAX_PARTICLES) {
+            return;
+        }
         nextParticles.add(entity);
     }
 
@@ -314,7 +332,7 @@ public class Map {
     public void saveReplay() {
 
 
-        ReplaySave.saveReplay(frames, name);
+        ReplaySave.saveReplay(frames, world + "\\" +name);
 
 
     }
@@ -338,7 +356,10 @@ public class Map {
 
     private void editorControls() {
 
-        double speed = ((Main.isKeyDown(InputAction.Sprint)) ? 1000 :  500);
+
+        String tool = Settings.getStr("editor tool");
+
+        double speed = ((Main.isKeyDown(InputAction.Sprint)) ? 1000 : 500);
 
         overlayEntites = new ArrayList<>();
         if (Main.isKeyDown(InputAction.Down)) {
@@ -363,63 +384,32 @@ public class Map {
                 }
                 mouseOriginX = applyGrid(Main.reverseUnit(Main.mouseX) + cameraX);
                 mouseOriginY = applyGrid(Main.reverseUnit(Main.mouseY) + cameraY);
-                System.out.println(mouseOriginX + " " + mouseOriginY);
+
+
             }
 
             mouseDragging = true;
+
+
             GameEntity toolDisplay = null;
-            if (Settings.getStr("editor tool").equals("wall")) {
 
-                double sizeX = GRID_SIZE + applyGrid((Main.reverseUnit(Main.mouseX)) + cameraX) - mouseOriginX;
-                double sizeY = GRID_SIZE + applyGrid((Main.reverseUnit(Main.mouseY)) + cameraY) - mouseOriginY;
-
-                if ((int)sizeX != (int)lastX) {
-                    SoundLoader.playSound(SoundLoader.stone, 1, 0, 1);
-
-                } else
-                if ((int)sizeY != (int)lastY) {
-                    SoundLoader.playSound(SoundLoader.stone, 1, 0, 1);
-
-                }
-
-                lastX = sizeX;
-                lastY = sizeY;
-
-
-                if (sizeX < 0) {
-
-                    if (sizeY < 0) {
-                        toolDisplay = new Wall(mouseOriginX + sizeX, mouseOriginY + sizeY, this
-                                , -sizeX, -sizeY, InputAction.Default, FillType.Tile, 1);
-                    } else {
-                        toolDisplay = new Wall(mouseOriginX + sizeX, mouseOriginY, this
-                                , -sizeX, sizeY, InputAction.Default, FillType.Tile, 1);
-                    }
-
-
-                } else if (sizeY < 0) {
-                    toolDisplay = new Wall(mouseOriginX, mouseOriginY + sizeY, this
-                            , sizeX, -sizeY, InputAction.Default, FillType.Tile, 1);
-                } else {
-                    toolDisplay = new Wall(mouseOriginX, mouseOriginY, this
-                            , sizeX, sizeY, InputAction.Default, FillType.Tile, 1);
-                }
-
-                toolDisplay = maxWall((Wall) toolDisplay);
-
-
-            } else if (Settings.getStr("editor tool").equals("eraser")) {
-
-                erase();
-            }else if (Settings.getStr("editor tool").equals("player")) {
-
-                playerX = Main.reverseUnit(Main.mouseX)+cameraX;
-            playerY = Main.reverseUnit(Main.mouseY)+cameraY;
-
-            }else if (Settings.getStr("editor tool").equals("flag")) {
-
-                toolDisplay = new Flag(applyGrid(Main.reverseUnit(Main.mouseX))+cameraX, applyGrid(Main.reverseUnit(Main.mouseY))+cameraY, this);
-
+            switch (tool) {
+                case "wall", "gate", "stickyWall", "water", "corner":
+                    toolDisplay = placeTile();
+                    break;
+                case "key":
+                    toolDisplay = new Key(applyGrid(Main.reverseUnit(Main.mouseX)) + cameraX, applyGrid(Main.reverseUnit(Main.mouseY)) + cameraY, this, 1, currentCode);
+                    break;
+                case "flag":
+                    toolDisplay = new Flag(applyGrid(Main.reverseUnit(Main.mouseX)) + cameraX, applyGrid(Main.reverseUnit(Main.mouseY)) + cameraY, this);
+                    break;
+                case "eraser":
+                    erase();
+                    break;
+                case "player":
+                    playerX = Main.reverseUnit(Main.mouseX) + cameraX;
+                    playerY = Main.reverseUnit(Main.mouseY) + cameraY;
+                    break;
             }
 
 
@@ -432,14 +422,119 @@ public class Map {
             if (mouseDragging) {
                 mouseDragging = false;
 
+
                 if (!(lastOverlay == null)) {
-                    addEntityLive(lastOverlay);
+                    if (lastOverlay.getSizeX() < 1 || lastOverlay.getSizeY() < 1) {
+
+                    } else {
+
+                        if (lastOverlay instanceof Key) {
+                            currentCode = getNextCode();
+                            ((Key) lastOverlay).setCode(currentCode);
+                        }
+
+                        addEntityLive(lastOverlay);
+                        lastOverlay.placeAnimate();
+                        SoundLoader.playSound(SoundLoader.fall, 1, 0, 1);
+                    }
                 }
                 //activate shit
             }
         }
 
 
+    }
+
+    public String getWorld() {
+        return world;
+    }
+
+
+    private GameEntity placeTile() {
+
+
+        GameEntity tile;
+
+        String tool = Settings.getStr("editor tool");
+
+
+        double sizeX = GRID_SIZE + applyGrid((Main.reverseUnit(Main.mouseX)) + cameraX) - mouseOriginX;
+        double sizeY = GRID_SIZE + applyGrid((Main.reverseUnit(Main.mouseY)) + cameraY) - mouseOriginY;
+
+        tile = switch (tool) {
+            case "gate" -> new Gate(mouseOriginX, mouseOriginY, this, sizeX, sizeY, InputAction.Default, FillType.Tile, 1, currentCode);
+            case "corner" -> new CornerWall(mouseOriginX, mouseOriginY, this, sizeX, sizeY, InputAction.Default, FillType.Tile, 1, 315);
+            case "stickyWall" -> new StickyWall(mouseOriginX, mouseOriginY, this, sizeX, sizeY, InputAction.Default, FillType.Tile, 1);
+            case "water" -> new Water(mouseOriginX, mouseOriginY, this, sizeX, sizeY, 1);
+            default -> new Wall(mouseOriginX, mouseOriginY, this, sizeX, sizeY, InputAction.Default, FillType.Tile, 1);
+
+        };
+
+
+        if ((int) sizeX != (int) lastX) {
+            SoundLoader.playSound(SoundLoader.stone, 1, 0, 1);
+
+        } else if ((int) sizeY != (int) lastY) {
+            SoundLoader.playSound(SoundLoader.stone, 1, 0, 1);
+
+        }
+
+        lastX = sizeX;
+        lastY = sizeY;
+
+
+        if (sizeX < 0) {
+
+            if (sizeY < 0) {
+
+                if (tile instanceof CornerWall) {
+                    ((CornerWall) tile).setRotation(405);
+                }
+
+                tile.setSizeX(-sizeX);
+                tile.setSizeY(-sizeY);
+                tile.setX(mouseOriginX + sizeX);
+                tile.setY(mouseOriginY + sizeY);
+
+            } else {
+                if (tile instanceof CornerWall) {
+                    ((CornerWall) tile).setRotation(225);
+                }
+
+
+                tile.setSizeX(-sizeX);
+                tile.setX(mouseOriginX + sizeX);
+            }
+
+
+
+
+        } else if (sizeY < 0) {
+            if (tile instanceof CornerWall) {
+                ((CornerWall) tile).setRotation(495);
+            }
+
+            tile.setSizeY(-sizeY);
+            tile.setY(mouseOriginY + sizeY);
+
+        }
+
+        return tile;
+        //  toolDisplay = maxWall((Wall) toolDisplay);
+
+    }
+
+    private int getNextCode() {
+        int largestCode = 0;
+
+        for (GameEntity entity : entities) {
+            if (entity instanceof Key) {
+                if (largestCode <= ((Key) entity).getCode()) {
+                    largestCode = ((Key) entity).getCode() + 1;
+                }
+            }
+        }
+        return largestCode;
     }
 
 
@@ -502,6 +597,7 @@ public class Map {
         }
 
         for (GameEntity entity : removeEntites) {
+            SoundLoader.playSound(SoundLoader.suck, 0.5, 0, 1);
             entities.remove(entity);
 
         }
@@ -603,9 +699,13 @@ public class Map {
     }
 
     public String getName() {
-        return name;
+        return world + "\\" + name;
     }
 
+
+    public boolean screenInersect(Square square) {
+        return square.intersect(new Square(cameraX, cameraY, Main.DEFAULT_WIDTH_MAP, Main.DEFAULT_HEIGHT_MAP, 1, InputAction.Default));
+    }
 
     public void render(GraphicsContext g) {
 
@@ -614,7 +714,7 @@ public class Map {
             entity.render(g);
         }
         for (GameEntity entity : entities) {
-            if (entity.getMainShape().intersect(new Square(cameraX, cameraY, g.getCanvas().getWidth(), g.getCanvas().getHeight(), 1, InputAction.Default))) {
+            if (screenInersect(entity.getMainShape())) {
                 entity.render(g);
             }
 
@@ -669,8 +769,8 @@ public class Map {
 
 
         if (Menu.currentMenu.equals("editor")) {
-            g.setFill(Color.color(0,1,0,0.2));
-            g.drawImage(ImageLoader.player, Main.correctUnit(playerX-cameraX), Main.correctUnit(playerY-cameraY), Main.correctUnit(GRID_SIZE), Main.correctUnit(GRID_SIZE));
+            g.setFill(Color.color(0, 1, 0, 0.2));
+            g.drawImage(ImageLoader.player, Main.correctUnit(playerX - cameraX), Main.correctUnit(playerY - cameraY), Main.correctUnit(GRID_SIZE), Main.correctUnit(GRID_SIZE));
         }
 
         if (isReplay) {
@@ -708,12 +808,8 @@ public class Map {
     }
 
 
-
-
-
-
     public String toString() {
-        String lines = sizeX + " " + sizeY + " " + (int)playerX + " " + (int)playerY + "\n/\n/";
+        String lines = sizeX + " " + sizeY + " " + (int) playerX + " " + (int) playerY + "\n/\n/";
 
         for (GameEntity entity : entities) {
             lines = lines + "\n" + entity.toString() + ";";
@@ -841,12 +937,14 @@ public class Map {
             if (currentEntity.getMainShape().intersect(entity.getMainShape())) {
                 currentEntity.flagAll();
                 if (isValidEntity(entity, currentEntity)) {
-                    if (InputAction.isYType(currentEntity.getShape(entity.getMainShape()).getAction())) {
+                    if (!InputAction.isUnactionable(currentEntity.getShape(entity.getMainShape()).getAction())) {
+                        if (InputAction.isYType(currentEntity.getShape(entity.getMainShape()).getAction())) {
 
-                        return currentEntity.getShape(entity.getMainShape());
-                    } else {
+                            return currentEntity.getShape(entity.getMainShape());
+                        } else {
 
-                        returnEntity = currentEntity.getShape(entity.getMainShape());
+                            returnEntity = currentEntity.getShape(entity.getMainShape());
+                        }
                     }
 
                 }

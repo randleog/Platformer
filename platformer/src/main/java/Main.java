@@ -61,13 +61,15 @@ public class Main extends Application {
     public static String lastKey = "";
 
 
-    public static int lastLevel = 5;
+
 
     public static int monitorFPS = 0;
 
     public static final double EXPECTED_ASPECT_RATIO = 1.7778;
 
     public static Random random = new Random();
+
+    private static WritableImage lastFrame;
 
     private static Canvas canvas;
 
@@ -240,10 +242,24 @@ public class Main extends Application {
     }
 
 
+    public static String getWorld(String name) {
+
+        return name.split("\\\\")[0];
+    }
+    public static String getLevel(String name) {
+
+        return name.split("\\\\")[1];
+    }
+
+
     public static double getMemory() {
         return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
     }
 
+
+    public static WritableImage getCanvas() {
+        return lastFrame;
+    }
 
 
 
@@ -259,10 +275,7 @@ public class Main extends Application {
         g.fillText("Loading...", canvas.getWidth() / 2.8, canvas.getHeight() / 2.5);
     }
 
-    public static WritableImage getScreenshot() {
 
-        return canvas.snapshot(new SnapshotParameters(), null);
-    }
 
 
     private static void exit() {
@@ -336,6 +349,11 @@ public class Main extends Application {
 
     }
 
+    public static WritableImage getScreenshot() {
+
+        return canvas.snapshot(new SnapshotParameters(), null);
+    }
+
 
     private static int totalTime = 0;
     private static int count = 0;
@@ -356,6 +374,7 @@ public class Main extends Application {
             totalTime += (int) ((1000000000.0 / (System.nanoTime() - time)));
             count++;
             if (count > Settings.get("fps")) {
+
                 possibleFps = totalTime / count;
                 count = 0;
                 totalTime = 0;
@@ -478,6 +497,8 @@ public class Main extends Application {
 
         g.setFill(Color.BLACK);
         canvas.getGraphicsContext2D().fillRect(primaryStage.getHeight() * EXPECTED_ASPECT_RATIO, 0, primaryStage.getWidth(), primaryStage.getHeight());
+
+
 
 
     }

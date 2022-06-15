@@ -80,26 +80,36 @@ public class Square {
 
     public boolean intersect(Square entity) {
 
+        double x2 = entity.getX();
+        double y2 = entity.getY();
+        double sizeX2 = entity.getSizeX();
+        double sizeY2 = entity.getSizeY();
 
-        if (this.rotation == -1) {
 
-            double x2 = entity.getX();
-            double y2 = entity.getY();
-            double sizeX2 = entity.getSizeX();
-            double sizeY2 = entity.getSizeY();
-            return x + sizeX > x2 && x < x2 + sizeX2
-                    && y + sizeY > y2 && y < y2 + sizeY2;
-        } else {
-            if (rotation == 225) {
+        if (x + sizeX > x2 && x < x2 + sizeX2
+                && y + sizeY > y2 && y < y2 + sizeY2) {
+            if (this.rotation == -1) {
+
+                return true;
+            } else if (rotation == 225) {
                 Polygon polygon = new Polygon(new int[]{(int) x, (int) x, (int) x + (int) sizeX}, new int[]{(int) y, (int) y + (int) sizeY, (int) y + (int) sizeY}, 3);
 
                 return polygon.intersects(entity.getX(), entity.getY(), entity.getSizeX(), entity.getSizeY());
-            } else {
+            } else if (rotation == 315) {
                 Polygon polygon = new Polygon(new int[]{(int) x, (int) x + (int) sizeX, (int) x + (int) sizeX}, new int[]{(int) y + (int) sizeY, (int) y + (int) sizeY, (int) y}, 3);
+
+                return polygon.intersects(entity.getX(), entity.getY(), entity.getSizeX(), entity.getSizeY());
+            }else if (rotation == 405) {
+                Polygon polygon = new Polygon(new int[]{(int) x, (int) x , (int) x + (int) sizeX}, new int[]{(int) y + (int) sizeY, (int) y , (int) y}, 3);
+
+                return polygon.intersects(entity.getX(), entity.getY(), entity.getSizeX(), entity.getSizeY());
+            }else if (rotation == 495) {
+                Polygon polygon = new Polygon(new int[]{(int) x, (int) x+ (int) sizeX , (int) x+ (int) sizeX }, new int[]{(int) y , (int) y , (int) y+ (int) sizeY}, 3);
 
                 return polygon.intersects(entity.getX(), entity.getY(), entity.getSizeX(), entity.getSizeY());
             }
         }
+        return false;
     }
 
     public double getRenderX(double cameraX) {
@@ -135,19 +145,28 @@ public class Square {
 
     public void render(GraphicsContext g, double cameraX, double cameraY, Player player) {
 
-        if (Settings.get("debug") == 1 || Menu.currentMenu.equals("editor")) {
+        if (Settings.get("debug") == 1) {
             double x = getRenderX(cameraX);
             double y = getRenderY(cameraY);
 
 
             if (!(rotation == -1)) {
                 g.setFill(Color.rgb(255, 40, 40, 0.3));
+
                 if (rotation == 225) {
 
                     g.fillPolygon(new double[]{x, x, x + Main.correctUnit(sizeX)}, new double[]{y, y + Main.correctUnit(sizeY), y + Main.correctUnit(sizeY)}, 3);
-                } else {
+                } else if (rotation ==315) {
 
-                    g.fillPolygon(new double[]{x, x+ Main.correctUnit(sizeX), x + Main.correctUnit(sizeX)}, new double[]{y+ Main.correctUnit(sizeY), y + Main.correctUnit(sizeY), y}, 3);
+                    g.fillPolygon(new double[]{x, x + Main.correctUnit(sizeX), x + Main.correctUnit(sizeX)}, new double[]{y + Main.correctUnit(sizeY), y + Main.correctUnit(sizeY), y}, 3);
+                }else if (rotation == 405) {
+
+
+                    g.fillPolygon(new double[]{x, x, x + Main.correctUnit(sizeX)}, new double[]{y + Main.correctUnit(sizeY), y , y}, 3);
+                }else if (rotation == 495) {
+
+
+                    g.fillPolygon(new double[]{x, x + Main.correctUnit(sizeX), x + Main.correctUnit(sizeX)}, new double[]{y, y, y+ Main.correctUnit(sizeY)}, 3);
                 }
 
             } else {
@@ -166,6 +185,13 @@ public class Square {
             g.setFont(new Font("monospaced", 15));
             g.fillText(action.toString() + " x:" + String.format("%.4f", this.x) + " y:" + String.format("%.4f", this.y), x, y);
             flagged = false;
+        } else if (Menu.currentMenu.equals("editor")) {
+            double x = getRenderX(cameraX);
+            double y = getRenderY(cameraY);
+
+            g.setFill(Color.WHITE);
+            g.setFont(new Font("monospaced", 15));
+            g.fillText(action.toString() + " x:" + String.format("%.4f", this.x) + " y:" + String.format("%.4f", this.y), x, y);
         }
     }
 

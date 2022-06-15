@@ -24,6 +24,9 @@ public class SettingButton extends MenuElement {
 
 
     public void tick() {
+
+
+
         if (hideButton) {
             return;
         }
@@ -50,6 +53,8 @@ public class SettingButton extends MenuElement {
     @Override
     public void render(GraphicsContext g) {
         if (hideButton) {
+
+
             return;
         }
 

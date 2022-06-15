@@ -19,22 +19,25 @@ public class SpeedrunBar extends MenuElement {
 
 
     public SpeedrunBar(int x, int y, Map map) {
-        super(x, y, 300, (Main.lastLevel + 2) * HEIGHT, "", TextType.normal);
+        super(x, y, 300, (UserFileHandler.getLastLevel(map.getWorld())+ 2) * HEIGHT, "", TextType.normal);
         this.map = map;
-        oldTime = ReplaySave.getReplay("full\\" + map.getName()).getTime();
+
+
+        oldTime = ReplaySave.getReplay(Main.getWorld(map.getName()) + "\\full\\" + Main.getLevel(map.getName())).getTime();
 
         canPlay = (Replay.canProgress(Main.currentFull, map.getName()) || map.getName().equals("1"));
+
 
         for (Replay replay : Main.currentFull) {
 
             String sign = "";
-            if (ReplaySave.getReplay("full\\" + replay.getMapName()).getTime() >= replay.getTime() || ReplaySave.getReplay("full\\" + replay.getMapName()).getTime() == -1) {
+            if (ReplaySave.getReplay(Main.getWorld(map.getName()) + "\\full\\" +Main.getLevel(map.getName())).getTime() >= replay.getTime() || ReplaySave.getReplay(Main.getWorld(map.getName()) + "\\full\\" + Main.getLevel(map.getName())).getTime() == -1) {
                 sign = "-";
             } else {
                 sign = "+";
             }
             times.add(new String[]{replay.getMapName() + ", " + Main.formatTime(replay.getTime()) + ", "
-                    + sign + Main.formatTime((replay.getTime() - ReplaySave.getReplay("full\\" + replay.getMapName()).getTime())), sign});
+                    + sign + Main.formatTime((replay.getTime() - ReplaySave.getReplay(Main.getWorld(replay.getMapName()) + "\\full\\" + Main.getLevel(replay.getMapName())).getTime())), sign});
         }
 
     }

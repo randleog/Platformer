@@ -29,6 +29,10 @@ public abstract class GameEntity {
     private final int SPEED_FACTOR = 144;
 
     private final double ROTATE_TIME = 1;
+
+
+    protected boolean changed = false;
+
     public static final double WALL_CORNER_SIZE = 10.0;
 
     protected double parallax;
@@ -43,8 +47,8 @@ public abstract class GameEntity {
     protected Color color;
 
 
+    protected static final double SWIMMING_GRAVITY = 0.2;
 
-    protected static final double SWIMMING_GRAVITY = 0.1;
 
     private double lastInteraction = 0;
     private double timeBetweenSounds = 500;
@@ -94,6 +98,8 @@ public abstract class GameEntity {
 
     protected double wallHeight = 0;
     protected static final double STUCK_FACTOR = 0.00000001;
+
+    protected static final double SWIM_FACTOR = 0.01;
     private static final double WALL_FACTOR = 1;
     protected ArrayList<Square> hitbox = new ArrayList<>();
 
@@ -164,7 +170,6 @@ public abstract class GameEntity {
     }
 
 
-
     public double getParallax() {
         return parallax;
     }
@@ -194,9 +199,7 @@ public abstract class GameEntity {
         velY = velY + accelY / Settings.getD("fps");
 
 
-
         velX = velX * Math.pow(currentDrag, 1.0 / Settings.getD("fps"));
-
 
 
         double vertDrag = Map.BASE_DRAG_Y;
@@ -204,15 +207,19 @@ public abstract class GameEntity {
         if (this instanceof Racer) {
             vertDrag = currentDrag;
 
+
+        } else if (swimming) {
+            vertDrag = Map.BASE_DRAG_Y * SWIM_FACTOR;
+
+
         } else if (stuck) {
-            vertDrag = Map.BASE_DRAG_Y*STUCK_FACTOR;
+            vertDrag = Map.BASE_DRAG_Y * STUCK_FACTOR;
 
         } else if (canRightJump || canLeftJump) {
-            vertDrag = Map.BASE_DRAG_Y*WALL_FACTOR;
+            vertDrag = Map.BASE_DRAG_Y * WALL_FACTOR;
 
         }
         velY = velY * Math.pow(vertDrag, 1.0 / Settings.getD("fps"));
-
 
 
         x += (velX / Settings.getD("fps")) * SPEED_FACTOR;
@@ -231,11 +238,14 @@ public abstract class GameEntity {
 
 
     public void setX(double x) {
+
         this.x = x;
+        loadHitbox();
     }
 
     public void setY(double y) {
         this.y = y;
+        loadHitbox();
     }
 
     public void setVelX(double velX) {
@@ -306,20 +316,28 @@ public abstract class GameEntity {
 
     public void setSizeX(double sizeX) {
         this.sizeX = sizeX;
+        loadHitbox();
     }
 
 
     public void setSizeY(double sizeY) {
         this.sizeY = sizeY;
+        loadHitbox();
     }
 
 
     protected void jumpCollision() {
+        swimming = false;
+        if (map.getActions(this).contains(InputAction.Swim)) {
+            swimming = true;
+        }
+
+
         x += WALL_CLING_RADIUS;
         if (map.getActions(this).contains(InputAction.Left)) {
             canLeftJump = true;
             velX += WALL_CLING_FORCE / Settings.getD("fps");
-        }else if (map.getActions(this).contains(InputAction.StickyLeft)) {
+        } else if (map.getActions(this).contains(InputAction.StickyLeft)) {
             stuck = true;
 
 
@@ -330,7 +348,7 @@ public abstract class GameEntity {
         if (map.getActions(this).contains(InputAction.Right)) {
             canRightJump = true;
             velX += -WALL_CLING_FORCE / Settings.getD("fps");
-        }else if (map.getActions(this).contains(InputAction.StickyRight)) {
+        } else if (map.getActions(this).contains(InputAction.StickyRight)) {
             stuck = true;
 
 
@@ -358,6 +376,27 @@ public abstract class GameEntity {
     }
 
 
+    public void placeAnimate() {
+
+        double size = (sizeY + sizeX) / 4;
+
+        for (int i = 0; i < this.sizeX / size; i++) {
+            for (int j = 0; j < this.sizeY / size; j++) {
+                map.crashParticle(i * size + this.x, j * size + this.y);
+            }
+        }
+
+
+    }
+
+    //deletes if intersecting anything
+    public void scanDelete() {
+        if (map.getActions(this).contains(InputAction.Default)) {
+            map.removeEntity(this);
+        }
+    }
+
+
     public boolean isWall() {
         return false;
     }
@@ -365,7 +404,7 @@ public abstract class GameEntity {
 
     protected void collision() {
         clinging = false;
-        swimming = false;
+
         if (rotationTicks > 0) {
             rotationTicks--;
         }
@@ -404,9 +443,7 @@ public abstract class GameEntity {
                 if (InputAction.isLeftType(action)) {
 
 
-
                     if (hasGoneRight) {
-
 
 
                         intersectSquareUp(entity);
@@ -428,14 +465,13 @@ public abstract class GameEntity {
                     }
 
                     intersectSquareRight(entity);
-                } else if (action == InputAction.Swim) {
-                    swimming = true;
+
                 } else if (InputAction.isUpType(action)) {
                     hasGoneUp = true;
 
                     if (this instanceof Player || this instanceof BasicEnemy) {
 
-                        if (Math.abs(velX/ Settings.getD("fps")) > 0.01) {
+                        if (Math.abs(velX / Settings.getD("fps")) > 0.01) {
                             playWalk();
                         }
 
@@ -445,7 +481,7 @@ public abstract class GameEntity {
                         }
 
                         if (velY > 5) {
-                            SoundLoader.playSound(SoundLoader.fall, velY/25, 0, SoundLoader.getRandomSpeed() * 0.6);
+                            SoundLoader.playSound(SoundLoader.fall, velY / 25, 0, SoundLoader.getRandomSpeed() * 0.6);
                         }
                     }
                     canJump = true;
@@ -456,9 +492,9 @@ public abstract class GameEntity {
                     if (action == InputAction.StickyDown) {
 
 
-                        if (Math.abs(velY) >2) {
+                        if (Math.abs(velY) > 2) {
 
-                                SoundLoader.playSound(SoundLoader.slime, 1 , 0, SoundLoader.getRandomSpeed() *1.3);
+                            SoundLoader.playSound(SoundLoader.slime, 1, 0, SoundLoader.getRandomSpeed() * 1.3);
 
                         }
                     }
@@ -478,9 +514,7 @@ public abstract class GameEntity {
                     if (action == InputAction.StickyDown) {
 
 
-
                         this.velY = -1;
-
 
 
                         clinging = true;
@@ -522,25 +556,24 @@ public abstract class GameEntity {
         }
 
 
-
     }
 
     private void playWalk() {
 
-            if (System.currentTimeMillis() -lastInteraction > Math.max(((1/(Math.abs(velX))))*timeBetweenSounds, MaxtimeBetweenSounds)) {
-                SoundLoader.playSound(SoundLoader.stone, 1, 0, SoundLoader.getRandomSpeed());
-                lastInteraction = System.currentTimeMillis();
-                System.out.println("thing");
+        if (System.currentTimeMillis() - lastInteraction > Math.max(((1 / (Math.abs(velX)))) * timeBetweenSounds, MaxtimeBetweenSounds)) {
+            SoundLoader.playSound(SoundLoader.stone, 1, 0, SoundLoader.getRandomSpeed());
+            lastInteraction = System.currentTimeMillis();
 
-            }
+
+        }
     }
 
     private void playSlime() {
 
-        if (System.currentTimeMillis() -lastInteraction > Math.max(((1/(Math.abs(velX))))*timeBetweenSounds, MaxtimeBetweenSounds)) {
+        if (System.currentTimeMillis() - lastInteraction > Math.max(((1 / (Math.abs(velX)))) * timeBetweenSounds, MaxtimeBetweenSounds)) {
             SoundLoader.playSound(SoundLoader.slime, 1, 0, SoundLoader.getRandomSpeed());
             lastInteraction = System.currentTimeMillis();
-            System.out.println("thing");
+
 
         }
     }
@@ -713,7 +746,9 @@ public abstract class GameEntity {
 
 
     public Square getMainShape() {
-        return new Square(this.x, this.y, this.sizeX, getSizeY(), parallax, action);
+
+
+        return new Square(this.x - ((this.sizeX < 0) ? Math.abs(this.sizeX) : 0), this.y - ((this.sizeY < 0) ? Math.abs(this.sizeY) : 0), Math.abs(this.sizeX), Math.abs(getSizeY()), parallax, action);
     }
 
 

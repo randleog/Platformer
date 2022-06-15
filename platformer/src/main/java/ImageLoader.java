@@ -26,16 +26,27 @@ public class ImageLoader {
     public static Image player = loadImage("default.png", 64);
     public static Image particle = loadImage("particle.png", 64);
 
+    public static Image water = loadImage("water.png", 64);
+
     public static Image speed = loadImage("speed.png", 64);
     public static Image enemy = loadImage("enemy.png", 64);
+
     public static Image key = loadImage("key.png", 64);
     public static Image gate = loadImage("gateTile.png", 64);
+    public static Image lock = loadImage("lock.png", 64);
+
+
     public static Image trophy = loadImage("trophy.png", 64);
     public static Image flag = loadImage("flag.png", 64);
     public static Image checkpoint = loadImage("checkpoint.png", 64);
 
     public static Image eraser = loadImage("eraser.png", 64);
     public static Image dimension = loadImage("dimension.png", 64);
+
+    public static Image cursor = loadImage("cursor.png", 64);
+
+
+    public static Image corner = loadImage("corner.png", 64);
     /**
      * Create an input stream to read images.
      * @param fileName File name.
@@ -96,6 +107,11 @@ public class ImageLoader {
             case "flag" -> flag;
             case "eraser" -> eraser;
             case "player" -> player;
+            case "key" -> key;
+            case "cursor" -> cursor;
+            case "gate" -> gate;
+            case "water" -> water;
+            case "corner" -> corner;
             default -> wallTile;
 
         };

@@ -1,11 +1,16 @@
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 import java.util.ArrayList;
 
 public class Gate extends GameEntity {
 
     private int code;
+    private Image lock;
+
+
 
     public Gate(double x, double y, Map map,  double sizeX, double sizeY, InputAction side, FillType fillType, double parallax, int code) {
         super(x,y,map,side, fillType, parallax);
@@ -17,6 +22,8 @@ public class Gate extends GameEntity {
         if (sizeX < 10 && sizeY < 10) {
             System.out.println("wall is too small");
         }
+
+        lock = ImageLoader.lock;
 
         loadWallHitbox();
     }
@@ -43,7 +50,13 @@ public class Gate extends GameEntity {
     public void render(GraphicsContext g) {
 
         renderSquare(g);
+        g.drawImage(lock, getRenderX()+getRenderSizeX()/2-Main.correctUnit(Map.GRID_SIZE)/2, getRenderY()+getRenderSizeY()/2-Main.correctUnit(Map.GRID_SIZE)/2, Main.correctUnit(Map.GRID_SIZE), Main.correctUnit(Map.GRID_SIZE));
 
+        if (Menu.currentMenu.equals("editor")) {
+            g.setFill(Color.WHITE);
+            g.setFont(new Font("monospaced", 20));
+            g.fillText("code: " + code, getRenderX(), getRenderY()+getRenderSizeY()/2);
+        }
     }
 
     public String toString() {

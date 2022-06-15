@@ -39,15 +39,17 @@ public class ScrollMenu extends MenuElement {
         int largestY = 0;
         int largestX = 0;
         for (MenuElement element : menu.getbuttons()) {
-            element.setX((int)element.getX()+this.x);
-            element.setY((int)element.getY()+this.y);
 
             if (element.getY() > largestY) {
                 largestY = (int)(element.getY()+element.getHeight());
             }
             if (element.getX()+element.getWidth() > largestX) {
-                largestX = (int)(element.getWidth());
+                largestX = (int)(element.getWidth()+ element.getX());
             }
+
+            element.setX((int)element.getX()+this.x);
+            element.setY((int)element.getY()+this.y);
+
 
 
 

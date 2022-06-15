@@ -37,6 +37,7 @@ public class ReplayPlayer extends GameEntity {
         }
 
 
+
         this.fps = replay.getFps();
 
         speedFactor = fps / Settings.getD("fps");

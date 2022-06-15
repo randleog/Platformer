@@ -24,6 +24,8 @@ public class SoundLoader {
     public static final AudioClip fall = new AudioClip(new File(path + "fall.wav").toURI().toString());
     public static final AudioClip slime = new AudioClip(new File(path + "slime.wav").toURI().toString());
     public static final AudioClip stone = new AudioClip(new File(path + "stone.wav").toURI().toString());
+    public static final AudioClip suck = new AudioClip(new File(path + "suck.wav").toURI().toString());
+
     public static final Media music1 = getSound("music1.mp3");
 
 

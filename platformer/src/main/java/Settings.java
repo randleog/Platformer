@@ -145,8 +145,13 @@ public class Settings {
 
         put("name", ANONYMOUS_NAME);
 
+
+        put("back", "exit");
+
         put("reduced motion", 1);
 
+
+        put("level", "main");
 
         put("editor tool", "nothing");
 

@@ -11,6 +11,7 @@ public class ReplayButton extends MenuElement {
 
     private int currentTick = 0;
 
+
     public ReplayButton(int x, int y, int width, int height, String name) {
         super(x,y,width,height, "level: " + name, TextType.normal);
         this.name = name;
@@ -65,7 +66,7 @@ public class ReplayButton extends MenuElement {
         if (Main.mouseClicked && mouseOver) {
             Main.mouseClicked = false;
             SoundLoader.playButtonPress();
-            Main.playMap(MapLoader.loadMap(name, 2));
+            Main.playMap(MapLoader.loadMap( name, 2));
         }
     }
 

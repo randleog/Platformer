@@ -1,6 +1,7 @@
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+import javax.annotation.processing.SupportedOptions;
 import java.util.ArrayList;
 
 public class MovingWall extends GameEntity {
@@ -150,7 +151,7 @@ public class MovingWall extends GameEntity {
 
     @Override
     public Square getShape(Square entity) {
-        loadWallHitbox();
+        loadHitbox();
 
 
         Square lastShape = null;
@@ -165,7 +166,9 @@ public class MovingWall extends GameEntity {
 
         return lastShape;
     }
-    protected void loadWallHitbox() {
+
+    @Override
+    protected void loadHitbox() {
         hitbox = new ArrayList<>();
         hitbox.add(new Square(x + WALL_CORNER_SIZE, y, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Up));
         hitbox.add(new Square(x + sizeX - 1, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Right));

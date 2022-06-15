@@ -8,12 +8,15 @@ public class Player extends GameEntity {
 
     private static final double AIR_ACCELERATION = 5.0;
     private static final double GROUND_ACCELERATION = 25.0;
+    //private static final double SWIMMING_ACCELERATION = 25.0;
 
     private static final double RUNNING_BOOST = 1.85;
 
     private static final double SIDE_BOOST = 1;
 
     private static final double JUMP_SPEED = 6;
+
+    private static final double SWIM_SPEED = 10;
 
     private static final double CROUCH_GRAVITY = 2;
 
@@ -187,6 +190,14 @@ public class Player extends GameEntity {
 
         runningBefore = running;
         running = Main.isKeyDown(InputAction.Sprint);
+
+    /*    if (swimming) {
+            if (Main.isKeyDown(InputAction.Up)) {
+                velY -= SWIM_SPEED/Settings.get("fps");
+            }
+        }
+
+     */
 
 
 

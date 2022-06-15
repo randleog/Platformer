@@ -16,10 +16,8 @@ public class CornerWall extends GameEntity {
         this.rotation = rotation;
         this.color = Color.color(1, 0.5, 0);
         this.image = ImageLoader.wallTile;
-        if (sizeX < 10 && sizeY < 10) {
-            System.out.println("wall is too small");
-        }
-        loadCornerWallHitbox();
+
+        loadHitbox();
     }
 
     @Override
@@ -35,11 +33,21 @@ public class CornerWall extends GameEntity {
 
     public void tick() {
 
+        if (changed) {
+            loadHitbox();
+        }
+
     }
 
-    protected void loadCornerWallHitbox() {
+    public void setRotation(double rotation) {
+        this.rotation = rotation;
+    }
+
+    @Override
+    protected void loadHitbox() {
         hitbox = new ArrayList<>();
         hitbox.add(new Square(x , y, sizeX, sizeY, parallax, InputAction.Corner, rotation));
+        changed = false;
        // hitbox.add(new Shape(x + sizeX, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Right, rotation));
      //   hitbox.add(new Shape(x + WALL_CORNER_SIZE, y + sizeY - WALL_CORNER_SIZE-1, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Down, rotation));
      //   hitbox.add(new Shape(x, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Left, rotation));
@@ -47,23 +55,28 @@ public class CornerWall extends GameEntity {
     }
 
 
+
+
     public void render(GraphicsContext g) {
 
+
+        double x = getRenderX();
+        double y = getRenderY();
+        g.setFill(new ImagePattern(image, getRenderX(), getRenderY(), map.correctUnit(tileSize) * parallax, map.correctUnit(tileSize) * parallax, false));
         if (rotation == 225) {
-            g.setFill(new ImagePattern(image, getRenderX(), getRenderY(), map.correctUnit(tileSize) * parallax, map.correctUnit(tileSize) * parallax, false));
-            g.fillPolygon(new double[]{getRenderX(), getRenderX(), getRenderX() + map.correctUnit(sizeX)}, new double[]{getRenderY(), getRenderY() + map.correctUnit(sizeY), getRenderY() + map.correctUnit(sizeY)}, 3);
 
-        } else if (rotation == 315) {
-            g.setFill(new ImagePattern(image, getRenderX(), getRenderY(), map.correctUnit(tileSize) * parallax, map.correctUnit(tileSize) * parallax, false));
-            g.fillPolygon(new double[]{getRenderX(), getRenderX()+ map.correctUnit(sizeX), getRenderX() + map.correctUnit(sizeX)}, new double[]{getRenderY()+ map.correctUnit(sizeY), getRenderY() + map.correctUnit(sizeY), getRenderY()}, 3);
-        } else {
-            g.save();
-            g.translate(getRenderX() + map.correctUnit(sizeX / 2), getRenderY() + map.correctUnit(sizeY / 2));
-            g.rotate(rotation);
+            g.fillPolygon(new double[]{x, x, x + Main.correctUnit(sizeX)}, new double[]{y, y + Main.correctUnit(sizeY), y + Main.correctUnit(sizeY)}, 3);
 
+        } else if (rotation == 315){
 
-            renderStill(g);
-            g.restore();
+            g.fillPolygon(new double[]{x, x+ Main.correctUnit(sizeX), x + Main.correctUnit(sizeX)}, new double[]{y+ Main.correctUnit(sizeY), y + Main.correctUnit(sizeY), y}, 3);
+
+        }else if (rotation == 405) {
+
+            g.fillPolygon(new double[]{x, x, x + Main.correctUnit(sizeX)}, new double[]{y + Main.correctUnit(sizeY), y , y}, 3);
+        }else if (rotation == 495) {
+
+            g.fillPolygon(new double[]{x, x + Main.correctUnit(sizeX), x + Main.correctUnit(sizeX)}, new double[]{y, y, y+ Main.correctUnit(sizeY)}, 3);
         }
         for (Square shape : hitbox) {
             shape.render(g, map.cameraX, map.cameraY, (Player)map.player);

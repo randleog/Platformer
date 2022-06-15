@@ -7,6 +7,9 @@ import java.util.Scanner;
 public class MapLoader {
 
 
+
+
+
     /**
      * @param mapName
      * @param type    0 = empty, 1 = with player, 2 = replay player
@@ -29,14 +32,14 @@ public class MapLoader {
             header.close();
             Map map;
             if (type == 2) {
-                map = new Map(width, height, mapName, true);
+                map = new Map(width, height, mapName.split("\\\\")[1], true, mapName.split("\\\\")[0]);
             } else {
-                map = new Map(width, height, mapName, false);
+                map = new Map(width, height, mapName.split("\\\\")[1], false, mapName.split("\\\\")[0]);
             }
 
 
             Scanner background = new Scanner(text[1]);
-            //  System.out.println("wtf");
+
             background.useDelimiter(";");
             while (background.hasNext()) {
 
@@ -80,6 +83,12 @@ public class MapLoader {
                         int wallWidth = Integer.parseInt(line[3]);
                         int wallHeight = Integer.parseInt(line[4]);
                         map.addEntity(new StickyWall(x, y, map, wallWidth, wallHeight, InputAction.Default, FillType.Tile, 1));
+                        break;
+                    }
+                    case "water" -> {
+                        int wallWidth = Integer.parseInt(line[3]);
+                        int wallHeight = Integer.parseInt(line[4]);
+                        map.addEntity(new Water(x, y, map, wallWidth, wallHeight, 1));
                         break;
                     }
                     case "gate" -> {
@@ -147,44 +156,51 @@ public class MapLoader {
             entities.close();
             boolean isReplay = type == 2;
 
+            String world = mapName.split("\\\\")[0];
+            String level = mapName.split("\\\\")[1];
+
             //deal with the replays
 
-            if ((new File("res\\replays\\gold\\" + mapName + ".txt").exists())) {
-                if ((new File("res\\replays\\" + mapName + ".txt").exists())) {
-                    if (UserFileHandler.getTime(mapName, 1) < (ReplaySave.getReplay("gold\\" + mapName).getTime())) {
+            if ((new File("res\\replays\\" + world+ "\\gold\\" + level + ".txt").exists())) {
+                if ((new File("res\\replays\\"+ mapName + ".txt").exists())) {
 
-                        if ((new File("res\\replays\\author\\" + mapName + ".txt").exists())) {
 
-                            map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getReplay("author\\" + mapName), isReplay,  Settings.AUTHOR_REPLAY));
 
-                            if (UserFileHandler.getTime(mapName, 1) < (ReplaySave.getReplay("author\\" + mapName).getTime())) {
-                                map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getReplay("gold\\" + mapName), isReplay,  Settings.GOLD_REPLAY));
+                    if (UserFileHandler.getTime(mapName, 1) < (ReplaySave.getReplay(world + "\\gold\\" + level).getTime())) {
+                        System.out.println("?");
+                        if ((new File("res\\replays\\" + world+ "\\author\\" + level + ".txt").exists())) {
+
+                            System.out.println("shouldAdd");
+                            map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getReplay(world +"\\author\\" + level), isReplay,  Settings.AUTHOR_REPLAY));
+
+                            if (UserFileHandler.getTime(mapName, 1) < (ReplaySave.getReplay(world +"\\author\\" + level).getTime())) {
+                                map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getReplay(world +"\\gold\\" + level), isReplay,  Settings.GOLD_REPLAY));
                             }
                         }
                     } else {
 
 
-                        map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getReplay("gold\\" + mapName), isReplay,  Settings.GOLD_REPLAY));
+                        map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getReplay(world +"\\gold\\" + level), isReplay,  Settings.GOLD_REPLAY));
 
                     }
                 } else {
-                    map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getReplay("gold\\" + mapName), isReplay, Settings.GOLD_REPLAY));
+                    map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getReplay(world +"\\gold\\" +level), isReplay, Settings.GOLD_REPLAY));
                 }
             }
 
-            if ((new File("res\\replays\\full\\" + mapName + ".txt").exists())) {
+            if ((new File("res\\replays\\" +world+"\\full\\" + level + ".txt").exists())) {
 
 
-                    map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getReplay("full\\" + mapName), isReplay, Settings.SPEEDRUN_REPLAY));
+                    map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getReplay(world+"\\full\\" + level), isReplay, Settings.SPEEDRUN_REPLAY));
 
 
             }
 
 
-            if ((new File("res\\replays\\last\\" + mapName + ".txt").exists())) {
+            if ((new File("res\\replays\\" + world + "\\last\\" + level + ".txt").exists())) {
 
 
-                map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getReplay("last\\" + mapName), isReplay,  Settings.LAST_REPLAY));
+                map.addEntity(new ReplayPlayer(playerX, playerY, map, ReplaySave.getReplay(world + "\\last\\" + level), isReplay,  Settings.LAST_REPLAY));
 
 
             }
@@ -209,6 +225,8 @@ public class MapLoader {
 
 
 
+
+
     public static void saveMap(Map map, boolean keepName) {
 
         File file = new File ("res\\maps\\custom\\" + ((keepName) ? map.getName() :(new File("res\\maps\\custom\\").listFiles().length+1)) + ".txt");
@@ -221,7 +239,7 @@ public class MapLoader {
         try {
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(map.toString());
-            System.out.println("written");
+
 
             fileWriter.close();
         } catch (IOException e) {
