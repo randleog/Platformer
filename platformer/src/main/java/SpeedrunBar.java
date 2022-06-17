@@ -26,13 +26,17 @@ public class SpeedrunBar extends MenuElement {
 
         oldTime = ReplaySave.getReplay(Main.getWorld(map.getName()) + "\\full\\" + Main.getLevel(map.getName())).getTime();
 
-        canPlay = (Replay.canProgress(Main.currentFull, map.getName()) || map.getName().equals("1"));
+
+
+        canPlay = (Replay.canProgress(Main.currentFull, map.getName()) || Main.getLevel((map.getName())).equals("1"));
 
 
         for (Replay replay : Main.currentFull) {
 
             String sign = "";
-            if (ReplaySave.getReplay(Main.getWorld(map.getName()) + "\\full\\" +Main.getLevel(map.getName())).getTime() >= replay.getTime() || ReplaySave.getReplay(Main.getWorld(map.getName()) + "\\full\\" + Main.getLevel(map.getName())).getTime() == -1) {
+            double currentTime = ReplaySave.getReplay(Main.getWorld(replay.getMapName()) + "\\full\\" +Main.getLevel(replay.getMapName())).getTime();
+            if (currentTime >= replay.getTime() || currentTime == -1) {
+
                 sign = "-";
             } else {
                 sign = "+";

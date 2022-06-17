@@ -111,6 +111,8 @@ public class Water extends GameEntity {
 
     public void splash(double x, GameEntity entity) {
 
+        double velY = Math.min(1,entity.getVelY());
+
 
         for (int i = 0; i < Math.abs(entity.getVelY()) * SPLASH_COUNT; i++) {
 
