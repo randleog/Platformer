@@ -6,7 +6,7 @@ show_author 1
 debug -1
 full_speedrun -1
 playback_speed -1
-fps 144
+fps 266
 show_last 1
 show_best 1
 show_gold 1
@@ -29,13 +29,15 @@ volume 100
 music_volume 0
 editor_tool nothing
 item_scroll_Y 0
-item_scroll_X 169
+item_scroll_X 275
 back exit
 save save
 main_level_scroll_Y 0
 main_level_scroll_X 0
 level main
-level_scroll_Y 40
+level_scroll_Y 80
 main\full_leaderboard_scroll_X 2
 main\4_leaderboard_scroll_X 2
 main\2_leaderboard_scroll_Y 240
+level_scroll_X 5
+main_replay_scroll_X 23

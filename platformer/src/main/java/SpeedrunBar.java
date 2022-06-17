@@ -23,6 +23,7 @@ public class SpeedrunBar extends MenuElement {
         this.map = map;
 
 
+
         oldTime = ReplaySave.getReplay(Main.getWorld(map.getName()) + "\\full\\" + Main.getLevel(map.getName())).getTime();
 
         canPlay = (Replay.canProgress(Main.currentFull, map.getName()) || map.getName().equals("1"));

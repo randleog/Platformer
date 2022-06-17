@@ -200,7 +200,7 @@ public class Map {
                     Main.currentFull.add(new Replay(frames, getName()));
 
 
-                    if (getName().equals(Integer.toString(UserFileHandler.getLastLevel(getWorld())))) {
+                    if (name.equals(Integer.toString(UserFileHandler.getLastLevel(getWorld())))) {
 
                         if (UserFileHandler.getTime(world + "\\full", 1) > Replay.getTime(Main.currentFull) || UserFileHandler.getTime(world + "\\full", 1) == -1) {
 
@@ -214,6 +214,7 @@ public class Map {
                         }
 
                         UserFileHandler.saveUserTime(world , "full", Replay.getTime(Main.currentFull), data);
+                        Main.currentFull = new ArrayList<>();
 
                     }
                 }
@@ -240,7 +241,7 @@ public class Map {
     }
 
     public boolean isPb() {
-        return UserFileHandler.getTime(name, 1) > getTime() || UserFileHandler.getTime(name, 1) == -1;
+        return UserFileHandler.getTime(getName(), 1) > getTime() || UserFileHandler.getTime(getName(), 1) == -1;
     }
 
 
@@ -838,6 +839,18 @@ public class Map {
         currentAction = currentAction + " to: " + action + "\n";
 
         return currentAction;
+    }
+
+    public void splash(GameEntity entity) {
+
+        for (GameEntity entity1 : entities) {
+            if (entity1 instanceof Water) {
+                if (entity.getMainShape().intersect(entity1.getMainShape())) {
+                    ((Water)(entity1)).splash(entity.getX(), entity);
+                }
+            }
+        }
+
     }
 
 

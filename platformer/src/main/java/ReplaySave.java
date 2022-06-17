@@ -78,6 +78,14 @@ public class ReplaySave {
 
         try {
 
+            if (!(new File("res\\replays\\"+ mapName + ".txt")).exists()) {
+                try {
+                    (new File("res\\replays\\"+ mapName + ".txt")).createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
             FileWriter writer = new FileWriter("res\\replays\\"+ mapName + ".txt");
             String text = frames.get(0)[0] + " " +  LocalDate.now() + "\n";
             for (int i = 1; i < frames.size(); i++) {

@@ -29,7 +29,7 @@ import java.util.Random;
  * the main class that launches the game
  *
  * @author William Randle
- * @version 0.0.8
+ * @version 0.0.9
  * @todo: leaderboard for full speedrun ranking, then stats page button launches menu for previous records in all the categories: slider to show them
  * @todo: save times for individual users (last, best[and overall too], speedrun[and overall too])
  * @todo: vanity slots to customise character design (multi layered player model with independantly moving parts)
@@ -50,7 +50,7 @@ public class Main extends Application {
 
     public static int deaths = 0;
 
-    public static final String VERSION = "0.0.8";
+    public static final String VERSION = "0.0.9";
 
 
     public static boolean mouseClicked = false;
@@ -148,7 +148,6 @@ public class Main extends Application {
         Settings.initialiseValues();
 
         Stats.load();
-
         GridParser.parseAll();
 
 
@@ -319,6 +318,10 @@ public class Main extends Application {
         hashMap.put(InputAction.Menu, 2);
         Menu.currentlyMenu = false;
 
+    }
+
+    public static double getDistance(double x, double y, double x1, double y1) {
+        return Math.sqrt(Math.pow(x-x1,2) + Math.pow(y-y1, 2));
     }
 
 

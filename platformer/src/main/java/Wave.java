@@ -11,7 +11,7 @@ public class Wave {
 
 
     private static final double SPRING_CONSTANT = 0.025;
-    private static final double DAMPENING_FACTOR = 0.15;
+    private static final double DAMPENING_FACTOR = 0.09;
 
 
     private static final double SPEED = 144;
@@ -23,7 +23,7 @@ public class Wave {
     private static final double MASS = 1; // spring constant/mass = current constant
 
     public Wave() {
-        this.amplitude = 0;
+        this.amplitude = targetHeight;
         this.velY = 0;
         this.velX = 0;
     }
@@ -32,18 +32,13 @@ public class Wave {
 
     public void tick(Wave... additional) {
 
-
-
-
         double displacement = amplitude-targetHeight;
         double accel = -SPRING_CONSTANT*displacement -DAMPENING_FACTOR*velY;
 
+     //   velY = velY+Main.random.nextDouble(0.1)-0.025;
+
         amplitude+=Main.correctFPS(velY);
         velY+=Main.correctFPS(accel);
-
-
-
-
 
 
 

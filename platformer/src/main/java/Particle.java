@@ -31,6 +31,8 @@ public class Particle extends GameEntity {
     }
 
 
+
+
     public void tick() {
         if (gravity) {
             gravity();
@@ -43,6 +45,10 @@ public class Particle extends GameEntity {
 
 
     }
+
+
+
+
 
     public void render(GraphicsContext g) {
 

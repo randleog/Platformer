@@ -66,6 +66,10 @@ public class Replay {
 
     public double getTime() {
 
+        if (frames.size() == 0) {
+            return 0;
+        }
+
         return ((frames.size()-1)*1.0)/frames.get(0)[0];
     }
 

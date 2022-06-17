@@ -180,8 +180,8 @@ public class MovingWall extends GameEntity {
     public void tick() {
 
         if (isMainWall) {
-            this.x = x + velX;
-            this.y = y + velY;
+            this.x = x + Main.correctFPS(velX);
+            this.y = y + Main.correctFPS(velY);
 
             collision();
         } else {

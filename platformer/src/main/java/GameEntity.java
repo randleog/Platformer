@@ -10,7 +10,7 @@ public abstract class GameEntity {
 
     private static final double CRASH_SPEED = 8;
 
-    private static final double COLLISION_AMMOUNT = 0.1;
+    private static final double COLLISION_AMMOUNT = 0.05;
 
     protected double x;
     protected double y;
@@ -327,9 +327,18 @@ public abstract class GameEntity {
 
 
     protected void jumpCollision() {
-        swimming = false;
+
         if (map.getActions(this).contains(InputAction.Swim)) {
+            if (!swimming) {
+                map.splash(this);
+            }
             swimming = true;
+
+        } else {
+            if (swimming) {
+                map.splash(this);
+            }
+            swimming = false;
         }
 
 

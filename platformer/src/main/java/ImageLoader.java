@@ -47,6 +47,8 @@ public class ImageLoader {
 
 
     public static Image corner = loadImage("corner.png", 64);
+
+    public static Image splash = loadImage("splash.png", 64);
     /**
      * Create an input stream to read images.
      * @param fileName File name.

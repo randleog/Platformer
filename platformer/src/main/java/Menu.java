@@ -273,7 +273,7 @@ public class Menu {
         ArrayList<MenuElement> elements = new ArrayList<>();
         elements.add(new MenuMap("main\\3"));
 
-        elements.add(new MenuSlider(BUTTON_GAP, 100, 500, 100, "fps", "fps", 300, 30, false, Main.monitorFPS));
+        elements.add(new MenuSlider(BUTTON_GAP, 100, 500, 100, "fps", "fps", 300, 60, false, Main.monitorFPS));
 
 
         elements.add(new SwitchMenuButton(BUTTON_GAP, 550, BUTTON_WIDTH, BUTTON_HEIGHT, "replay settings", "replay settings"));
@@ -336,7 +336,26 @@ public class Menu {
     private static void loadReplayMenu() {
         ArrayList<MenuElement> elements = new ArrayList<>();
         elements.add(new MenuMap("main\\4"));
-        File directory = new File("res\\replays");
+
+        elements.add(new ScrollMenu(BUTTON_GAP, BUTTON_GAP * 3, (int) Main.DEFAULT_WIDTH_MAP - BUTTON_GAP * 5, (int) (BUTTON_HEIGHT * 2), new Menu(getReplayButtons("main"), "main"), "main replay scroll"));
+
+        elements.add(new ScrollMenu(BUTTON_GAP, BUTTON_GAP * 3+BUTTON_HEIGHT * 3, (int) Main.DEFAULT_WIDTH_MAP/2 - BUTTON_GAP * 5, (int) (BUTTON_HEIGHT * 2), new Menu(getReplayButtons("custom"), "main"), "custom replay scroll"));
+
+
+
+
+        elements.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "main"));
+
+        elements.add(new MenuText(900, 100, "Replay Menu: ", 55, "Title"));
+        elements.add(new MenuTransition(NORMAL_TRANSITION_TIME));
+        menus.put("replays", new Menu(elements, "main"));
+
+    }
+
+    private static ArrayList<MenuElement> getReplayButtons(String folder) {
+        ArrayList<MenuElement> elements = new ArrayList<>();
+
+        File directory = new File("res\\replays\\" + folder);
         File[] levels = directory.listFiles();
         int fileCount = directory.list().length;
 
@@ -356,17 +375,14 @@ public class Menu {
 
                 elements.add(new ReplayButton(xFactor * BUTTON_WIDTH + xFactor * BUTTON_GAP + BUTTON_GAP
                         , yFactor * BUTTON_HEIGHT + yFactor * BUTTON_GAP + BUTTON_GAP * 2
-                        , BUTTON_WIDTH, BUTTON_HEIGHT, levels[i].getName().replace(".txt", "")));
+                        , BUTTON_WIDTH, BUTTON_HEIGHT, folder + "\\" + levels[i].getName().replace(".txt", "")));
             } else {
                 directories++;
             }
         }
-        elements.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "main"));
 
-        elements.add(new MenuText(900, 100, "Replay Menu: ", 55, "Title"));
-        elements.add(new MenuTransition(NORMAL_TRANSITION_TIME));
-        menus.put("replays", new Menu(elements, "main"));
 
+        return elements;
     }
 
     private static void loadName() {
@@ -432,6 +448,8 @@ public class Menu {
         menus.put(name + " levels", new Menu(elements, "levels"));
 
     }
+
+
 
     private static ArrayList<MenuElement> getLevelButtons(String folder) {
         ArrayList<MenuElement> mainLevels = new ArrayList<>();
