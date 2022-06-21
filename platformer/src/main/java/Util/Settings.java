@@ -106,6 +106,7 @@ public class Settings {
         loadSetting("reduced motion");
         loadSetting("volume");
         loadSetting("music volume");
+        loadSetting("image smoothing");
         loadSetting("graphics");
     }
 
@@ -162,13 +163,15 @@ public class Settings {
         put("graphics", 3);
         put("focus", BEST_REPLAY);
 
+        put("image smoothing", -1);
+
         put("show " + AUTHOR_REPLAY, 1);
         put("show " + GOLD_REPLAY, 1);
         put("show " + BEST_REPLAY, 1);
         put("show " + SPEEDRUN_REPLAY, 1);
         put("show " + LAST_REPLAY, 1);
 
-
+        put("map choice", "preset\\empty");
         put("leaderboard scroll", 0);
 
 

@@ -1,6 +1,7 @@
 package Map;
 
 import GameControl.Square;
+import GameControl.TimedSound;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -65,6 +66,11 @@ public class Map {
 
     private static final int CRASH_PARTICLE_COUNT = 10;
 
+    private String backgroundName;
+
+
+    private Background background;
+
     private String world;
 
 
@@ -99,6 +105,8 @@ public class Map {
 
     GameEntity player = null;
 
+    private TimedSound placeSound;
+
 
     public static final int SMALLER_GRID = 25;
     public static final int GRID_SIZE = 50;
@@ -113,9 +121,28 @@ public class Map {
 
     private String name;
 
+    private static final int DAY_LENGTH = 5;//300;
+
     private ArrayList<Integer[]> frames = new ArrayList<>();
 
+
+    private ArrayList<BackgroundObject> backgroundObjects;
+
+
+    private ArrayList<String[]> messages;
+
     public Map(int sizeX, int sizeY, String name, boolean isReplay, String world) {
+
+        messages = new ArrayList<>();
+
+
+        placeSound = new TimedSound(75);
+
+
+        backgroundObjects = new ArrayList<>();
+
+        background = new Background();
+        backgroundName = "empty";
         Settings.put("speed", "1");
         finished = 0;
 
@@ -131,14 +158,20 @@ public class Map {
             fullSpeedrun = (Settings.get("full speedrun") == 1);
         }
 
-
         frames.add(new Integer[]{Settings.get("fps"), 0});
 
         initialiseButtons();
 
-
     }
 
+
+
+
+
+    public void setBackground(Background background, String backgroundName) {
+        this.background = background;
+        this.backgroundName = backgroundName;
+    }
 
     public double getGravity() {
         if (trance) {
@@ -165,6 +198,11 @@ public class Map {
             }
         }
 
+    }
+
+    public void moveCamera(double dx, double dy) {
+        cameraX+=Main.correctFPS(dx);
+        cameraY+=Main.correctFPS(dy);
     }
 
 
@@ -287,7 +325,7 @@ public class Map {
 
             Menu.switchMenu( world + " levels");
         } else {
-            String message = ((isPb) ? "New best time: " : "Map.Map completed in: ") + Main.formatTime(getTime());
+            String message = ((isPb) ? "New best time: " : "Map completed in: ") + Main.formatTime(getTime());
             Stats.add("total Finishes", 1);
             Main.victory(world + "\\" +name, new MenuText(475, 250, message, 50, "message"));
         }
@@ -406,6 +444,7 @@ public class Map {
 
 
     private GameEntity lastOverlay;
+    private BackgroundObject lastBackground;
 
     private double mouseOriginX = 0;
     private double mouseOriginY = 0;
@@ -454,10 +493,16 @@ public class Map {
 
 
             GameEntity toolDisplay = null;
+            BackgroundObject backgroundDisplay = null;
+
+
 
             switch (tool) {
-                case "wall", "gate", "stickyWall", "water", "lava", "corner":
+                case "wall", "gate", "stickyWall", "water", "lava", "corner", "sandTile":
                     toolDisplay = placeTile();
+                    break;
+                case "background wall":
+                    backgroundDisplay = placeBackgroundTile();
                     break;
                 case "key":
                     toolDisplay = new Key(applyGrid(Main.reverseUnit(Main.mouseX)) + cameraX, applyGrid(Main.reverseUnit(Main.mouseY)) + cameraY, this, 1, currentCode);
@@ -480,6 +525,11 @@ public class Map {
                 lastOverlay = toolDisplay;
             }
 
+            if (backgroundDisplay != null) {
+                lastBackground = backgroundDisplay;
+
+            }
+
         } else {
             if (mouseDragging) {
                 mouseDragging = false;
@@ -497,7 +547,22 @@ public class Map {
 
                         addEntityLive(lastOverlay);
                         lastOverlay.placeAnimate();
-                        SoundLoader.playSound(SoundLoader.fall, 1, 0, 1);
+
+                        placeSound.play(SoundLoader.fall, 1, 1);
+
+                    }
+                }
+
+
+                if (!(lastBackground == null)) {
+                    if (lastBackground.getSizeX() < 1 || lastBackground.getSizeY() < 1) {
+
+                    } else {
+
+
+                        backgroundObjects.add(lastBackground);
+                        placeSound.play(SoundLoader.fall, 1, 1);
+
                     }
                 }
                 //activate shit
@@ -510,6 +575,62 @@ public class Map {
     public String getWorld() {
         return world;
     }
+
+
+
+
+    private BackgroundObject placeBackgroundTile() {
+
+        double sizeX = GRID_SIZE + applyGrid((Main.reverseUnit(Main.mouseX)) + cameraX) - mouseOriginX;
+        double sizeY = GRID_SIZE + applyGrid((Main.reverseUnit(Main.mouseY)) + cameraY) - mouseOriginY;
+
+
+        BackgroundObject tile = new BackgroundObject(mouseOriginX,mouseOriginY, sizeX, sizeY, this, ImageLoader.wallTile, 1);
+
+
+        if ((int) sizeX != (int) lastX) {
+            SoundLoader.playSound(SoundLoader.stone, 1, 0, 1);
+
+        } else if ((int) sizeY != (int) lastY) {
+            SoundLoader.playSound(SoundLoader.stone, 1, 0, 1);
+
+        }
+
+        lastX = sizeX;
+        lastY = sizeY;
+
+
+        if (sizeX < 0) {
+
+            if (sizeY < 0) {
+
+
+                tile.setSizeX(-sizeX);
+                tile.setSizeY(-sizeY);
+                tile.setX(mouseOriginX + sizeX);
+                tile.setY(mouseOriginY + sizeY);
+
+            } else {
+
+
+
+                tile.setSizeX(-sizeX);
+                tile.setX(mouseOriginX + sizeX);
+            }
+
+
+        } else if (sizeY < 0) {
+
+            tile.setSizeY(-sizeY);
+            tile.setY(mouseOriginY + sizeY);
+
+        }
+
+        return tile;
+        //  toolDisplay = maxWall((Map.Wall) toolDisplay);
+
+    }
+
 
 
     private GameEntity placeTile() {
@@ -527,11 +648,16 @@ public class Map {
             case "gate" -> new Gate(mouseOriginX, mouseOriginY, this, sizeX, sizeY, InputAction.Default, FillType.Tile, 1, currentCode);
             case "corner" -> new CornerWall(mouseOriginX, mouseOriginY, this, sizeX, sizeY, InputAction.Default, FillType.Tile, 1, 315);
             case "stickyWall" -> new StickyWall(mouseOriginX, mouseOriginY, this, sizeX, sizeY, InputAction.Default, FillType.Tile, 1);
-            case "water" -> new Water(mouseOriginX, mouseOriginY, this, sizeX, sizeY, 1);
-            case "lava" -> new Lava(mouseOriginX, mouseOriginY, this, sizeX, sizeY, 1);
+            case "water" -> MapLoader.getWater(mouseOriginX, mouseOriginY, this, sizeX, sizeY);
+            case "lava" -> MapLoader.getLava(mouseOriginX, mouseOriginY, this, sizeX, sizeY);
             default -> new Wall(mouseOriginX, mouseOriginY, this, sizeX, sizeY, InputAction.Default, FillType.Tile, 1);
 
         };
+
+        if (tool.equals("sandTile")) {
+            ((Wall)tile).setType("sand");
+            ((Wall)tile).setImage(ImageLoader.sandTile);
+        }
 
 
         if ((int) sizeX != (int) lastX) {
@@ -646,8 +772,7 @@ public class Map {
         return wall;
     }
 
-
-    private void erase() {
+    private void eraserEntities() {
         Square mouseIntesect = new Square(Main.reverseUnit(Main.mouseX) + cameraX, Main.reverseUnit(Main.mouseY) + cameraY, SMALLER_GRID, SMALLER_GRID, 1, InputAction.Default);
 
         ArrayList<GameEntity> removeEntites = new ArrayList<>();
@@ -660,11 +785,38 @@ public class Map {
         }
 
         for (GameEntity entity : removeEntites) {
-            SoundLoader.playSound(SoundLoader.suck, 0.5, 0, 1);
+            placeSound.play(SoundLoader.suck, 0.5, 1);
+
             entities.remove(entity);
 
         }
         lastOverlay = null;
+        lastBackground = null;
+    }
+
+    private void eraserWall() {
+        Square mouseIntesect = new Square(Main.reverseUnit(Main.mouseX) + cameraX, Main.reverseUnit(Main.mouseY) + cameraY, 1, 1, 1, InputAction.Default);
+
+        ArrayList<BackgroundObject> removeObjects = new ArrayList<>();
+
+        for (BackgroundObject entity : backgroundObjects) {
+            if (mouseIntesect.intersect(entity.getMainShape())) {
+                removeObjects.add(entity);
+            }
+
+        }
+
+        for (BackgroundObject entity: removeObjects) {
+            placeSound.play(SoundLoader.suck, 0.5, 1);
+            backgroundObjects.remove(entity);
+
+        }
+    }
+
+
+    private void erase() {
+    eraserWall();
+    eraserEntities();
     }
 
     private int applyGrid(double input) {
@@ -766,11 +918,28 @@ public class Map {
     }
 
 
+    public void addBackgroundObject(BackgroundObject object) {
+        backgroundObjects.add(object);
+    }
+
     public boolean screenInersect(Square square) {
         return square.intersect(new Square(cameraX, cameraY, Main.DEFAULT_WIDTH_MAP, Main.DEFAULT_HEIGHT_MAP, 1, InputAction.Default));
     }
 
     public void render(GraphicsContext g) {
+
+        background.renderSky(g, cameraX, getTime());
+
+        if (lastBackground != null) {
+            lastBackground.render(g);
+        }
+
+
+        for (BackgroundObject backgroundObject : backgroundObjects) {
+            if (screenInersect(backgroundObject.getMainShape())) {
+                backgroundObject.render(g);
+            }
+        }
 
 
         for (GameEntity entity : particles) {
@@ -834,14 +1003,13 @@ public class Map {
         if (Menu.currentMenu.equals("editor")) {
             g.setFill(Color.color(0, 1, 0, 0.2));
             g.drawImage(ImageLoader.player, Main.correctUnit(playerX - cameraX), Main.correctUnit(playerY - cameraY), Main.correctUnit(GRID_SIZE), Main.correctUnit(GRID_SIZE));
-        }
-
-        if (isReplay) {
+        } else if (isReplay) {
 
             g.setFill(Color.WHITE);
             g.setFont(new Font(Settings.FONT, Main.correctUnit(40)));
             g.fillText("x" + String.format("%.2f", actualSpeed), correctUnit(225), correctUnit(825));
         }
+
 
 
         if (Settings.get("debug") > 0 || Menu.currentMenu.equals("editor")) {
@@ -872,7 +1040,16 @@ public class Map {
 
 
     public String toString() {
-        String lines = sizeX + " " + sizeY + " " + (int) playerX + " " + (int) playerY + "\n/\n/";
+        String lines = sizeX + " " + sizeY + " " + (int) playerX + " " + (int) playerY + "\n/";
+
+
+
+        lines = lines + "\n" + backgroundName + " ;";
+        for (BackgroundObject entity : backgroundObjects) {
+            lines = lines + "\n" + entity.toString() + ";";
+        }
+
+        lines = lines + "\n/";
 
         for (GameEntity entity : entities) {
             lines = lines + "\n" + entity.toString() + ";";
@@ -883,6 +1060,11 @@ public class Map {
 
     public ArrayList<GameEntity> getEntities() {
         return entities;
+    }
+
+
+    public ArrayList<BackgroundObject> getBackgroundObjects() {
+        return backgroundObjects;
     }
 
 
@@ -906,13 +1088,9 @@ public class Map {
     public void splash(GameEntity entity) {
 
         for (GameEntity entity1 : entities) {
-            if (entity1 instanceof Water) {
+            if (entity1 instanceof Liquid) {
                 if (entity.getMainShape().intersect(entity1.getMainShape())) {
-                    ((Water)(entity1)).splash(entity.getX(), entity);
-                }
-            } else  if (entity1 instanceof Lava) {
-                if (entity.getMainShape().intersect(entity1.getMainShape())) {
-                    ((Lava)(entity1)).splash(entity.getX(), entity);
+                    ((Liquid)(entity1)).splash(entity.getX(), entity);
                 }
             }
         }
@@ -953,16 +1131,6 @@ public class Map {
     }
 
 
-    public void addWall(int x, int y, int sizeX, int sizeY, double parallax) {
-
-
-        Wall wallImage = new Wall(x, y, this, sizeX, sizeY, InputAction.Default, FillType.Tile, parallax);
-
-
-        addEntity(wallImage);
-
-
-    }
 
     public void addGate(int x, int y, int sizeX, int sizeY, double parallax, int code) {
 

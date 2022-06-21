@@ -11,6 +11,10 @@ import Map.Map;
 import Map.Player;
 import Map.ReplayPlayer;
 import Map.*;
+import javafx.scene.paint.Color;
+
+
+import Main.Main;
 
 public class MapLoader {
 
@@ -38,6 +42,7 @@ public class MapLoader {
             int playerX = header.nextInt();
             int playerY = header.nextInt();
             header.close();
+
             Map map;
             if (type == 2) {
                 map = new Map(width, height, mapName.split("\\\\")[1], true, mapName.split("\\\\")[0]);
@@ -45,29 +50,26 @@ public class MapLoader {
                 map = new Map(width, height, mapName.split("\\\\")[1], false, mapName.split("\\\\")[0]);
             }
 
-
-            Scanner background = new Scanner(text[1]);
-
-            background.useDelimiter(";");
-            while (background.hasNext()) {
-
-                String[] line = background.next().split(" ");
-                String name = line[0];
-
-                if (name.equals("wall")) {
-                    double parallax = Double.parseDouble(line[1]);
-                    int x = Integer.parseInt(line[2]);
-                    int y = Integer.parseInt(line[3]);
-                    int wallWidth = Integer.parseInt(line[4]);
-                    int wallHeight = Integer.parseInt(line[5]);
-                    map.addWall(x, y, wallWidth, wallHeight, parallax);
-                }
-
-
+            if (type == 1) {
+                map.addEntity(new Player(playerX, playerY, map));
             }
 
-            background.close();
-            // System.out.println("wtf");
+                Scanner background = new Scanner(text[1]);
+            String backgroundName = "";
+
+                background.useDelimiter(";");
+                if (background.hasNext()) {
+                    backgroundName =background.next();
+                    map.setBackground(BackgroundLoader.loadBackground(backgroundName), backgroundName);
+                }
+                while (background.hasNext()) {
+                    String[] line = background.next().split(" ");
+                    map.addBackgroundObject(new BackgroundObject(Integer.parseInt(line[0]),Integer.parseInt(line[1]), Integer.parseInt(line[2]), Integer.parseInt(line[3]), map,ImageLoader.wallTile, 1));
+                }
+
+                background.close();
+
+
 
             Scanner entities = new Scanner(text[2]);
             entities.useDelimiter(";");
@@ -81,12 +83,6 @@ public class MapLoader {
                 int x = Integer.parseInt(line[1]);
                 int y = Integer.parseInt(line[2]);
                 switch (name) {
-                    case "wall" -> {
-                        int wallWidth = Integer.parseInt(line[3]);
-                        int wallHeight = Integer.parseInt(line[4]);
-                        map.addWall(x, y, wallWidth, wallHeight, 1);
-                        break;
-                    }
                     case "stickyWall" -> {
                         int wallWidth = Integer.parseInt(line[3]);
                         int wallHeight = Integer.parseInt(line[4]);
@@ -96,13 +92,14 @@ public class MapLoader {
                     case "water" -> {
                         int wallWidth = Integer.parseInt(line[3]);
                         int wallHeight = Integer.parseInt(line[4]);
-                        map.addEntity(new Water(x, y, map, wallWidth, wallHeight, 1));
+                        map.addEntity(getWater(x,y,map,wallWidth,wallHeight));
                         break;
                     }
                     case "lava" -> {
                         int wallWidth = Integer.parseInt(line[3]);
                         int wallHeight = Integer.parseInt(line[4]);
-                        map.addEntity(new Lava(x, y, map, wallWidth, wallHeight, 1));
+                        map.addEntity(getLava(x,y,map,wallWidth,wallHeight));
+
                         break;
                     }
                     case "gate" -> {
@@ -161,6 +158,17 @@ public class MapLoader {
                         String trophyName = line[3];
 
                         map.addEntity(new Trophy(x, y, map, trophyName));
+                        break;
+                    }
+                    default -> {
+                        int wallWidth = Integer.parseInt(line[3]);
+                        int wallHeight = Integer.parseInt(line[4]);
+                        Wall wall = new Wall(x, y, map, wallWidth, wallHeight, InputAction.Default, FillType.Tile, 1);
+
+                        wall.setType(name);
+                        wall.setImage(ImageLoader.getImage(name + "Tile"));
+
+                        map.addEntity(wall);
                         break;
                     }
                 }
@@ -226,9 +234,7 @@ public class MapLoader {
             }
 
 
-            if (type == 1) {
-                map.addEntity(new Player(playerX, playerY, map));
-            }
+
             map.setStartEntities();
             return map;
 
@@ -241,10 +247,27 @@ public class MapLoader {
 
 
 
+    public static final Liquid getWater(double x, double y, Map map, double sizeX, double sizeY) {
+        return new Liquid(x, y, map, sizeX, sizeY, InputAction.Swim, Color.color(0.4, 0.8, 1, 0.3), 50, 0.003, 0.02, 0.09, "water");
+    }
+
+
+    public static final Liquid getLava(double x, double y, Map map, double sizeX, double sizeY) {
+        return new Liquid(x, y, map, sizeX, sizeY, InputAction.Lava, Color.color(1, 0.3, 0, 0.8), 50, 0.003, 0.05, 0.15, "lava");
+    }
+
 
     public static void saveMap(Map map, boolean keepName) {
+        String name = "";
+        if (!keepName) {
+            int i = 1;
+            while ((new File("res\\maps\\custom\\" + i  + ".txt")).exists()) {
+                i++;
+            }
+            name = i + "";
+        }
 
-        File file = new File ("res\\maps\\custom\\" + ((keepName) ? map.getName() :(new File("res\\maps\\custom\\").listFiles().length+1)) + ".txt");
+        File file = new File ("res\\maps\\custom\\" + name + ".txt");
         try {
             file.createNewFile();
         } catch (IOException e) {

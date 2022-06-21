@@ -12,9 +12,6 @@ import Main.Main;
 public class SoundLoader {
     private static final int MAX_SOUNDS = 15;
 
-    public static AudioClip[] sfx = new AudioClip[MAX_SOUNDS];
-    public static Integer[] volumes = new Integer[MAX_SOUNDS];
-
     private static int currentSound = 0;
 
 
@@ -31,7 +28,7 @@ public class SoundLoader {
 
 
 
-    public static final AudioClip splashWade = new AudioClip(new File(path + "Splash_Wade.wav").toURI().toString());
+    //public static final AudioClip splashWade = new AudioClip(new File(path + "Splash_Wade.wav").toURI().toString());
     public static final AudioClip largeSplash = new AudioClip(new File(path + "Large_Splash.wav").toURI().toString());
 
     public static final AudioClip bubble = new AudioClip(new File(path + "bubble.wav").toURI().toString());

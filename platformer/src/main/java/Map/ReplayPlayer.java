@@ -66,7 +66,11 @@ public class ReplayPlayer extends GameEntity {
         this.sizeX = 50;
         this.sizeY = 50;
 
-        map.player = new Player(-1000, -1000, map);
+
+        if (isReplay) {
+            map.player = new Player(-1000, -1000, map);
+
+        }
 
 
         map.initialiseButtons();

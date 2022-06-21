@@ -45,11 +45,24 @@ import Util.*;
  *
  * @author William Randle
  * @version 0.0.9
- * @todo: leaderboard for full speedrun ranking, then stats page button launches menu for previous records in all the categories: slider to show them
- * @todo: save times for individual users (last, best[and overall too], speedrun[and overall too])
+ *
+ * @todo: liquids interract
+ * @todo: steam
+ * @todo: read menus from text files
+ *
+ * @todo: gears, tightrope
+ * @todo: player health & visible bar
+ *
+ *
+ * @todo: chat system, in replay the chat messages come from the player. this can then be used as stories
+ *
+ * @todo: in level editor allow choice of background
+ *
+ * @todo player can walk around a map in the menu, choosing levels by walking into it
+ *
+ * @todo: pink world
+ *
  * @todo: vanity slots to customise character design (multi layered player model with independantly moving parts)
- * @todo: water / lava
- * @todo: level editor
  */
 public class Main extends Application {
 
@@ -138,6 +151,8 @@ public class Main extends Application {
 
     private static final double BASE_FPS = 144;
 
+    private static final double zoom = 1;
+
     /**
      * Load the menus for navigation, and launch the user selection menu.
      *
@@ -150,6 +165,7 @@ public class Main extends Application {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         canvas = new Canvas(screenSize.getWidth(), screenSize.getHeight());
+
 
         gameUnit = screenSize.getHeight() / GAME_UNIT_SETTING;
 
@@ -319,12 +335,12 @@ public class Main extends Application {
     }
 
 
-    public static void loadEditor() {
+    public static void loadEditor(String name) {
         resetTimeline();
         isLevelEditor = true;
 
 
-        currentMap = MapLoader.loadMap("preset\\empty", 0);
+        currentMap = MapLoader.loadMap(name, 0);
         hashMap.put(InputAction.Menu, 2);
         Menu.currentlyMenu = false;
 
@@ -378,6 +394,7 @@ public class Main extends Application {
     private static int count = 0;
 
     public static void resetTimeline() {
+     //   canvas.getGraphicsContext2D().setImageSmoothing(Settings.get("image smoothing") > 0);
         loop.stop();
 
 
@@ -491,7 +508,7 @@ public class Main extends Application {
 
     private static void render(GraphicsContext g) {
 
-        g.drawImage(ImageLoader.sky1, 0, 0, canvas.getWidth(), canvas.getHeight());
+        g.drawImage(ImageLoader.sky1, 0, 0, correctUnit(DEFAULT_WIDTH_MAP), correctUnit(DEFAULT_HEIGHT_MAP));
         if (!(currentMap == null)) {
             currentMap.render(g);
         }

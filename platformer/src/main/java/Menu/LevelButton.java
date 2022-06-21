@@ -31,9 +31,9 @@ public class LevelButton extends MenuElement {
         double time = UserFileHandler.getTime(name, 1);
         timeBefore = time;
         if (time == -1) {
-            text = text + "\nbest time: N/A";
+            text = text + "\nbest: N/A";
         } else {
-            text = text + "\nbest time: " + String.format("%.2f", time);
+            text = text + "\nbest: " + String.format("%.2f", time);
         }
 
     }
@@ -108,7 +108,7 @@ public class LevelButton extends MenuElement {
         g.fillRect(getRenderX(), getRenderY(), getRenderWidth(), Main.correctUnit(height));
         g.setFill(Color.WHITE);
         g.setFont(new Font(Settings.FONT,Main.correctUnit(25)));
-        g.fillText(text, getRenderX()+ Main.correctUnit(10), getRenderY() +Main.correctUnit( height / 2.0));
+        g.fillText(text.split("\\\\")[text.split("\\\\").length-1], getRenderX()+ Main.correctUnit(10), getRenderY() +Main.correctUnit( height / 2.0));
 
 
     }

@@ -1,0 +1,4 @@
+desert4 0.025
+desert3 0.05
+desert2 0.1
+desert1 0.2

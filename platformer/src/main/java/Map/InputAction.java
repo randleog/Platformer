@@ -97,7 +97,7 @@ public enum InputAction {
 
 
     public static boolean isUnactionable(InputAction action) {
-        return (action == InputAction.Default|| action == InputAction.Swim);
+        return (action == InputAction.Default|| action == InputAction.Swim|| action == InputAction.Lava);
     }
 
     public static boolean isRightType(InputAction action) {

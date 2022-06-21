@@ -5,6 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 import Main.Main;
 import Util.Settings;
 import Util.Stats;
+import javafx.scene.paint.Color;
 
 //edits = 1
 public class Player extends GameEntity {
@@ -30,7 +31,8 @@ public class Player extends GameEntity {
 
     private static final double MAX_WALL_JUMP_FACTOR = 1.5;
 
-    private double health;
+
+
 
     private boolean hooking = false;
 
@@ -46,9 +48,10 @@ public class Player extends GameEntity {
         canLeftJump = false;
         canRightJump = false;
 
-
-        health = 10;
+        maxHealth = 10;
+        health = maxHealth;
     }
+
 
 
     @Override
@@ -299,6 +302,11 @@ public class Player extends GameEntity {
         } else {
 
             renderSquare(g);
+        }
+
+        if (health < maxHealth) {
+            g.setFill(Color.color(0.8,0.2,0.2));
+            g.fillRect(getRenderX(),getRenderY()-Main.correctUnit(10), (Main.correctUnit(sizeX*getHealthPercentage())), Main.correctUnit(5));
         }
 
       //  body[0].render(g, getRenderX(), getRenderY(), Main.Main.correctUnit(this.sizeX));

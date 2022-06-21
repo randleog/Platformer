@@ -13,6 +13,8 @@ public class Wall extends GameEntity {
 
     private ArrayList<int[]> centers = new ArrayList<>();
 
+    private String type = "wall";
+
 
 
     public Wall(double x, double y, Map map, double sizeX, double sizeY, InputAction side, FillType fillType, double parallax) {
@@ -84,6 +86,12 @@ public class Wall extends GameEntity {
     }
 
 
+    public void setType(String type){
+        this.type = type;
+        centers = new ArrayList<>();
+    }
+
+
 
 
     @Override
@@ -92,7 +100,13 @@ public class Wall extends GameEntity {
     }
 
     private void loadCenters() {
+
         centers = new ArrayList<>();
+
+
+        if (!type.equals("sand")) {
+            return;
+        }
 
         int y = (int)(sizeY/150);
         int x = (int)(sizeX/150);
@@ -102,6 +116,10 @@ public class Wall extends GameEntity {
                 centers.add(new int[]{i,j});
             }
         }
+
+
+
+
 
     }
 
@@ -158,7 +176,7 @@ public class Wall extends GameEntity {
 
 
     public String toString() {
-        String line = "wall " + (int)x + " " + (int)y + " " + (int)sizeX + " " + (int)sizeY;
+        String line = type + " " + (int)x + " " + (int)y + " " + (int)sizeX + " " + (int)sizeY;
 
         return line;
     }

@@ -8,15 +8,20 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import Util.ImageLoader;
 import Main.Main;
+import Util.ImageLoader;
 import Util.Settings;
+import Util.SoundLoader;
 
-public class Lava extends GameEntity {
+
+import GameControl.TimedSound;
+public class Liquid extends GameEntity {
 
 
     private static final double DISTORT = 3;
-    private static final int grid = 75;
+    private int grid = 50;
+
+    private static final int PARTICLE_RESOLUTION = 2;
 
     private static final double WAVE = 30;
 
@@ -40,7 +45,7 @@ public class Lava extends GameEntity {
     public static final double PARTICLE_SPEED = 5.0;
 
 
-    private static final double SPREAD = 0.00075;
+    private double SPREAD = 0.003;
 
 
     private static final double SPLASH_TIME = 0.5;
@@ -67,21 +72,27 @@ public class Lava extends GameEntity {
     private double lastSplashX = 0;
     private double lastSplashY = 0;
 
+    private TimedSound bubbles;
 
-    public Lava(double x, double y, Map map, double sizeX, double sizeY, double parallax) {
-        super(x, y, map, InputAction.Lava, FillType.Color, parallax);
+    private String name;
+
+
+    public Liquid(double x, double y, Map map, double sizeX, double sizeY, InputAction action, Color color, int gridSize, double spread, double spring, double dampening, String name) {
+        super(x, y, map, action, FillType.Color, 1);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
-        this.color = Color.color(1, 0.3, 0, 0.8);
-        this.image = ImageLoader.wallTile;
-        if (sizeX < 10 && sizeY < 10) {
-            System.out.println("wall is too small");
-        }
+        this.color = color;
 
+        this.grid = gridSize;
+        this.SPREAD = spread;
+        this.name = name;
+
+
+        bubbles = new TimedSound(50);
 
         waves = new Wave[(int) (sizeX / grid) + 2];
         for (int i = 0; i < waves.length; i++) {
-            waves[i] = new Wave(0.05,0.15);
+            waves[i] = new Wave(spring, dampening);
         }
 
 
@@ -98,7 +109,7 @@ public class Lava extends GameEntity {
     @Override
     protected void loadHitbox() {
         hitbox = new ArrayList<>();
-        hitbox.add(new Square(this.x, this.y, this.sizeX, this.sizeY, parallax, InputAction.Swim));
+        hitbox.add(new Square(this.x, this.y, this.sizeX, this.sizeY, parallax, action));
     }
 
 
@@ -110,7 +121,6 @@ public class Lava extends GameEntity {
 
     public void splash(double x, GameEntity entity) {
 
-        double velY = Math.min(1,entity.getVelY());
 
 
         for (int i = 0; i < Math.abs(entity.getVelY()) * SPLASH_COUNT; i++) {
@@ -118,8 +128,8 @@ public class Lava extends GameEntity {
             double size = 30;
             ControlledParticle particle = new ControlledParticle(x+ Main.random.nextInt(50)-25, this.y - 30, size, size, ImageLoader.splash, 5 * Settings.get("fps"), 0.5);
 
-            particle.setVelX(Main.random.nextDouble(PARTICLE_SPEED*0.12) - (PARTICLE_SPEED / 4)*0.12);
-            particle.setVelY(Main.random.nextDouble(PARTICLE_SPEED*Math.abs(entity.getVelY())*0.04) - PARTICLE_SPEED*Math.abs(entity.getVelY())*0.07);
+            particle.setVelX(Main.random.nextDouble(PARTICLE_SPEED*0.15) - (PARTICLE_SPEED / 4)*0.15);
+            particle.setVelY(Main.random.nextDouble(PARTICLE_SPEED*Math.abs(entity.getVelY())*0.04) - PARTICLE_SPEED*Math.abs(entity.getVelY())*0.08);
 
             particles.add(particle);
         }
@@ -146,9 +156,15 @@ public class Lava extends GameEntity {
         }
 
         for (ControlledParticle particle : removeParticles) {
+            bubbles.play(SoundLoader.bubble, SoundLoader.getRandomVolume()-0.5, SoundLoader.getRandomSpeed());
             particles.remove(particle);
+
+
         }
 
+        if (Settings.get("graphics") ==0) {
+            return;
+        }
 
         tickWaves();
         tickSplashes();
@@ -259,7 +275,13 @@ public class Lava extends GameEntity {
 
 
     public void render(GraphicsContext g) {
-        //renderSquare(g);
+
+
+        if (Settings.get("graphics") ==0) {
+            renderSquare(g);
+            return;
+        }
+
 
         double x = getRenderX();
         double y = getRenderY();
@@ -268,7 +290,7 @@ public class Lava extends GameEntity {
             double currentAnimate = Main.correctUnit(Main.interpolate(0, BUBBLE_WIDTH, SPLASH_TIME * Settings.get("fps"), splash[2]));
             currentAnimate = Math.min(BUBBLE_WIDTH, currentAnimate);
             g.setLineWidth(Main.correctUnit(1));
-            g.setStroke(Color.color(1, 0.4, 0, 1 - ((currentAnimate) / BUBBLE_WIDTH)));
+            g.setStroke(Color.color(1, 1, 1, 1 - ((currentAnimate) / BUBBLE_WIDTH)));
             g.strokeRect(Main.correctUnit(splash[0] - map.cameraX) - currentAnimate / 2
                     , Main.correctUnit(splash[1] - map.cameraY) - currentAnimate / 2
                     , currentAnimate
@@ -312,7 +334,11 @@ public class Lava extends GameEntity {
 
                 g.fillPolygon(xs, ys, 6);
 
-
+                //    g.setStroke(Color.color(1, 1, 1));
+                //       g.setLineWidth(Main.Main.correctUnit(2));
+                //      g.strokeLine(xs[1], ys[1], xs[2], ys[2]);
+                //      g.strokeLine(xs[2], ys[2], xs[3], ys[3]);
+                //      g.strokeLine(xs[3], ys[3], xs[4], ys[4]);
 
 
             }
@@ -322,11 +348,19 @@ public class Lava extends GameEntity {
         for (Square square : hitbox) {
             square.render(g, map.cameraX, map.cameraY, (Player) map.player);
         }
-        //  for (Map.ControlledParticle particle : particles) {
-        //       particle.render(g, map.cameraX, map.cameraY);
-        //  }
 
-        renderSplash(g);
+        if (Settings.get("graphics") ==0) {
+            return;
+        }
+        if (Settings.get("graphics") <4) {
+            for (ControlledParticle particle : particles) {
+                particle.render(g, map.cameraX, map.cameraY);
+            }
+        } else {
+            renderSplash(g);
+        }
+
+
 
     }
 
@@ -339,8 +373,8 @@ public class Lava extends GameEntity {
         if (lastSplash != null && System.currentTimeMillis()- lastSplashT < PARTICLE_INTERVAL) {
 
             g.save();
-            g.setGlobalAlpha(0.8);
-            g.drawImage(lastSplash,  Main.correctUnit(lastSplashX-map.cameraX),getRenderY()- Main.correctUnit(SPLASH_HEIGHT), Main.correctUnit(SPLASH_WIDTH), Main.correctUnit(SPLASH_HEIGHT+SPLASH_HEIGHT_EXTRA));
+            g.setGlobalAlpha(color.getOpacity());
+            g.drawImage(lastSplash,  Main.correctUnit(lastSplashX-map.cameraX),Main.correctUnit(lastSplashY - SPLASH_HEIGHT- map.cameraY), Main.correctUnit(SPLASH_WIDTH), Main.correctUnit(SPLASH_HEIGHT+SPLASH_HEIGHT_EXTRA));
             g.restore();
 
         } else {
@@ -353,19 +387,39 @@ public class Lava extends GameEntity {
 
     }
 
+    public double getSurfaceY(double x) {
+
+        if (x > this.x && x < this.x+sizeX) {
+            x = x+grid/2.0;
+            double pos = (x-this.x)/grid;
+            if (pos > waves.length-1) {
+                return waves[(int)pos].getAmplitude()+this.y;
+            }
+            return Main.interpolate(waves[(int)pos].getAmplitude(), waves[(int)pos+1].getAmplitude(), 1, pos-(int)pos)+this.y;
+        }
+        return this.sizeY;
+    }
+
 
 
     private void renderActual(GraphicsContext g) {
 
+
+
         double furthestLeft = 9999999;
+        double lowest = -999999;
         for (ControlledParticle particle : particles) {
             if (particle.getX()-particle.getSize() < furthestLeft) {
                 furthestLeft = particle.getX()-particle.getSize();
             }
+
+            if (particle.getY()+particle.getSize() > lowest) {
+                lowest = particle.getY()+particle.getSize();
+            }
         }
 
 
-        int res =2;
+        int res =PARTICLE_RESOLUTION;
 
 
 
@@ -384,13 +438,22 @@ public class Lava extends GameEntity {
 
 
                 float actualX = (float)(Main.reverseUnit(x*res)+furthestLeft);
-                float actualY = (float)(Main.reverseUnit(y*res)+this.y-SPLASH_HEIGHT);
+                float actualY = (float)(Main.reverseUnit(y*res)+lowest-SPLASH_HEIGHT-SPLASH_HEIGHT_EXTRA);
+
+                double surfaceY = getSurfaceY(actualX);
+
                 int total = 0;
                 for (ControlledParticle particle : particles) {
                     total += 45 * (Main.correctUnit(particle.getSize()) / Main.getDistance(actualX, actualY , particle.getX(), particle.getY()));
                     // System.out.println(Main.Main.getDistance(actualX*res, actualY*res, particle.getX(), particle.getY()));
                     // total += 20 * (particle.getSize() / getDistance(x*res, y*res, particle.getX(), particle.getY()));
                 }
+
+
+                //   if (actualY < this.y) {
+                total+= 45 * (Main.correctUnit(100) / Main.getDistance(actualX, actualY , actualX, surfaceY));
+                //     }
+
                 //   if (actualY > this.y) {
 
                 //     }
@@ -402,7 +465,9 @@ public class Lava extends GameEntity {
 
 
                 if (total > 900) {
-                    image.getPixelWriter().setColor(x, y , Color.color(1, 0.3,0));
+                    if (!(actualY+SPLASH_HEIGHT_EXTRA+1 > surfaceY)) {
+                        image.getPixelWriter().setColor(x, y, Color.color(color.getRed(), color.getGreen(), color.getBlue()));
+                    }
 //
                 }
 
@@ -422,13 +487,14 @@ public class Lava extends GameEntity {
 
 
         lastSplashX =furthestLeft;
+        lastSplashY = lowest;
 
         // g.save();
         //     g.setGlobalBlendMode(BlendMode.ADD);
         g.save();
-        g.setGlobalAlpha(0.8);
+        g.setGlobalAlpha(color.getOpacity());
 
-        g.drawImage(image, Main.correctUnit(furthestLeft-map.cameraX),getRenderY()- Main.correctUnit(SPLASH_HEIGHT), Main.correctUnit(SPLASH_WIDTH), Main.correctUnit(SPLASH_HEIGHT+SPLASH_HEIGHT_EXTRA));
+        g.drawImage(image, Main.correctUnit(furthestLeft-map.cameraX),Main.correctUnit(lowest-SPLASH_HEIGHT-map.cameraY), Main.correctUnit(SPLASH_WIDTH), Main.correctUnit(SPLASH_HEIGHT+SPLASH_HEIGHT_EXTRA));
 
         g.restore();
     }
@@ -436,7 +502,7 @@ public class Lava extends GameEntity {
 
 
     public String toString() {
-        String line = "lava " + (int) x + " " + (int) y + " " + (int) sizeX + " " + (int) sizeY;
+        String line = name + " " + (int) x + " " + (int) y + " " + (int) sizeX + " " + (int) sizeY;
 
         return line;
     }

@@ -16,6 +16,8 @@ import Util.Settings;
 
 public abstract class GameEntity {
 
+    private static final int LAVA_DAMAGE = 3;
+
 
     private static final double CRASH_SPEED = 8;
 
@@ -108,15 +110,20 @@ public abstract class GameEntity {
     protected static final double SWIM_FACTOR = 0.01;
     private static final double WALL_FACTOR = 1;
     protected ArrayList<Square> hitbox = new ArrayList<>();
+    protected  double health;
 
     protected TimedSound walkSound;
     protected TimedSound swimSound;
+
+    public static final int DEFAULT_HEALTH = 5;
+    protected int maxHealth = 10;
 
     GameEntity(double x, double y, Map map, InputAction action, FillType fillType, double parallax) {
         flagRemoval = false;
         this.fillType = fillType;
         currentDrag = Map.AIR_DRAG;
         this.parallax = parallax;
+        health = DEFAULT_HEALTH;
         running = false;
         this.x = x;
         this.y = y;
@@ -139,6 +146,11 @@ public abstract class GameEntity {
         loadHitbox();
 
     }
+
+    public double getHealthPercentage() {
+        return health/(maxHealth*1.0);
+    }
+
 
 
     public double getStartVelX() {
@@ -341,16 +353,27 @@ public abstract class GameEntity {
         loadHitbox();
     }
 
+    protected void checkDeath() {
+        if (health < 0) {
+            die();
+        }
+    }
+
 
     protected void jumpCollision() {
+        ArrayList<InputAction> actions = map.getActions(this);
 
-        if (map.getActions(this).contains(InputAction.Swim) || map.getActions(this).contains(InputAction.Lava)) {
+        if (actions.contains(InputAction.Swim) || actions.contains(InputAction.Lava)) {
             if (!swimming) {
 
                 map.splash(this);
                 SoundLoader.playSound(SoundLoader.largeSplash, 1, 0, SoundLoader.getRandomSpeed());
             }
             swimming = true;
+            if (actions.contains(InputAction.Lava)) {
+                health-=(LAVA_DAMAGE*1.0)/Settings.get("fps");
+               // System.out.println("what in the fuck do you mean");
+            }
 
         } else {
             if (swimming) {
@@ -399,6 +422,8 @@ public abstract class GameEntity {
 
         y -= WALL_CLING_RADIUS;
 
+
+        checkDeath();
 
     }
 
@@ -558,16 +583,27 @@ public abstract class GameEntity {
                     lastRotation = cornerRotation;
                     cornerRotation = rotation;
                     rotationTicks = (int) (Settings.getD("fps") * ROTATE_TIME);
+                    double dy = Math.sin(rotation);
                     while (entity.intersect(getMainShape())) {
-                        y += COLLISION_AMMOUNT * Math.sin(rotation);
+                        y += COLLISION_AMMOUNT * dy;
 
 
-                        x -= COLLISION_AMMOUNT * Math.cos(rotation);
+
+                        if (dy < 0) {
+                            x -= COLLISION_AMMOUNT * Math.cos(rotation);
+                        }
+                    }
+
+                    if (dy < 0) {
+                        double totalVel = Math.sqrt(Math.pow(velY, 2) + Math.pow(velX, 2));
+                        velY = -Math.sin(rotation) * totalVel;
+                        velX = -Math.cos(rotation) * totalVel;
+                    } else {
+                        this.velX = 0;
+                        this.velY = 0;
 
                     }
-                    double totalVel = Math.sqrt(Math.pow(velY, 2) + Math.pow(velX, 2));
-                    velY = -Math.sin(rotation) * totalVel;
-                    velX = -Math.cos(rotation) * totalVel;
+
 
 
                 }
@@ -764,6 +800,10 @@ public abstract class GameEntity {
 
     public boolean intersect(GameEntity entity) {
 
+
+        if (entity == null) {
+            return false;
+        }
 
         for (Square shape : hitbox) {
             for (Square shape2 : entity.getHitbox()) {

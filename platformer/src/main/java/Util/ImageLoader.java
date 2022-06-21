@@ -21,6 +21,9 @@ public class ImageLoader {
     public static Image sky1 = loadImage("sky1.png", 1920,1080);
     public static Image stickyWall = loadImage("stickyWall.png", 64);
 
+    public static Image sandTile = loadImage("sandTile.png", 64);
+
+
     public static Image wallTile = loadImage("wallTile.png", 64);
     public static Image wallTile2 = loadImage("wallTile2.png", 64);
     public static Image wallTile3 = loadImage("wallTile3.png", 64);
@@ -98,7 +101,7 @@ public class ImageLoader {
      * @param height Size of image.
      * @return The image.
      */
-    private static Image loadImage(String fileName, int width, int height) {
+    public static Image loadImage(String fileName, int width, int height) {
 
 
         Image image;
@@ -121,7 +124,7 @@ public class ImageLoader {
 
     public static Image getImage(String name) {
         return switch (name) {
-            case "wall" -> wallTile;
+            case "wallTile" -> wallTile;
             case "stickyWall" -> stickyWall;
             case "flag" -> flag;
             case "eraser" -> eraser;
@@ -132,6 +135,7 @@ public class ImageLoader {
             case "water" -> water;
             case "corner" -> corner;
             case "lava" -> lava;
+            case "sandTile" -> sandTile;
             default -> wallTile;
 
         };

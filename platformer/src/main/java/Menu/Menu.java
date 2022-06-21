@@ -1,12 +1,14 @@
 package Menu;
 
 import Main.Main;
+import Map.Background;
 import Map.InputAction;
 import Util.MapLoader;
 import Util.Settings;
 import Util.SoundLoader;
 import Util.UserFileHandler;
 
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +19,7 @@ import Util.LeaderboardTime;
 public class Menu {
     private static final int BUTTON_WIDTH = 230;
     private static final int BUTTON_HEIGHT = 100;
+
 
     private static final int BUTTON_GAP = 58;
 
@@ -66,6 +69,8 @@ public class Menu {
 
     public static void setCurrentMenu(String newMenu) {
 
+
+        //check the users name is filled
         if (newMenu.equals("main")) {
 
             if (Settings.getStr("name").equals(Settings.ANONYMOUS_NAME)) {
@@ -114,6 +119,8 @@ public class Menu {
 
     public static void switchMenu(String newMenu) {
 
+
+
         if (currentMenu.equals("editor") && Settings.getStr("back").equals("save+exit")) {
             MapLoader.saveMap(Main.currentMap, false);
         }
@@ -131,7 +138,7 @@ public class Menu {
 
 
         Main.lastMap = null;
-        Menu.loadButtonsStart();
+    //    Menu.loadButtonsStart();
 
         currentlyMenu = true;
         setCurrentMenu(newMenu);
@@ -150,13 +157,17 @@ public class Menu {
 
 
         if (newMenu.equals("editor")) {
-            Main.loadEditor();
+            Main.loadEditor(Settings.getStr("map choice"));
+            System.out.println(Settings.getStr("map choice"));
         }
 
     }
 
     private static void updateTransition(String menu) {
-
+        if(!menus.containsKey(menu)) {
+            System.out.println("invalid menu!");
+            return;
+        }
 
         for (MenuElement button : menus.get(menu).getbuttons()) {
             if (button instanceof MenuTransition) {
@@ -166,6 +177,9 @@ public class Menu {
             } else if (button instanceof MenuMap) {
 
                 ((MenuMap) button).loadMap();
+            }else if (button instanceof MenuBackground) {
+
+                ((MenuBackground) button).loadBackground();
             }
         }
     }
@@ -187,16 +201,90 @@ public class Menu {
 
     }
 
+
+
+
+
+
+
+    private static void loadPreEditor() {
+        ArrayList<MenuElement> elements = new ArrayList<>();
+
+        elements.add(new ScrollMenu(BUTTON_GAP, BUTTON_GAP+BUTTON_HEIGHT,BUTTON_WIDTH*5+BUTTON_GAP*6, BUTTON_HEIGHT*3, new Menu(getEditorOptions("custom"), "main"), "editor cutstom options"));
+
+
+        elements.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "main"));
+
+        menus.put("pre editor", new Menu(elements, "main"));
+    }
+
+
+
+
+
+
+
+    private static ArrayList<MenuElement> getEditorOptions(String folder) {
+        ArrayList<MenuElement> mainLevels = new ArrayList<>();
+
+        File directory = new File("res\\maps\\" + folder);
+        File[] levels = directory.listFiles();
+        int fileCount = directory.list().length;
+
+
+
+        int maxLevel = 0;
+        for (int i = 0; i < fileCount; i++) {
+            if ((levels[i].getName().replace(".txt", "").matches(Main.IS_INT_REGEX))) {
+                if (Integer.parseInt(levels[i].getName().replace(".txt", "")) > maxLevel) {
+                    maxLevel = Integer.parseInt(levels[i].getName().replace(".txt", ""));
+                }
+            }
+        }
+
+
+        int maxColums = 5;
+
+        for (int i = 1; i < maxLevel+1; i++) {
+            double x = BUTTON_GAP + (BUTTON_WIDTH+BUTTON_GAP)*((i-1)%maxColums);
+            double y = (BUTTON_HEIGHT+BUTTON_GAP)*((int)(((i-1)*1.0)/maxColums));
+            if ((new File("res\\maps\\" + folder + "\\" + i + ".txt").exists())) {
+
+                String levelName = folder + "\\" + i;
+
+                mainLevels.add(new SettingButtonSwitchMenu((int)x, (int)y, BUTTON_WIDTH, BUTTON_HEIGHT, "map choice", levelName, "editor", MenuElement.TextType.choice));
+            } else {
+                mainLevels.add(new InactiveButton((int)x, (int)y, BUTTON_WIDTH, BUTTON_HEIGHT, "level missing"));
+
+            }
+
+
+        }
+
+        return mainLevels;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     private static void loadMain() {
         ArrayList<MenuElement> mainMenu = new ArrayList<>();
-        mainMenu.add(new MenuMap("main\\2"));
+        mainMenu.add(new MenuBackground("desert", 2,0));
         mainMenu.add(new MenuText(BUTTON_GAP, 100, "Platformer v" + Main.VERSION, 55, "Title"));
 
 
         mainMenu.add(new SwitchMenuButton(BUTTON_GAP, 200, BUTTON_WIDTH * 2 + BUTTON_GAP, (BUTTON_HEIGHT), "levels", "levels"));
 
         mainMenu.add(new SwitchMenuButton(BUTTON_GAP, 350, BUTTON_WIDTH, BUTTON_HEIGHT, "replays", "replays"));
-        mainMenu.add(new SwitchMenuButton(BUTTON_GAP + BUTTON_WIDTH + BUTTON_GAP, 350, BUTTON_WIDTH, BUTTON_HEIGHT, "level editor", "editor").getAnimateRight(true));
+        mainMenu.add(new SwitchMenuButton(BUTTON_GAP + BUTTON_WIDTH + BUTTON_GAP, 350, BUTTON_WIDTH, BUTTON_HEIGHT, "level editor", "pre editor").getAnimateRight(true));
 
 
         mainMenu.add(new SwitchMenuButton(BUTTON_GAP, 500, BUTTON_WIDTH, BUTTON_HEIGHT, "stats", "stats"));
@@ -229,6 +317,7 @@ public class Menu {
 
         loadEditorMenu();
 
+        loadPreEditor();
 
         loadLevelBoard("main");
         loadLevelBoard("custom");
@@ -272,6 +361,9 @@ public class Menu {
             case "sound settings":
                 loadSoundSettingsMenu();
                 break;
+            case "pre editor":
+                loadPreEditor();
+                break;
             default:
                 if (name.contains("leaderboard")) {
                     loadLeaderboard(name.replace(" leaderboard", ""));
@@ -300,6 +392,8 @@ public class Menu {
         elements.add(new ToggleButton(BUTTON_GAP * 2 + BUTTON_WIDTH, 250, BUTTON_WIDTH, BUTTON_HEIGHT, "enable reduced motion", "disable reduced motion", "reduced motion").getAnimateRight(true));
 
         elements.add(new ToggleButton(BUTTON_GAP, 400, BUTTON_WIDTH, BUTTON_HEIGHT, "enable full speedrun", "disable full speedrun", "full speedrun"));
+
+        elements.add(new ToggleButton(BUTTON_GAP*2+BUTTON_WIDTH, 400, BUTTON_WIDTH, BUTTON_HEIGHT, "enable image smoothing", "disable image smoothing", "image smoothing"));
 
         elements.add(new MenuSlider(BUTTON_GAP+550, 100, 500, 100, "graphics", "graphics", GRAPHICS_MAX, 0, false, Main.monitorFPS));
 
@@ -354,52 +448,67 @@ public class Menu {
         ArrayList<MenuElement> elements = new ArrayList<>();
         elements.add(new MenuMap("main\\4"));
 
-        elements.add(new ScrollMenu(BUTTON_GAP, BUTTON_GAP * 3, (int) Main.DEFAULT_WIDTH_MAP - BUTTON_GAP * 5, (int) (BUTTON_HEIGHT * 2), new Menu(getReplayButtons("main"), "main"), "main replay scroll"));
+        elements.add(new ScrollMenu(BUTTON_GAP, BUTTON_GAP * 3, (int) Main.DEFAULT_WIDTH_MAP - BUTTON_GAP * 5, (int) (BUTTON_HEIGHT * 1.5), new Menu(getReplayButtons("main"), "main"), "main replay scroll"));
 
-        elements.add(new ScrollMenu(BUTTON_GAP, BUTTON_GAP * 3+BUTTON_HEIGHT * 3, (int) Main.DEFAULT_WIDTH_MAP/2 - BUTTON_GAP * 5, (int) (BUTTON_HEIGHT * 2), new Menu(getReplayButtons("custom"), "main"), "custom replay scroll"));
+        elements.add(new ScrollMenu(BUTTON_GAP, BUTTON_GAP * 3+BUTTON_HEIGHT * 3, (int) Main.DEFAULT_WIDTH_MAP - BUTTON_GAP * 5, (int) (BUTTON_HEIGHT * 1.5), new Menu(getReplayButtons("custom"), "main"), "custom replay scroll"));
 
 
 
 
         elements.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "main"));
 
-        elements.add(new MenuText(900, 100, "Util.Replay Menu.Menu: ", 55, "Title"));
+        elements.add(new MenuText(900, 100, "Replay Menu: ", 55, "Title"));
         elements.add(new MenuTransition(NORMAL_TRANSITION_TIME));
         menus.put("replays", new Menu(elements, "main"));
 
     }
 
     private static ArrayList<MenuElement> getReplayButtons(String folder) {
-        ArrayList<MenuElement> elements = new ArrayList<>();
+
+        ArrayList<MenuElement> mainLevels = new ArrayList<>();
 
         File directory = new File("res\\replays\\" + folder);
         File[] levels = directory.listFiles();
         int fileCount = directory.list().length;
 
-        int directories = 0;
+
+
+        int maxLevel = 0;
         for (int i = 0; i < fileCount; i++) {
-            if (!levels[i].isDirectory()) {
-                int x = i - directories;
-
-                double width = Main.DEFAULT_WIDTH_MAP - BUTTON_GAP * 2;
-
-                int xFactor = (int) (x % (width
-                        / (BUTTON_WIDTH + BUTTON_GAP)));
-
-                int yFactor = (int) (x / (width
-                        / (BUTTON_WIDTH + BUTTON_GAP)));
-
-
-                elements.add(new ReplayButton(xFactor * BUTTON_WIDTH + xFactor * BUTTON_GAP + BUTTON_GAP
-                        , yFactor * BUTTON_HEIGHT + yFactor * BUTTON_GAP + BUTTON_GAP * 2
-                        , BUTTON_WIDTH, BUTTON_HEIGHT, folder + "\\" + levels[i].getName().replace(".txt", "")));
-            } else {
-                directories++;
+            if ((levels[i].getName().replace(".txt", "").matches(Main.IS_INT_REGEX))) {
+                if (Integer.parseInt(levels[i].getName().replace(".txt", "")) > maxLevel) {
+                    maxLevel = Integer.parseInt(levels[i].getName().replace(".txt", ""));
+                }
             }
         }
 
 
-        return elements;
+        int maxColums = 5;
+
+        for (int i = 1; i < maxLevel+1; i++) {
+
+            double x = BUTTON_GAP + (BUTTON_WIDTH+BUTTON_GAP)*((i-1)%maxColums);
+            double y = (BUTTON_HEIGHT+BUTTON_GAP)*((int)(((i-1)*1.0)/maxColums));
+            if ((new File("res\\replays\\" + folder + "\\" + i + ".txt").exists())) {
+
+                String levelName = folder + "\\" + i;
+
+                mainLevels.add(new ReplayButton((int)x, (int)y, BUTTON_WIDTH, BUTTON_HEIGHT, levelName));
+
+            } else {
+
+                mainLevels.add(new InactiveButton((int)x, (int)y, BUTTON_WIDTH, BUTTON_HEIGHT, "level missing"));
+
+            }
+
+
+        }
+
+        return mainLevels;
+
+
+
+
     }
 
     private static void loadName() {
@@ -428,7 +537,7 @@ public class Menu {
 
 
         elements.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "main"));
-        elements.add(new MenuText(475, 55, "Levels Menu.Menu: ", 50, "Title"));
+        elements.add(new MenuText(475, 55, "world Menu: ", 50, "Title"));
         elements.add(new MenuTransition(NORMAL_TRANSITION_TIME));
         menus.put("levels", new Menu(elements, "main"));
 
@@ -445,7 +554,7 @@ public class Menu {
         elements.add(new MenuMap("main" + "\\5"));
 
 
-        elements.add(new MenuText(475, 55, "Levels Menu.Menu: ", 50, "Title"));
+        elements.add(new MenuText(475, 55, name + " levels: ", 50, "Title"));
 
         elements.add(new ScrollMenu(BUTTON_GAP, BUTTON_GAP * 3, (int) Main.DEFAULT_WIDTH_MAP - BUTTON_GAP * 5, (int) (BUTTON_HEIGHT * 3.5), new Menu(getLevelButtons(Main.getWorld(name)), "main"), "level scroll"));
 
@@ -471,41 +580,38 @@ public class Menu {
     private static ArrayList<MenuElement> getLevelButtons(String folder) {
         ArrayList<MenuElement> mainLevels = new ArrayList<>();
 
-        mainLevels.add(new MenuText(0, 0, folder, 20));
-
         File directory = new File("res\\maps\\" + folder);
         File[] levels = directory.listFiles();
         int fileCount = directory.list().length;
 
-        int directories = 0;
 
+
+        int maxLevel = 0;
         for (int i = 0; i < fileCount; i++) {
-
-
-            if (!levels[i].isDirectory()) {
-                int x = i - directories;
-                double width = Main.DEFAULT_WIDTH_MAP - BUTTON_GAP * 10;
-
-                int xFactor = (int) (x % (width
-                        / (BUTTON_WIDTH + BUTTON_GAP)));
-
-                int yFactor = (int) (x / (width
-                        / (BUTTON_WIDTH + BUTTON_GAP)));
-
-
-                String levelName = levels[i].getName().replace(".txt", "");
-                if (folder.length() > 0) {
-                    levelName = folder + "\\" + levels[i].getName().replace(".txt", "");
+            if ((levels[i].getName().replace(".txt", "").matches(Main.IS_INT_REGEX))) {
+                if (Integer.parseInt(levels[i].getName().replace(".txt", "")) > maxLevel) {
+                    maxLevel = Integer.parseInt(levels[i].getName().replace(".txt", ""));
                 }
-
-                mainLevels.add(new LevelButton(xFactor * BUTTON_WIDTH + xFactor * BUTTON_GAP
-                        , yFactor * BUTTON_HEIGHT + yFactor * BUTTON_GAP
-                        , BUTTON_WIDTH, BUTTON_HEIGHT, levelName));
-
-
-            } else {
-                directories++;
             }
+        }
+
+
+        int maxColums = 5;
+
+        for (int i = 1; i < maxLevel+1; i++) {
+            double x = BUTTON_GAP + (BUTTON_WIDTH+BUTTON_GAP)*((i-1)%maxColums);
+            double y = (BUTTON_HEIGHT+BUTTON_GAP)*((int)(((i-1)*1.0)/maxColums));
+            if ((new File("res\\maps\\" + folder + "\\" + i + ".txt").exists())) {
+
+                String levelName = folder + "\\" + i;
+
+                mainLevels.add(new LevelButton((int)x, (int)y, BUTTON_WIDTH, BUTTON_HEIGHT, levelName));
+            } else {
+                mainLevels.add(new InactiveButton((int)x, (int)y, BUTTON_WIDTH, BUTTON_HEIGHT, "level missing"));
+
+            }
+
+
         }
 
         return mainLevels;
@@ -515,7 +621,7 @@ public class Menu {
         ArrayList<MenuElement> stats = new ArrayList<>();
         stats.add(new MenuMap("main\\1"));
         stats.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "main"));
-        stats.add(new MenuText(50, 75, "Util.Stats:", 45, "deaths"));
+        stats.add(new MenuText(50, 75, "Stats:", 45, "deaths"));
 
         int i = 0;
         for (String stat : Stats.getExpectedStats()) {
@@ -623,6 +729,9 @@ public class Menu {
         items.add(new SettingButton(BUTTON_GAP * 5 + BUTTON_HEIGHT * 5, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "water", MenuElement.TextType.hide));
         items.add(new SettingButton(BUTTON_GAP * 6 + BUTTON_HEIGHT * 6, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "lava", MenuElement.TextType.hide));
         items.add(new SettingButton(BUTTON_GAP * 7 + BUTTON_HEIGHT * 7, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "corner", MenuElement.TextType.hide));
+        items.add(new SettingButton(BUTTON_GAP * 8 + BUTTON_HEIGHT * 8, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "background wall", MenuElement.TextType.hide));
+        items.add(new SettingButton(BUTTON_GAP * 9 + BUTTON_HEIGHT * 9, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "sandTile", MenuElement.TextType.hide));
+
 
         elements.add(new ScrollMenu(BUTTON_GAP * 3 + BUTTON_WIDTH, 800, BUTTON_WIDTH * 3, BUTTON_HEIGHT, new Menu(items, "editor"), "item scroll"));
 
