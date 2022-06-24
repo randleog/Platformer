@@ -15,6 +15,10 @@ import Util.SoundLoader;
 
 
 import GameControl.TimedSound;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
+
 public class Liquid extends GameEntity {
 
 
@@ -51,6 +55,11 @@ public class Liquid extends GameEntity {
     private static final double SPLASH_TIME = 0.5;
     private static final double SPLASH_INTERVAL =0.4;
 
+    private static final int DRIP_LENGTH = 500;
+    private static final int DRIP_SCAN = 25;
+
+    private static final double DRIP_FALLOUT = 0.7;
+
 
     private double lastSplashTime = 0;
 
@@ -76,12 +85,18 @@ public class Liquid extends GameEntity {
 
     private String name;
 
+    double spring;
+    double dampening;
+
 
     public Liquid(double x, double y, Map map, double sizeX, double sizeY, InputAction action, Color color, int gridSize, double spread, double spring, double dampening, String name) {
         super(x, y, map, action, FillType.Color, 1);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.color = color;
+
+        this.spring = spring;
+        this.dampening =dampening;
 
         this.grid = gridSize;
         this.SPREAD = spread;
@@ -90,10 +105,7 @@ public class Liquid extends GameEntity {
 
         bubbles = new TimedSound(50);
 
-        waves = new Wave[(int) (sizeX / grid) + 2];
-        for (int i = 0; i < waves.length; i++) {
-            waves[i] = new Wave(spring, dampening);
-        }
+        loadHitbox();
 
 
         leftDeltas = new float[waves.length];
@@ -102,7 +114,7 @@ public class Liquid extends GameEntity {
         rightDeltas = new float[waves.length];
         Arrays.fill(rightDeltas, 0);
 
-        loadHitbox();
+
     }
 
 
@@ -110,6 +122,41 @@ public class Liquid extends GameEntity {
     protected void loadHitbox() {
         hitbox = new ArrayList<>();
         hitbox.add(new Square(this.x, this.y, this.sizeX, this.sizeY, parallax, action));
+
+
+
+        loadDrip();
+    }
+
+    private void loadDrip() {
+        if ((int) (sizeX / grid) + 2 < 1) {
+            return;
+        }
+
+        waves = new Wave[(int) (sizeX / grid) + 2];
+        for (int i = 0; i < waves.length; i++) {
+
+            int actualX = i-1;
+            double currentY = 0;
+            boolean loop = true;
+            while (loop) {
+
+
+                if (map.getActions(new Wall(this.x + actualX * grid, this.y+currentY, map, grid
+                        , this.sizeY+DRIP_SCAN, InputAction.Default, FillType.Image
+                        , 1)).contains(InputAction.Up)) {
+
+                    loop = false;
+                } else if (currentY > DRIP_LENGTH) {
+                    loop = false;
+                } else {
+                    currentY+=DRIP_SCAN;
+                }
+
+
+            }
+            waves[i] = new Wave(spring, dampening, currentY);
+        }
     }
 
 
@@ -137,7 +184,33 @@ public class Liquid extends GameEntity {
 
     }
 
-    public void tick() {
+    private boolean hasStuck = false;
+
+
+
+
+
+        public void tick() {
+
+
+
+
+        //until it is touching something, gravity.
+
+        if (!canJump) {
+            canJump = false;
+            gravity();
+            loadDrip();
+            physics();
+            collision();
+
+        } else {
+            if (!hasStuck) {
+                loadHitbox();
+                hasStuck = true;
+            }
+        }
+
 
         ArrayList<ControlledParticle> removeParticles = new ArrayList<>();
 
@@ -265,6 +338,10 @@ public class Liquid extends GameEntity {
                     waves[i].tick(waves[i - 1], waves[i + 1]);
                 }
 
+                if (waves[i].getDripLength() > 100) {
+
+                }
+
 
             }
 
@@ -275,6 +352,8 @@ public class Liquid extends GameEntity {
 
 
     public void render(GraphicsContext g) {
+
+
 
 
         if (Settings.get("graphics") ==0) {
@@ -312,8 +391,9 @@ public class Liquid extends GameEntity {
             int actualPos = i - 1;
 
 
-            if (map.screenInersect(new Square(this.x + actualPos * grid, this.y - DISTORT, grid, DISTORT, 1, InputAction.Default))) {
+
                 g.setFill(color);
+
 
 
                 double[] ys = new double[]{y + getRenderSizeY()
@@ -334,6 +414,13 @@ public class Liquid extends GameEntity {
 
                 g.fillPolygon(xs, ys, 6);
 
+                if (waves[i].getDripLength() > 1) {
+                    Stop[] stops = new Stop[] { new Stop(0, color),new Stop(DRIP_FALLOUT, color), new Stop(1, Color.rgb((int)(color.getRed()*255),(int)(color.getGreen()*255),(int)(color.getBlue()*255),0))};
+                    LinearGradient fade = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops);
+                    g.setFill(fade);
+                    g.fillRect(x + actualPos *Main.correctUnit(grid), y+getRenderSizeY(), Main.correctUnit(grid), Main.correctUnit(waves[i].getDripLength()));
+                }
+
                 //    g.setStroke(Color.color(1, 1, 1));
                 //       g.setLineWidth(Main.Main.correctUnit(2));
                 //      g.strokeLine(xs[1], ys[1], xs[2], ys[2]);
@@ -341,7 +428,7 @@ public class Liquid extends GameEntity {
                 //      g.strokeLine(xs[3], ys[3], xs[4], ys[4]);
 
 
-            }
+
         }
 
 

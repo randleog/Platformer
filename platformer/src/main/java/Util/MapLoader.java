@@ -80,22 +80,26 @@ public class MapLoader {
 
                 String name = line[0];
 
-                int x = Integer.parseInt(line[1]);
-                int y = Integer.parseInt(line[2]);
                 switch (name) {
                     case "stickyWall" -> {
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
                         int wallWidth = Integer.parseInt(line[3]);
                         int wallHeight = Integer.parseInt(line[4]);
                         map.addEntity(new StickyWall(x, y, map, wallWidth, wallHeight, InputAction.Default, FillType.Tile, 1));
                         break;
                     }
                     case "water" -> {
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
                         int wallWidth = Integer.parseInt(line[3]);
                         int wallHeight = Integer.parseInt(line[4]);
                         map.addEntity(getWater(x,y,map,wallWidth,wallHeight));
                         break;
                     }
                     case "lava" -> {
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
                         int wallWidth = Integer.parseInt(line[3]);
                         int wallHeight = Integer.parseInt(line[4]);
                         map.addEntity(getLava(x,y,map,wallWidth,wallHeight));
@@ -103,6 +107,9 @@ public class MapLoader {
                         break;
                     }
                     case "gate" -> {
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
+
                         int wallWidth = Integer.parseInt(line[3]);
                         int wallHeight = Integer.parseInt(line[4]);
                         int code = Integer.parseInt(line[5]);
@@ -110,11 +117,15 @@ public class MapLoader {
                         break;
                     }
                     case "key" -> {
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
                         int code = Integer.parseInt(line[3]);
                         map.addEntity(new Key(x, y, map, 1, code));
                         break;
                     }
                     case "moving" -> {
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
                         int wallWidth = Integer.parseInt(line[3]);
                         int wallHeight = Integer.parseInt(line[4]);
                         int velx = Integer.parseInt(line[5]);
@@ -124,12 +135,17 @@ public class MapLoader {
                         break;
                     }
                     case "basicEnemy" -> {
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
                         boolean runner = Boolean.parseBoolean(line[3]);
                         boolean jumper = Boolean.parseBoolean(line[4]);
                         map.addEntity(new BasicEnemy(x, y, map, runner, jumper));
                         break;
                     }
                     case "hookable" -> {
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
+
                         int radius = Integer.parseInt(line[3]);
 
 
@@ -137,17 +153,22 @@ public class MapLoader {
                         break;
                     }
                     case "flag" -> {
-
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
                         map.addEntity(new Flag(x, y, map));
                         break;
                     }
                     case "dimension" -> {
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
                         int tpx = Integer.parseInt(line[3]);
                         int tpy = Integer.parseInt(line[4]);
                         map.addEntity(new DimensionPortal(x, y, map, tpx, tpy));
                         break;
                     }
                     case "corner" -> {
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
                         int wallWidth = Integer.parseInt(line[3]);
                         int wallHeight = Integer.parseInt(line[4]);
                         double rotation = Double.parseDouble(line[5]);
@@ -155,17 +176,42 @@ public class MapLoader {
                         break;
                     }
                     case "trophy" -> {
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
                         String trophyName = line[3];
 
                         map.addEntity(new Trophy(x, y, map, trophyName));
                         break;
                     }
-                    default -> {
+                    case "candle" -> {
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
+
+                        map.addEntity(new Candle(x, y, map));
+                        break;
+                    }
+                    case "gear" -> {
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
+
                         int wallWidth = Integer.parseInt(line[3]);
                         int wallHeight = Integer.parseInt(line[4]);
+                        double startingSpeed = Double.parseDouble(line[5]);
+
+
+                        map.addEntity(new Gear(x, y,wallWidth, wallHeight, map, startingSpeed));
+                        break;
+                    }
+                    default -> {
+                        String wallType = line[1];
+                        int x = Integer.parseInt(line[2]);
+                        int y = Integer.parseInt(line[3]);
+
+                        int wallWidth = Integer.parseInt(line[4]);
+                        int wallHeight = Integer.parseInt(line[5]);
                         Wall wall = new Wall(x, y, map, wallWidth, wallHeight, InputAction.Default, FillType.Tile, 1);
 
-                        wall.setType(name);
+                        wall.setType(wallType);
                         wall.setImage(ImageLoader.getImage(name + "Tile"));
 
                         map.addEntity(wall);
@@ -248,7 +294,7 @@ public class MapLoader {
 
 
     public static final Liquid getWater(double x, double y, Map map, double sizeX, double sizeY) {
-        return new Liquid(x, y, map, sizeX, sizeY, InputAction.Swim, Color.color(0.4, 0.8, 1, 0.3), 50, 0.003, 0.02, 0.09, "water");
+        return new Liquid(x, y, map, sizeX, sizeY, InputAction.Swim, Color.color(0.4, 0.8, 1, 0.3), 50, 0.01, 0.01, 0.04, "water");
     }
 
 

@@ -1,5 +1,5 @@
 name INJATA
-focus last
+focus best
 speed 1
 replay_speed 25
 show_author 1
@@ -24,12 +24,12 @@ full_leaderboard_scroll_X 31
 2_leaderboard_scroll_Y 0
 2_leaderboard_scroll_X 3
 full_leaderboard_scroll_Y 0
-reduced_motion 1
+reduced_motion -1
 volume 100
 music_volume 0
 editor_tool nothing
 item_scroll_Y 0
-item_scroll_X 1004
+item_scroll_X 1285
 back exit
 save save
 main_level_scroll_Y 0
@@ -44,7 +44,7 @@ main_replay_scroll_X 1
 custom_replay_scroll_X 410
 main\2_leaderboard_scroll_X 1
 graphics 5
-map_choice preset\empty
+map_choice custom\empty
 custom\17 map_choice
 editor_cutstom_options_X 0
 editor_cutstom_options_Y 432

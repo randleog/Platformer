@@ -1,6 +1,8 @@
 package Map;
 
+import GameControl.Square;
 import Main.Main;
+import Util.Settings;
 
 
 public class Wave {
@@ -23,21 +25,35 @@ public class Wave {
 
     private double targetHeight = 10;
 
+    private double dripLength = 0;
+
 
 
     private static final double MASS = 1; // spring constant/mass = current constant
 
-    public Wave(double spring, double dampening) {
+    public Wave(double spring, double dampening, double dripLength) {
         this.spring = spring;
         this.dampening = dampening;
+        this.dripLength = dripLength;
         this.amplitude = targetHeight;
+
         this.velY = 0;
         this.velX = 0;
     }
 
+    public void setDripLength(double dripLength) {
+        this.dripLength = dripLength;
+    }
+
+    public double getDripLength() {
+
+        return dripLength;
+    }
 
 
     public void tick(Wave... additional) {
+
+
 
         double displacement = amplitude-targetHeight;
         double accel = -spring *displacement - dampening *velY;
@@ -50,6 +66,7 @@ public class Wave {
 
 
     }
+
 
 
     private void factorVelY(Wave... additional) {

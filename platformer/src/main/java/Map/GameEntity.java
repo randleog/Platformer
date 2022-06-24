@@ -7,6 +7,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 
 import java.util.ArrayList;
+
 import Util.ImageLoader;
 import Main.Main;
 import Util.SoundLoader;
@@ -110,7 +111,7 @@ public abstract class GameEntity {
     protected static final double SWIM_FACTOR = 0.01;
     private static final double WALL_FACTOR = 1;
     protected ArrayList<Square> hitbox = new ArrayList<>();
-    protected  double health;
+    protected double health;
 
     protected TimedSound walkSound;
     protected TimedSound swimSound;
@@ -139,7 +140,7 @@ public abstract class GameEntity {
         this.color = Color.color(1, 0, 0);
         this.image = ImageLoader.player;
         walkSound = new TimedSound(75);
-      //  swimSound = new GameControl.TimedSound(500);
+        //  swimSound = new GameControl.TimedSound(500);
 
         cornerRotation = 0;
 
@@ -148,9 +149,8 @@ public abstract class GameEntity {
     }
 
     public double getHealthPercentage() {
-        return health/(maxHealth*1.0);
+        return health / (maxHealth * 1.0);
     }
-
 
 
     public double getStartVelX() {
@@ -198,7 +198,7 @@ public abstract class GameEntity {
     }
 
     protected void gravity() {
-        velY += map.getGravity()/ Settings.getD("fps");
+        velY += map.getGravity() / Settings.getD("fps");
 
 
     }
@@ -319,13 +319,22 @@ public abstract class GameEntity {
         Square lastShape = null;
 
         for (Square shape : hitbox) {
-            if (shape.intersect(entity)) {
-                // shape.flag();
-                if (InputAction.isYType(shape.getAction())) {
-                    return shape;
-                } else {
-                    lastShape = shape;
+            if (InputAction.isUnactionable((shape.getAction()))) {
+                lastShape = shape;
+            } else {
+
+
+                if (shape.intersect(entity)) {
+
+
+                    // shape.flag();
+                    if (InputAction.isYType(shape.getAction())) {
+                        return shape;
+                    } else {
+                        lastShape = shape;
+                    }
                 }
+
             }
         }
 
@@ -371,8 +380,8 @@ public abstract class GameEntity {
             }
             swimming = true;
             if (actions.contains(InputAction.Lava)) {
-                health-=(LAVA_DAMAGE*1.0)/Settings.get("fps");
-               // System.out.println("what in the fuck do you mean");
+                health -= (LAVA_DAMAGE * 1.0) / Settings.get("fps");
+                // System.out.println("what in the fuck do you mean");
             }
 
         } else {
@@ -481,24 +490,26 @@ public abstract class GameEntity {
 
             while (loop) {
 
-
+                InputAction action = entity.getAction();
                 numberOfCollisions++;
                 if (numberOfCollisions > MAX_COLLISIONS) {
 
                     die();
+                    System.out.println(action);
+                    System.out.println("too many collisions");
                     numberOfCollisions = 0;
                     loop = false;
 
                 }
-                InputAction action = entity.getAction();
+
 
                 if (InputAction.isLeftType(action)) {
 
 
                     if (hasGoneRight) {
 
-
-                        intersectSquareUp(entity);
+                        loop = false;
+                       // intersectSquareUp(entity);
                     } else {
                         canLeftJump = true;
 
@@ -588,7 +599,6 @@ public abstract class GameEntity {
                         y += COLLISION_AMMOUNT * dy;
 
 
-
                         if (dy < 0) {
                             x -= COLLISION_AMMOUNT * Math.cos(rotation);
                         }
@@ -605,8 +615,8 @@ public abstract class GameEntity {
                     }
 
 
-
                 }
+
                 entity = map.intersectionWall(this);
 
                 //   if (action == Map.InputAction.Default) {
@@ -616,12 +626,14 @@ public abstract class GameEntity {
                     loop = false;
                 }
 
+                if (isWall()) {
+                    loadHitbox();
+                }
             }
         }
 
 
     }
-
 
 
     private void intersectSquareRight(Square square) {
@@ -787,6 +799,7 @@ public abstract class GameEntity {
                 g.fillRect(-sizeX / 2, -sizeY / 2, sizeX, sizeY);
             }
         }
+
 
     }
 

@@ -65,6 +65,8 @@ public class ImageLoader {
 
     public static Image lava = loadImage("lava.png", 64);
 
+    public static Image gear = loadImage("gear.png", 64);
+
 
     public static Image torso1 = loadImage("torso1.png", 64);
     public static Image legs1 = loadImage("legs1.png", 64);
@@ -136,6 +138,9 @@ public class ImageLoader {
             case "corner" -> corner;
             case "lava" -> lava;
             case "sandTile" -> sandTile;
+            case "gear" -> gear;
+            case "gearSpeed" -> gear;
+            case "gearLarge" -> gear;
             default -> wallTile;
 
         };

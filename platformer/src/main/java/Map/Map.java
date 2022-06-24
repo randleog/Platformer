@@ -161,7 +161,6 @@ public class Map {
         frames.add(new Integer[]{Settings.get("fps"), 0});
 
         initialiseButtons();
-
     }
 
 
@@ -490,6 +489,8 @@ public class Map {
             }
 
             mouseDragging = true;
+            lastOverlay = null;
+            lastBackground = null;
 
 
             GameEntity toolDisplay = null;
@@ -498,17 +499,20 @@ public class Map {
 
 
             switch (tool) {
-                case "wall", "gate", "stickyWall", "water", "lava", "corner", "sandTile":
+                case "wall", "gate", "stickyWall", "water", "lava", "corner", "sandTile", "gear", "gearSpeed":
                     toolDisplay = placeTile();
                     break;
                 case "background wall":
                     backgroundDisplay = placeBackgroundTile();
                     break;
                 case "key":
-                    toolDisplay = new Key(applyGrid(Main.reverseUnit(Main.mouseX)) + cameraX, applyGrid(Main.reverseUnit(Main.mouseY)) + cameraY, this, 1, currentCode);
+                    toolDisplay = new Key(Main.reverseUnit(Main.mouseX) + cameraX, applyGrid(Main.reverseUnit(Main.mouseY)) + cameraY, this, 1, currentCode);
                     break;
                 case "flag":
-                    toolDisplay = new Flag(applyGrid(Main.reverseUnit(Main.mouseX)) + cameraX, applyGrid(Main.reverseUnit(Main.mouseY)) + cameraY, this);
+                    toolDisplay = new Flag(Main.reverseUnit(Main.mouseX) + cameraX, applyGrid(Main.reverseUnit(Main.mouseY)) + cameraY, this);
+                    break;
+                case "candle":
+                    toolDisplay = new Candle(Main.reverseUnit(Main.mouseX) + cameraX, applyGrid(Main.reverseUnit(Main.mouseY)) + cameraY, this);
                     break;
                 case "eraser":
                     erase();
@@ -532,6 +536,9 @@ public class Map {
 
         } else {
             if (mouseDragging) {
+                for (GameEntity entity : entities) {
+                    entity.loadHitbox();
+                }
                 mouseDragging = false;
 
 
@@ -650,6 +657,8 @@ public class Map {
             case "stickyWall" -> new StickyWall(mouseOriginX, mouseOriginY, this, sizeX, sizeY, InputAction.Default, FillType.Tile, 1);
             case "water" -> MapLoader.getWater(mouseOriginX, mouseOriginY, this, sizeX, sizeY);
             case "lava" -> MapLoader.getLava(mouseOriginX, mouseOriginY, this, sizeX, sizeY);
+            case "gear" -> new Gear(mouseOriginX, mouseOriginY, sizeX, sizeX, this, 0);
+            case "gearSpeed" -> new Gear(mouseOriginX, mouseOriginY, sizeX, sizeX, this, 1.5);
             default -> new Wall(mouseOriginX, mouseOriginY, this, sizeX, sizeY, InputAction.Default, FillType.Tile, 1);
 
         };
@@ -707,6 +716,7 @@ public class Map {
             tile.setY(mouseOriginY + sizeY);
 
         }
+        tile.loadHitbox();
 
         return tile;
         //  toolDisplay = maxWall((Map.Wall) toolDisplay);

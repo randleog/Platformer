@@ -23,9 +23,7 @@ public class Wall extends GameEntity {
         this.sizeY = sizeY;
         this.color = Color.color(1,0.5,0);
         this.image = ImageLoader.wallTile;
-        if (sizeX < 10 && sizeY < 10) {
-            System.out.println("wall is too small");
-        }
+
 
 
 
@@ -176,7 +174,7 @@ public class Wall extends GameEntity {
 
 
     public String toString() {
-        String line = type + " " + (int)x + " " + (int)y + " " + (int)sizeX + " " + (int)sizeY;
+        String line ="wall " +  type + " " + (int)x + " " + (int)y + " " + (int)sizeX + " " + (int)sizeY;
 
         return line;
     }

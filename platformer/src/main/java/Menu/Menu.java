@@ -232,6 +232,7 @@ public class Menu {
         int fileCount = directory.list().length;
 
 
+int nonIntLevels = 0;
 
         int maxLevel = 0;
         for (int i = 0; i < fileCount; i++) {
@@ -239,13 +240,20 @@ public class Menu {
                 if (Integer.parseInt(levels[i].getName().replace(".txt", "")) > maxLevel) {
                     maxLevel = Integer.parseInt(levels[i].getName().replace(".txt", ""));
                 }
+            }else {
+                if (!(levels[i].isDirectory())) {
+                    double x = BUTTON_GAP + (BUTTON_WIDTH+BUTTON_GAP)*((nonIntLevels)%maxColums);
+                    double y = (BUTTON_HEIGHT+BUTTON_GAP)*((int)(((nonIntLevels)*1.0)/maxColums));
+                    mainLevels.add(new SettingButtonSwitchMenu((int)x, (int)y, BUTTON_WIDTH, BUTTON_HEIGHT, "map choice", folder + "\\" + levels[i].getName().replace(".txt", ""), "editor", MenuElement.TextType.choice));
+                    nonIntLevels++;
+                }
             }
         }
 
 
         int maxColums = 5;
 
-        for (int i = 1; i < maxLevel+1; i++) {
+        for (int i = 1+nonIntLevels; i < maxLevel+1+nonIntLevels; i++) {
             double x = BUTTON_GAP + (BUTTON_WIDTH+BUTTON_GAP)*((i-1)%maxColums);
             double y = (BUTTON_HEIGHT+BUTTON_GAP)*((int)(((i-1)*1.0)/maxColums));
             if ((new File("res\\maps\\" + folder + "\\" + i + ".txt").exists())) {
@@ -333,6 +341,8 @@ public class Menu {
     }
 
     private static void loadMenu(String name) {
+        loadLevelMenu();
+
         switch (name) {
             case "main":
                 loadMain();
@@ -575,7 +585,7 @@ public class Menu {
 
     }
 
-
+    private static final int maxColums = 5;
 
     private static ArrayList<MenuElement> getLevelButtons(String folder) {
         ArrayList<MenuElement> mainLevels = new ArrayList<>();
@@ -585,6 +595,7 @@ public class Menu {
         int fileCount = directory.list().length;
 
 
+        int nonIntLevels = 0;
 
         int maxLevel = 0;
         for (int i = 0; i < fileCount; i++) {
@@ -592,13 +603,20 @@ public class Menu {
                 if (Integer.parseInt(levels[i].getName().replace(".txt", "")) > maxLevel) {
                     maxLevel = Integer.parseInt(levels[i].getName().replace(".txt", ""));
                 }
+            } else {
+                if (!(levels[i].isDirectory())) {
+                    double x = BUTTON_GAP + (BUTTON_WIDTH+BUTTON_GAP)*((nonIntLevels)%maxColums);
+                    double y = (BUTTON_HEIGHT+BUTTON_GAP)*((int)(((nonIntLevels)*1.0)/maxColums));
+                    mainLevels.add(new LevelButton((int)x, (int)y, BUTTON_WIDTH, BUTTON_HEIGHT, levels[i].getName().replace(".txt", "")));
+                    nonIntLevels++;
+                }
             }
         }
 
 
-        int maxColums = 5;
 
-        for (int i = 1; i < maxLevel+1; i++) {
+
+        for (int i = 1+nonIntLevels; i < maxLevel+1+nonIntLevels; i++) {
             double x = BUTTON_GAP + (BUTTON_WIDTH+BUTTON_GAP)*((i-1)%maxColums);
             double y = (BUTTON_HEIGHT+BUTTON_GAP)*((int)(((i-1)*1.0)/maxColums));
             if ((new File("res\\maps\\" + folder + "\\" + i + ".txt").exists())) {
@@ -731,7 +749,10 @@ public class Menu {
         items.add(new SettingButton(BUTTON_GAP * 7 + BUTTON_HEIGHT * 7, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "corner", MenuElement.TextType.hide));
         items.add(new SettingButton(BUTTON_GAP * 8 + BUTTON_HEIGHT * 8, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "background wall", MenuElement.TextType.hide));
         items.add(new SettingButton(BUTTON_GAP * 9 + BUTTON_HEIGHT * 9, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "sandTile", MenuElement.TextType.hide));
+        items.add(new SettingButton(BUTTON_GAP * 10 + BUTTON_HEIGHT * 10, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "candle", MenuElement.TextType.hide));
 
+        items.add(new SettingButton(BUTTON_GAP * 11 + BUTTON_HEIGHT * 11, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "gear", MenuElement.TextType.hide));
+        items.add(new SettingButton(BUTTON_GAP * 12 + BUTTON_HEIGHT * 12, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "gearSpeed", MenuElement.TextType.hide));
 
         elements.add(new ScrollMenu(BUTTON_GAP * 3 + BUTTON_WIDTH, 800, BUTTON_WIDTH * 3, BUTTON_HEIGHT, new Menu(items, "editor"), "item scroll"));
 

@@ -90,14 +90,20 @@ public enum InputAction {
     },
     Lava() {
         public String toString() {
-            return "Map.Lava";
+            return "Lava";
+        }
+
+    },
+    Gear() {
+        public String toString() {
+            return "Gear";
         }
 
     };
 
 
     public static boolean isUnactionable(InputAction action) {
-        return (action == InputAction.Default|| action == InputAction.Swim|| action == InputAction.Lava);
+        return (action == InputAction.Default|| action == InputAction.Swim|| action == InputAction.Lava|| action == InputAction.Gear);
     }
 
     public static boolean isRightType(InputAction action) {
