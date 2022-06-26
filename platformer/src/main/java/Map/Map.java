@@ -281,6 +281,7 @@ public class Map {
         Stats.add("total Time", getTime());
 
         boolean isPb = isPb();
+        System.out.println("is pb: " + isPb);
 
 
         if (!isReplay) {
@@ -316,6 +317,7 @@ public class Map {
             ReplaySave.saveReplay(frames, world + "\\" + "last\\" + name);
 
             if (isPb) {
+                System.out.println("saving new best");
                 saveReplay();
             }
             UserFileHandler.saveUserTime(world, name, getTime(), Main.getCurrentTime());
@@ -508,6 +510,9 @@ public class Map {
                 case "key":
                     toolDisplay = new Key(Main.reverseUnit(Main.mouseX) + cameraX, applyGrid(Main.reverseUnit(Main.mouseY)) + cameraY, this, 1, currentCode);
                     break;
+                case "plate":
+                    toolDisplay = new Plate(Main.reverseUnit(Main.mouseX) + cameraX, applyGrid(Main.reverseUnit(Main.mouseY)) + cameraY, this, 1, currentCode);
+                    break;
                 case "flag":
                     toolDisplay = new Flag(Main.reverseUnit(Main.mouseX) + cameraX, applyGrid(Main.reverseUnit(Main.mouseY)) + cameraY, this);
                     break;
@@ -547,9 +552,9 @@ public class Map {
 
                     } else {
 
-                        if (lastOverlay instanceof Key) {
+                        if (lastOverlay instanceof Key || lastOverlay instanceof Plate) {
                             currentCode = getNextCode();
-                            ((Key) lastOverlay).setCode(currentCode);
+                            lastOverlay.setCode(currentCode);
                         }
 
                         addEntityLive(lastOverlay);
@@ -657,8 +662,8 @@ public class Map {
             case "stickyWall" -> new StickyWall(mouseOriginX, mouseOriginY, this, sizeX, sizeY, InputAction.Default, FillType.Tile, 1);
             case "water" -> MapLoader.getWater(mouseOriginX, mouseOriginY, this, sizeX, sizeY);
             case "lava" -> MapLoader.getLava(mouseOriginX, mouseOriginY, this, sizeX, sizeY);
-            case "gear" -> new Gear(mouseOriginX, mouseOriginY, sizeX, sizeX, this, 0);
-            case "gearSpeed" -> new Gear(mouseOriginX, mouseOriginY, sizeX, sizeX, this, 1.5);
+            case "gear" -> new Gear(mouseOriginX, mouseOriginY, sizeX, sizeX, this, 0, currentCode);
+            case "gearSpeed" -> new Gear(mouseOriginX, mouseOriginY, sizeX, sizeX, this, 1.5, currentCode);
             default -> new Wall(mouseOriginX, mouseOriginY, this, sizeX, sizeY, InputAction.Default, FillType.Tile, 1);
 
         };
@@ -716,7 +721,7 @@ public class Map {
             tile.setY(mouseOriginY + sizeY);
 
         }
-        tile.loadHitbox();
+       // tile.loadHitbox();
 
         return tile;
         //  toolDisplay = maxWall((Map.Wall) toolDisplay);
@@ -730,6 +735,10 @@ public class Map {
             if (entity instanceof Key) {
                 if (largestCode <= ((Key) entity).getCode()) {
                     largestCode = ((Key) entity).getCode() + 1;
+                }
+            } else if (entity instanceof Plate) {
+                if (largestCode <= ((Plate) entity).getCode()) {
+                    largestCode = ((Plate) entity).getCode() + 1;
                 }
             }
         }

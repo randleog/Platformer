@@ -18,8 +18,10 @@ public class Key extends GameEntity {
         this.sizeY = 50;
         this.color = Color.color(1,0.5,0);
         this.image = ImageLoader.key;
-
+        map.keys.put(code, false);
     }
+
+
 
 
     public void collectKey() {
@@ -27,12 +29,18 @@ public class Key extends GameEntity {
         map.keys.put(Integer.valueOf(code), true);
     }
 
+    @Override
     public void setCode(int code) {
         this.code = code;
     }
 
 
     public void tick() {
+
+        gravity();
+        physics();
+        this.velX =0;
+        collision();
 
 
         if (map.player == null) {

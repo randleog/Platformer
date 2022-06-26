@@ -17,7 +17,7 @@ import Util.Settings;
 
 public abstract class GameEntity {
 
-    private static final int LAVA_DAMAGE = 3;
+    private static final int LAVA_DAMAGE = 10;
 
 
     private static final double CRASH_SPEED = 8;
@@ -40,7 +40,7 @@ public abstract class GameEntity {
 
     private final int SPEED_FACTOR = 144;
 
-    private final double ROTATE_TIME = 1;
+    public final double ROTATE_TIME = 0.75;
 
 
     protected boolean changed = false;
@@ -204,10 +204,18 @@ public abstract class GameEntity {
     }
 
 
+    public boolean isCode() {
+        return false;
+    }
+
+    public void setCode(int code) {
+
+    }
+
+
     public void setImage(Image image) {
         this.image = image;
     }
-
     public boolean isPlayer() {
         return false;
     }
@@ -369,14 +377,21 @@ public abstract class GameEntity {
     }
 
 
+    public Map getMap() {
+        return map;
+    }
+
     protected void jumpCollision() {
+
+
+
         ArrayList<InputAction> actions = map.getActions(this);
 
         if (actions.contains(InputAction.Swim) || actions.contains(InputAction.Lava)) {
             if (!swimming) {
 
                 map.splash(this);
-                SoundLoader.playSound(SoundLoader.largeSplash, 1, 0, SoundLoader.getRandomSpeed());
+
             }
             swimming = true;
             if (actions.contains(InputAction.Lava)) {
@@ -448,13 +463,6 @@ public abstract class GameEntity {
         }
 
 
-    }
-
-    //deletes if intersecting anything
-    public void scanDelete() {
-        if (map.getActions(this).contains(InputAction.Default)) {
-            map.removeEntity(this);
-        }
     }
 
 
@@ -626,9 +634,7 @@ public abstract class GameEntity {
                     loop = false;
                 }
 
-                if (isWall()) {
-                    loadHitbox();
-                }
+
             }
         }
 
@@ -670,6 +676,8 @@ public abstract class GameEntity {
         velY = 0;
 
         cornerRotation = 0;
+
+
     }
 
 

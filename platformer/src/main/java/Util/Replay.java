@@ -9,6 +9,7 @@ public class Replay {
     public static final String DEFAULT_DATE = "5500 BCE";
 
 
+
     private ArrayList<Integer[]> frames = new ArrayList<>();
 
     private String mapName;
@@ -79,6 +80,13 @@ public class Replay {
 
 
     public static boolean canProgress(ArrayList<Replay> actual, String next) {
+        if (next.contains("custom")) {
+            return false;
+        }
+        if (next.split("\\\\").length < 2) {
+            return false;
+        }
+
         String level = next.split("\\\\")[1];
 
         if (!(level .matches(Main.IS_INT_REGEX))) {

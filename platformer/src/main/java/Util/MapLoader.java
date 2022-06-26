@@ -197,9 +197,17 @@ public class MapLoader {
                         int wallWidth = Integer.parseInt(line[3]);
                         int wallHeight = Integer.parseInt(line[4]);
                         double startingSpeed = Double.parseDouble(line[5]);
+                        int code = Integer.parseInt(line[6]);
 
 
-                        map.addEntity(new Gear(x, y,wallWidth, wallHeight, map, startingSpeed));
+                        map.addEntity(new Gear(x, y,wallWidth, wallHeight, map, startingSpeed, code));
+                        break;
+                    }
+                    case "plate" -> {
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
+                        int code = Integer.parseInt(line[3]);
+                        map.addEntity(new Plate(x, y, map, 1, code));
                         break;
                     }
                     default -> {
@@ -294,7 +302,7 @@ public class MapLoader {
 
 
     public static final Liquid getWater(double x, double y, Map map, double sizeX, double sizeY) {
-        return new Liquid(x, y, map, sizeX, sizeY, InputAction.Swim, Color.color(0.4, 0.8, 1, 0.3), 50, 0.01, 0.01, 0.04, "water");
+        return new Liquid(x, y, map, sizeX, sizeY, InputAction.Swim, Color.color(0.4, 0.8, 1, 0.3), 50, 0.0015, 0.01, 0.03, "water");
     }
 
 

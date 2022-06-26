@@ -1,6 +1,7 @@
 package Map;
 
 import Map.Map;
+import Util.ImageLoader;
 import javafx.scene.canvas.GraphicsContext;
 import Main.Main;
 import Util.Settings;
@@ -32,16 +33,30 @@ public class Player extends GameEntity {
     private static final double MAX_WALL_JUMP_FACTOR = 1.5;
 
 
+    private static final double ANIMATION_TIME = 30;
+
+    boolean facingRight = false;
+
+    private Fabric fabric1;
+
+    private Fabric fabric2;
 
 
     private boolean hooking = false;
 
+    private double lastTurn = 0;
+
 
 
     public Player(double x, double y, Map map) {
+
         super(x, y, map, InputAction.Default, FillType.Image, 1);
         this.sizeX = 50;
         this.sizeY = 50;
+
+        fabric1 = new Fabric(25, this, Color.color(0.75,0,1), 2, 150);
+        fabric2 = new Fabric(40, this,Color.color(0.5,0,1),2, 75);
+
 
         map.player = this;
         canJump = false;
@@ -50,6 +65,8 @@ public class Player extends GameEntity {
 
         maxHealth = 10;
         health = maxHealth;
+
+
     }
 
 
@@ -83,7 +100,8 @@ public class Player extends GameEntity {
 
 
     public void tick() {
-
+        fabric1.tick();
+        fabric2.tick();
         if (map.isOutOfBounds(this.x, this.y, this.sizeX, this.sizeY)) {
             die();
         }
@@ -111,6 +129,9 @@ public class Player extends GameEntity {
 
         map.playerX = x;
         map.playerY = y;
+
+
+
     }
 
 
@@ -210,6 +231,8 @@ public class Player extends GameEntity {
         if (clinging && Main.isKeyDown(InputAction.Up)) {
             velY = JUMP_SPEED;
             Main.deactivateKey(InputAction.Up);
+
+
         }
 
         currentDrag = Map.AIR_DRAG;
@@ -218,6 +241,7 @@ public class Player extends GameEntity {
             if (Main.isKeyDown(InputAction.Up)) {
                 hasJumped = true;
                 velY = -JUMP_SPEED;
+
 
 
             }
@@ -266,13 +290,26 @@ public class Player extends GameEntity {
         if (hasJumped) {
             Main.deactivateKey(InputAction.Up);
        //     Util.SoundLoader.playSound(Util.SoundLoader.fall, 1, 0, Util.SoundLoader.getRandomSpeed()*1.1);
+
+
             Stats.add("total Jumps", 1);
         }
         if (Main.isKeyDown(InputAction.Right) && !Main.isKeyDown(InputAction.Left)) {
+
+            if (!facingRight) {
+                lastTurn = System.currentTimeMillis();
+            }
+            facingRight = true;
+
             accelX = (accel) * baseAccel;
         }
 
         if (Main.isKeyDown(InputAction.Left) && !Main.isKeyDown(InputAction.Right)) {
+            if (facingRight) {
+                lastTurn = System.currentTimeMillis();
+            }
+            facingRight = false;
+
             accelX = (-accel) * baseAccel;
         }
         if (Main.isKeyDown(InputAction.Left) && Main.isKeyDown(InputAction.Right)) {
@@ -290,11 +327,23 @@ public class Player extends GameEntity {
     }
 
     public void render(GraphicsContext g) {
+
+
+      //  if (System.currentTimeMillis()-lastTurn < ANIMATION_TIME) {
+        //    image = ImageLoader.ninjaMid;
+         if (facingRight) {
+            image = ImageLoader.ninjaRight;
+        } else {
+            image = ImageLoader.ninjaLeft;
+        }
         if (cornerRotation != 0) {
 
             g.save();
             g.translate(getRenderX()+map.correctUnit(sizeX/2),getRenderY()+map.correctUnit(sizeY/2));
             g.rotate(Math.toDegrees(getRenderRotation()));
+            double offset = Main.correctUnit(this.x-map.cameraX)-getRenderX();
+            fabric1.renderStill(g, facingRight,offset);
+            fabric2.renderStill(g, facingRight,offset);
 
             renderStill(g);
             g.restore();
@@ -302,6 +351,10 @@ public class Player extends GameEntity {
         } else {
 
             renderSquare(g);
+            double offset = Main.correctUnit(this.x-map.cameraX)-getRenderX();
+            fabric1.render(g, facingRight,offset);
+            fabric2.render(g, facingRight,offset);
+
         }
 
         if (health < maxHealth) {
@@ -316,6 +369,8 @@ public class Player extends GameEntity {
 
 
         getMainShape().render(g, map.cameraX, map.cameraY, this);
+
+
 
 
     }

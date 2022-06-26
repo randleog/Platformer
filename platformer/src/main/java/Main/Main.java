@@ -44,14 +44,16 @@ import Util.*;
  * the main class that launches the game
  *
  * @author William Randle
- * @version 0.0.9
+ * @version 0.0.10
  *
  * @todo: liquids interract
  * @todo: steam
  * @todo: read menus from text files
  *
- * @todo: gears, tightrope
+ * @todo: rope which connects to gears
  * @todo: player health & visible bar
+ *
+ * @todo: equipment such as scuba gears: allows user to swim, wings to fly, ninja to dash
  *
  *
  * @todo: chat system, in replay the chat messages come from the player. this can then be used as stories
@@ -63,6 +65,10 @@ import Util.*;
  * @todo: pink world
  *
  * @todo: vanity slots to customise character design (multi layered player model with independantly moving parts)
+ *
+ *
+ *
+ * @todo: make liquid splash spread to the left and right node
  */
 public class Main extends Application {
 
@@ -78,7 +84,7 @@ public class Main extends Application {
 
     public static int deaths = 0;
 
-    public static final String VERSION = "0.0.9";
+    public static final String VERSION = "0.0.10";
 
 
     public static boolean mouseClicked = false;

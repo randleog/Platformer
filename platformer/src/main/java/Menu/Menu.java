@@ -85,6 +85,7 @@ public class Menu {
     public static void switchMenu(String newMenu, MenuElement message) {
 
 
+
         Main.hashMap.put(InputAction.Menu, 2);
         Settings.save();
         Stats.save();
@@ -753,6 +754,8 @@ int nonIntLevels = 0;
 
         items.add(new SettingButton(BUTTON_GAP * 11 + BUTTON_HEIGHT * 11, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "gear", MenuElement.TextType.hide));
         items.add(new SettingButton(BUTTON_GAP * 12 + BUTTON_HEIGHT * 12, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "gearSpeed", MenuElement.TextType.hide));
+
+        items.add(new SettingButton(BUTTON_GAP * 13 + BUTTON_HEIGHT * 13, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "plate", MenuElement.TextType.hide));
 
         elements.add(new ScrollMenu(BUTTON_GAP * 3 + BUTTON_WIDTH, 800, BUTTON_WIDTH * 3, BUTTON_HEIGHT, new Menu(items, "editor"), "item scroll"));
 

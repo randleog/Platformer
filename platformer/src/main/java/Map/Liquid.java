@@ -21,7 +21,7 @@ import javafx.scene.paint.Stop;
 
 public class Liquid extends GameEntity {
 
-
+    private TimedSound splash = new TimedSound(100);
     private static final double DISTORT = 3;
     private int grid = 50;
 
@@ -56,7 +56,7 @@ public class Liquid extends GameEntity {
     private static final double SPLASH_INTERVAL =0.4;
 
     private static final int DRIP_LENGTH = 500;
-    private static final int DRIP_SCAN = 25;
+    private static final int DRIP_SCAN = 250;
 
     private static final double DRIP_FALLOUT = 0.7;
 
@@ -64,34 +64,28 @@ public class Liquid extends GameEntity {
     private double lastSplashTime = 0;
 
 
-    double lastSplashT = 0;
-    private static final double PARTICLE_INTERVAL = 40;
 
-    Image lastSplash = null;
 
-    private static final double SPLASH_HEIGHT = 150;
-    private static final double SPLASH_HEIGHT_EXTRA = 10;
-    private static final double SPLASH_WIDTH = 150;
 
     private ArrayList<Double[]> splashes = new ArrayList<>();
 
 
-    private ArrayList<ControlledParticle> particles = new ArrayList<>();
 
-    private double lastSplashX = 0;
-    private double lastSplashY = 0;
 
-    private TimedSound bubbles;
+
 
     private String name;
 
     double spring;
     double dampening;
 
+    private MetaballFrame metaballFrame;
+
 
     public Liquid(double x, double y, Map map, double sizeX, double sizeY, InputAction action, Color color, int gridSize, double spread, double spring, double dampening, String name) {
         super(x, y, map, action, FillType.Color, 1);
         this.sizeX = sizeX;
+
         this.sizeY = sizeY;
         this.color = color;
 
@@ -103,18 +97,30 @@ public class Liquid extends GameEntity {
         this.name = name;
 
 
-        bubbles = new TimedSound(50);
+
 
         loadHitbox();
 
-
+        loadDrip();
         leftDeltas = new float[waves.length];
         Arrays.fill(leftDeltas, 0);
 
         rightDeltas = new float[waves.length];
         Arrays.fill(rightDeltas, 0);
+        metaballFrame = new MetaballFrame(x,y,map,100,100, this);
 
+    }
 
+    public Wave[] getWaves() {
+        return waves;
+    }
+
+    public double getGrid() {
+        return grid;
+    }
+
+    public Color getColor() {
+        return color;
     }
 
 
@@ -126,6 +132,44 @@ public class Liquid extends GameEntity {
 
 
         loadDrip();
+    }
+
+    private void drip() {
+
+            if ((int) (sizeX / grid) + 2 < 1) {
+                return;
+            }
+
+            for (int i = 0; i < waves.length; i++) {
+
+                int actualX = i-1;
+                double currentY = 0;
+                boolean loop = true;
+                while (loop) {
+
+
+
+                    if (map.getActions(new Wall(this.x + actualX * grid, this.y+currentY, map, grid
+                            , this.sizeY+DRIP_SCAN, InputAction.Default, FillType.Image
+                            , 1)).contains(InputAction.Up)) {
+
+                        loop = false;
+                    } else if (currentY > DRIP_LENGTH+Math.random()*50) {
+                        loop = false;
+                    } else{
+                        currentY+=DRIP_SCAN/Settings.getD("fps");
+                    }
+                    if (waves[i].getDripLength() < currentY) {
+                        loop = false;
+
+                    }
+
+                }
+                waves[i].setDripLength(currentY);
+
+            }
+
+
     }
 
     private void loadDrip() {
@@ -170,16 +214,7 @@ public class Liquid extends GameEntity {
 
 
 
-        for (int i = 0; i < Math.abs(entity.getVelY()) * SPLASH_COUNT; i++) {
-
-            double size = 30;
-            ControlledParticle particle = new ControlledParticle(x+ Main.random.nextInt(50)-25, this.y - 30, size, size, ImageLoader.splash, 5 * Settings.get("fps"), 0.5);
-
-            particle.setVelX(Main.random.nextDouble(PARTICLE_SPEED*0.15) - (PARTICLE_SPEED / 4)*0.15);
-            particle.setVelY(Main.random.nextDouble(PARTICLE_SPEED*Math.abs(entity.getVelY())*0.04) - PARTICLE_SPEED*Math.abs(entity.getVelY())*0.08);
-
-            particles.add(particle);
-        }
+     metaballFrame.splash(x,entity);
 
 
     }
@@ -192,48 +227,11 @@ public class Liquid extends GameEntity {
 
         public void tick() {
 
+            metaballFrame.tick();
 
 
+            drip();
 
-        //until it is touching something, gravity.
-
-        if (!canJump) {
-            canJump = false;
-            gravity();
-            loadDrip();
-            physics();
-            collision();
-
-        } else {
-            if (!hasStuck) {
-                loadHitbox();
-                hasStuck = true;
-            }
-        }
-
-
-        ArrayList<ControlledParticle> removeParticles = new ArrayList<>();
-
-        for (ControlledParticle particle : particles) {
-            particle.tick();
-
-            if (particle.getY() > this.y+SPLASH_HEIGHT_EXTRA) {
-                particle.setRemove();
-            }
-
-            if (particle.isFinished()) {
-                removeParticles.add(particle);
-            }
-
-
-        }
-
-        for (ControlledParticle particle : removeParticles) {
-            bubbles.play(SoundLoader.bubble, SoundLoader.getRandomVolume()-0.5, SoundLoader.getRandomSpeed());
-            particles.remove(particle);
-
-
-        }
 
         if (Settings.get("graphics") ==0) {
             return;
@@ -299,9 +297,9 @@ public class Liquid extends GameEntity {
 
                     Wave wave = waves[(int) (((map.playerX - this.x) + 1) / grid) + 1];
 
-
+                    splash.play(SoundLoader.largeSplash, map.player.getVelY() * 0.5, SoundLoader.getRandomSpeed());
                     wave.addVelY(map.player.getVelY() * 0.5);
-                    wave.addVelY(Math.abs(map.player.getVelX()) * 0.2);
+                    wave.addVelY(Math.abs(map.player.getVelX()) * 0.025);
 
                 }
 
@@ -436,43 +434,10 @@ public class Liquid extends GameEntity {
             square.render(g, map.cameraX, map.cameraY, (Player) map.player);
         }
 
-        if (Settings.get("graphics") ==0) {
-            return;
-        }
-        if (Settings.get("graphics") <4) {
-            for (ControlledParticle particle : particles) {
-                particle.render(g, map.cameraX, map.cameraY);
-            }
-        } else {
-            renderSplash(g);
-        }
-
-
+        metaballFrame.render(g);
 
     }
 
-    public void renderSplash(GraphicsContext g) {
-
-        if (particles.size() < 1) {
-            return;
-        }
-        // renderActual(g);
-        if (lastSplash != null && System.currentTimeMillis()- lastSplashT < PARTICLE_INTERVAL) {
-
-            g.save();
-            g.setGlobalAlpha(color.getOpacity());
-            g.drawImage(lastSplash,  Main.correctUnit(lastSplashX-map.cameraX),Main.correctUnit(lastSplashY - SPLASH_HEIGHT- map.cameraY), Main.correctUnit(SPLASH_WIDTH), Main.correctUnit(SPLASH_HEIGHT+SPLASH_HEIGHT_EXTRA));
-            g.restore();
-
-        } else {
-            lastSplashT = System.currentTimeMillis();
-            renderActual(g);
-        }
-
-
-
-
-    }
 
     public double getSurfaceY(double x) {
 
@@ -489,102 +454,6 @@ public class Liquid extends GameEntity {
 
 
 
-    private void renderActual(GraphicsContext g) {
-
-
-
-        double furthestLeft = 9999999;
-        double lowest = -999999;
-        for (ControlledParticle particle : particles) {
-            if (particle.getX()-particle.getSize() < furthestLeft) {
-                furthestLeft = particle.getX()-particle.getSize();
-            }
-
-            if (particle.getY()+particle.getSize() > lowest) {
-                lowest = particle.getY()+particle.getSize();
-            }
-        }
-
-
-        int res =PARTICLE_RESOLUTION;
-
-
-
-
-        WritableImage image = new WritableImage((int) Main.correctUnit(SPLASH_WIDTH/res), (int) Main.correctUnit((SPLASH_HEIGHT+SPLASH_HEIGHT_EXTRA)/res));
-
-
-
-
-        for (int x = 0; x < image.getWidth(); x ++) {
-            for (int y = 0; y < image.getHeight(); y ++) {
-
-
-
-
-
-
-                float actualX = (float)(Main.reverseUnit(x*res)+furthestLeft);
-                float actualY = (float)(Main.reverseUnit(y*res)+lowest-SPLASH_HEIGHT-SPLASH_HEIGHT_EXTRA);
-
-                double surfaceY = getSurfaceY(actualX);
-
-                int total = 0;
-                for (ControlledParticle particle : particles) {
-                    total += 45 * (Main.correctUnit(particle.getSize()) / Main.getDistance(actualX, actualY , particle.getX(), particle.getY()));
-                    // System.out.println(Main.Main.getDistance(actualX*res, actualY*res, particle.getX(), particle.getY()));
-                    // total += 20 * (particle.getSize() / getDistance(x*res, y*res, particle.getX(), particle.getY()));
-                }
-
-
-                //   if (actualY < this.y) {
-                total+= 45 * (Main.correctUnit(100) / Main.getDistance(actualX, actualY , actualX, surfaceY));
-                //     }
-
-                //   if (actualY > this.y) {
-
-                //     }
-
-                if (total > 2550) {
-                    total = 2550;
-                }
-
-
-
-                if (total > 900) {
-                    if (!(actualY+SPLASH_HEIGHT_EXTRA+1 > surfaceY)) {
-                        image.getPixelWriter().setColor(x, y, Color.color(color.getRed(), color.getGreen(), color.getBlue()));
-                    }
-//
-                }
-
-
-
-            }
-        }
-
-
-
-        lastSplash = image;
-
-
-
-
-
-
-
-        lastSplashX =furthestLeft;
-        lastSplashY = lowest;
-
-        // g.save();
-        //     g.setGlobalBlendMode(BlendMode.ADD);
-        g.save();
-        g.setGlobalAlpha(color.getOpacity());
-
-        g.drawImage(image, Main.correctUnit(furthestLeft-map.cameraX),Main.correctUnit(lowest-SPLASH_HEIGHT-map.cameraY), Main.correctUnit(SPLASH_WIDTH), Main.correctUnit(SPLASH_HEIGHT+SPLASH_HEIGHT_EXTRA));
-
-        g.restore();
-    }
 
 
 

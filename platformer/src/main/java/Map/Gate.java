@@ -30,7 +30,7 @@ public class Gate extends GameEntity {
         }
 
         lock = ImageLoader.lock;
-
+        map.keys.put(code, false);
         loadWallHitbox();
     }
 
@@ -40,8 +40,10 @@ public class Gate extends GameEntity {
     }
 
     public void tick() {
-        if (map.keys.keySet().contains(Integer.valueOf(code))) {
+        if (map.keys.get(code)) {
             map.removeEntity(this);
+
+            System.out.println("hasDeleted");
         }
 
     }

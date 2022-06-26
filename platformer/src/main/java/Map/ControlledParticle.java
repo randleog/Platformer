@@ -35,9 +35,10 @@ public class ControlledParticle {
 
 
     private static double GRAVITY = 5;
+    private boolean gravity;
 
-    public ControlledParticle(double x, double y, double sizeX, double sizeY, Image image, int endTick, double opacity) {
-
+    public ControlledParticle(double x, double y, double sizeX, double sizeY, Image image, int endTick, double opacity, boolean gravity) {
+        this.gravity = gravity;
 
         this.endTick = endTick;
         this.opacity = opacity;
@@ -98,7 +99,9 @@ public class ControlledParticle {
 
     public void tick() {
 
-        gravity();
+        if (gravity) {
+            gravity();
+        }
         physics();
 
         currentTick++;

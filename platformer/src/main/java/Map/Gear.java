@@ -5,7 +5,9 @@ import GameControl.Square;
 import Util.ImageLoader;
 import Util.Settings;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 
@@ -23,10 +25,13 @@ public class Gear extends GameEntity{
     boolean startSpeed = true;
 
     double startVel = 0;
+    boolean sourcePowered = false;
+    private int code;
 
-    public Gear(double x, double y, double sizeX, double sizeY, Map map, double startingSpeed) {
+    public Gear(double x, double y, double sizeX, double sizeY, Map map, double startingSpeed, int code) {
         super(x, y, map, InputAction.Gear, FillType.Image, 1);
 
+        this.code = code;
         startVel = startingSpeed*sizeX;
 
         rotation = 0;
@@ -39,10 +44,13 @@ public class Gear extends GameEntity{
 
         if (startingSpeed > 0) {
             startSpeed = true;
+            this.sourcePowered = true;
         }
 
         this.gearFactor = (1.0/this.sizeX);
-        this.gearSpeed = startingSpeed*sizeX;
+
+
+        map.keys.put(code, false);
     }
 
 
@@ -69,25 +77,44 @@ public class Gear extends GameEntity{
         double sizeY = this.sizeY - this.sizeY/(sizeFactor/2);
 
 
-        hitbox.add(new Square(x + WALL_CORNER_SIZE, y, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Up));
+
         hitbox.add(new Square(x + WALL_CORNER_SIZE, y + sizeY - 1, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Down));
         if (sizeY > 25) {
             hitbox.add(new Square(x + sizeX - 1, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Right));
             hitbox.add(new Square(x, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Left));
         }
-        collision();
 
+
+    }
+
+    private boolean isActive() {
+
+            return (code == -1 || map.keys.get(this.code));
 
     }
 
 
     @Override
     public void tick() {
-
-
-        if (startSpeed) {
-            gearSpeed = startVel;
+        if (map.player == null) {
+            return;
         }
+        if (this.getMainShape().intersect(map.player.getMainShape())) {
+            map.player.health-=(Math.abs((gearSpeed*gearFactor)/ Settings.get("fps")))*5;
+        }
+
+        gearSpeed = gearSpeed*Math.pow(0.5, 1/Settings.getD("fps"));
+        rotation+=(gearSpeed*gearFactor)/ Settings.get("fps");
+
+
+        if (isActive()) {
+            gearSpeed += startVel / Settings.get("fps");
+        }
+
+        if (startVel != 0) {
+            return;
+        }
+
 
 
 
@@ -113,15 +140,26 @@ public class Gear extends GameEntity{
         for (Gear gear : touching) {
             if (!hasSet) {
                 if (gear.getGearSpeed() != 0) {
-                    this.gearSpeed = -gear.getGearSpeed();
 
+                    this.gearSpeed = -gear.getGearSpeed();
+                    gearSpeed = gearSpeed*Math.pow(0.5, 1/Settings.getD("fps"));
                     hasSet = true;
+
                 }
+
+            }
+            if (gear.startVel != 0) {
+
+                this.gearSpeed = -gear.getGearSpeed();
+                gearSpeed = gearSpeed*Math.pow(0.5, 1/Settings.getD("fps"));
+                hasSet = true;
+
             }
         }
 
-        rotation+=(gearSpeed*gearFactor)/ Settings.get("fps");
+
     }
+
 
     @Override
 
@@ -130,6 +168,9 @@ public class Gear extends GameEntity{
         ArrayList<Square> hitbox = new ArrayList<>();
         hitbox.addAll(this.hitbox);
 
+        double moveRange = Math.cos(rotation)*this.sizeX*0.5;
+
+        hitbox.add(new Square(x + WALL_CORNER_SIZE-moveRange/2, y, sizeX - WALL_CORNER_SIZE * 2+moveRange, 1, parallax, InputAction.Up));
         Square lastShape = null;
 
         for (Square shape : hitbox) {
@@ -173,6 +214,16 @@ public class Gear extends GameEntity{
 
         renderStill(g);
         g.restore();
+
+        if (isActive()) {
+            if (startVel > 0) {
+                g.save();
+                g.setGlobalBlendMode(BlendMode.MULTIPLY);
+                g.setFill(Color.color(1,0.5,0, 0.3));
+                g.fillRect(getRenderX(), getRenderY(), getRenderSizeX(), getRenderSizeX());
+                g.restore();
+            }
+        }
 
      //   for (Square shape : hitbox) {
      //       shape.render(g, map.cameraX, map.cameraY, (Player) map.player);
@@ -230,7 +281,7 @@ public class Gear extends GameEntity{
     }
 
     public String toString() {
-        String line ="gear " + (int)x + " " + (int)y + " " + (int)sizeX + " " + (int)sizeY + " " + startVel;
+        String line ="gear " + (int)x + " " + (int)y + " " + (int)sizeX + " " + (int)sizeY + " " + startVel/sizeX + " " + code;
 
         return line;
     }
