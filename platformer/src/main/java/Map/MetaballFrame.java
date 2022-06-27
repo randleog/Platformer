@@ -162,6 +162,11 @@ public class MetaballFrame extends GameEntity {
         if (x > liquid.getX() && liquid.getX() < liquid.getX()+liquid.getSizeX()) {
             x = x+liquid.getGrid()/2.0;
             double pos = (x-liquid.getX())/liquid.getGrid();
+
+            if (pos > liquid.getWaves().length-1 || pos < 0) {
+                return liquid.getSizeY();
+            }
+
             if (pos > liquid.getWaves().length-1 && pos > 0) {
                 return liquid.getWaves()[(int)pos-1].getAmplitude()+liquid.getY();
             }

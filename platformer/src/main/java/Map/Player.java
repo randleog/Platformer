@@ -2,6 +2,7 @@ package Map;
 
 import Map.Map;
 import Util.ImageLoader;
+import Util.SoundLoader;
 import javafx.scene.canvas.GraphicsContext;
 import Main.Main;
 import Util.Settings;
@@ -37,9 +38,10 @@ public class Player extends GameEntity {
 
     boolean facingRight = false;
 
-    private Fabric fabric1;
+    private Costume costume;
 
-    private Fabric fabric2;
+    private int shurikans;
+
 
 
     private boolean hooking = false;
@@ -54,8 +56,7 @@ public class Player extends GameEntity {
         this.sizeX = 50;
         this.sizeY = 50;
 
-        fabric1 = new Fabric(25, this, Color.color(0.75,0,1), 2, 150);
-        fabric2 = new Fabric(40, this,Color.color(0.5,0,1),2, 75);
+
 
 
         map.player = this;
@@ -66,6 +67,12 @@ public class Player extends GameEntity {
         maxHealth = 10;
         health = maxHealth;
 
+        shurikans = 1;
+
+        costume = new Costume(ImageLoader.ninjaLeft, ImageLoader.ninjaRight, this);
+
+        costume.addFabric(new Fabric(25, this, Color.color(0.75,0,1), 2, 150));
+        costume.addFabric(new Fabric(40, this,Color.color(0.5,0,1),2, 75));
 
     }
 
@@ -100,8 +107,7 @@ public class Player extends GameEntity {
 
 
     public void tick() {
-        fabric1.tick();
-        fabric2.tick();
+        costume.tick();
         if (map.isOutOfBounds(this.x, this.y, this.sizeX, this.sizeY)) {
             die();
         }
@@ -129,6 +135,10 @@ public class Player extends GameEntity {
 
         map.playerX = x;
         map.playerY = y;
+
+
+
+
 
 
 
@@ -206,7 +216,26 @@ public class Player extends GameEntity {
     }
 
 
+    private static final double SHURIKAN_SPEED = 12;
+
     private void inputActions() {
+
+
+        if (shurikans > 0) {
+            if (Main.mouseDown) {
+
+                Shurikan shurikan = new Shurikan(this.x, this.y, map);
+
+                double mag = Math.sqrt(Math.pow(Main.mouseX - getRenderX(), 2) + Math.pow(Main.mouseY - getRenderY(), 2));
+
+                shurikan.setVelX(SHURIKAN_SPEED * ((Main.mouseX - getRenderX()) / mag));
+                shurikan.setVelY(SHURIKAN_SPEED * ((Main.mouseY - getRenderY()) / mag));
+                map.addEntityLive(shurikan);
+                shurikans--;
+                SoundLoader.playSound(SoundLoader.suck, 0.5, 0, 1.2);
+                Main.mouseDown = false;
+            }
+        }
 
         boolean hasJumped = false;
 
@@ -322,6 +351,14 @@ public class Player extends GameEntity {
 
     }
 
+    public void increaseShurikans() {
+        shurikans++;
+    }
+
+    public int getShurikans() {
+        return shurikans;
+    }
+
     public double getCornerRotation() {
         return cornerRotation;
     }
@@ -341,19 +378,21 @@ public class Player extends GameEntity {
             g.save();
             g.translate(getRenderX()+map.correctUnit(sizeX/2),getRenderY()+map.correctUnit(sizeY/2));
             g.rotate(Math.toDegrees(getRenderRotation()));
-            double offset = Main.correctUnit(this.x-map.cameraX)-getRenderX();
-            fabric1.renderStill(g, facingRight,offset);
-            fabric2.renderStill(g, facingRight,offset);
+            costume.renderStill(g, facingRight);
 
-            renderStill(g);
+          //  renderStill(g);
             g.restore();
 
         } else {
 
-            renderSquare(g);
-            double offset = Main.correctUnit(this.x-map.cameraX)-getRenderX();
-            fabric1.render(g, facingRight,offset);
-            fabric2.render(g, facingRight,offset);
+          //  renderSquare(g);
+
+            if (facingRight) {
+                costume.render(g, facingRight, getRenderX(), getRenderY()+Main.correctUnit(11));
+            } else {
+                costume.render(g, facingRight, getRenderX()+getRenderSizeX(), getRenderY()+Main.correctUnit(11));
+            }
+
 
         }
 
@@ -370,6 +409,14 @@ public class Player extends GameEntity {
 
         getMainShape().render(g, map.cameraX, map.cameraY, this);
 
+
+        if (Settings.get("debug") > 0) {
+            double velocity =Main.getVector(this.velX, this.velY);
+            if (velocity > Stats.get("fastest movement speed")) {
+                Stats.put("fastest movement speed", (int) velocity);
+            }
+            g.fillText((int)velocity + " mps", getRenderX(), getRenderY());
+        }
 
 
 

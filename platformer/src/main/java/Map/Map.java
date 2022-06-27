@@ -39,7 +39,7 @@ public class Map {
     public boolean trance = false;
 
 
-    private static final int MAX_FRAMES = 100000;
+    private static final int MAX_FRAMES = 10000;
 
     private static final int MAX_SPEED = 50;
 
@@ -123,10 +123,15 @@ public class Map {
 
     private static final int DAY_LENGTH = 5;//300;
 
+    private int countingFactor = 1;
+
     private ArrayList<Integer[]> frames = new ArrayList<>();
 
 
     private ArrayList<BackgroundObject> backgroundObjects;
+
+    private ArrayList<GameEntity> lighting;
+    private ArrayList<GameEntity> nextLighting;
 
 
     private ArrayList<String[]> messages;
@@ -138,6 +143,9 @@ public class Map {
 
         placeSound = new TimedSound(75);
 
+
+        nextLighting = new ArrayList<>();
+        lighting = new ArrayList<>();
 
         backgroundObjects = new ArrayList<>();
 
@@ -158,7 +166,7 @@ public class Map {
             fullSpeedrun = (Settings.get("full speedrun") == 1);
         }
 
-        frames.add(new Integer[]{Settings.get("fps"), 0});
+        frames.add(new Integer[]{Settings.get("fps")/countingFactor, 0});
 
         initialiseButtons();
     }
@@ -182,20 +190,6 @@ public class Map {
 
     public void trance() {
         this.trance = !this.trance;
-
-        if (trance) {
-            for (GameEntity entity : entities) {
-                if (entity instanceof Wall) {
-                    ((Wall)entity).setImage(ImageLoader.pinkWall);
-                }
-            }
-        } else {
-            for (GameEntity entity : entities) {
-                if (entity instanceof Wall) {
-                    ((Wall)entity).setImage(ImageLoader.wallTile);
-                }
-            }
-        }
 
     }
 
@@ -399,15 +393,31 @@ public class Map {
 
 
     public void addEntity(GameEntity entity) {
-        entities.add(entity);
+
+        if (entity instanceof Candle || entity instanceof Light) {
+            lighting.add(entity);
+        } else {
+            entities.add(entity);
+        }
+
+
     }
+
 
     public void addParticle(GameEntity entity) {
         particles.add(entity);
     }
 
     public void addEntityLive(GameEntity entity) {
-        nextEntities.add(entity);
+
+
+        if (entity instanceof Candle || entity instanceof Light) {
+            nextLighting.add(entity);
+        } else {
+            nextEntities.add(entity);
+        }
+
+
     }
 
 
@@ -456,6 +466,8 @@ public class Map {
     private boolean mouseDragging = false;
     private ArrayList<GameEntity> overlayEntites = new ArrayList<>();
 
+    private DimensionPortal lastPortal;
+
     private void editorControls() {
 
 
@@ -501,26 +513,40 @@ public class Map {
 
 
             switch (tool) {
-                case "wall", "gate", "stickyWall", "water", "lava", "corner", "sandTile", "gear", "gearSpeed":
+                case "wall", "gate", "stickyWall", "water", "lava", "corner", "sandTile", "gear", "gearSpeed", "pink","candleNot", "candle":
                     toolDisplay = placeTile();
                     break;
                 case "background wall":
                     backgroundDisplay = placeBackgroundTile();
                     break;
                 case "key":
-                    toolDisplay = new Key(Main.reverseUnit(Main.mouseX) + cameraX, applyGrid(Main.reverseUnit(Main.mouseY)) + cameraY, this, 1, currentCode);
+                    toolDisplay = new Key(Main.reverseUnit(Main.mouseX) + cameraX, Main.reverseUnit(Main.mouseY) + cameraY, this, 1, currentCode);
+                    break;
+                case "shurikan":
+                    Shurikan shurikan = new Shurikan(Main.reverseUnit(Main.mouseX) + cameraX, Main.reverseUnit(Main.mouseY) + cameraY, this);
+                    shurikan.setVelY(1);
+                    toolDisplay = shurikan;
+                    break;
+                case "portal":
+                    lastPortal =  new DimensionPortal(Main.reverseUnit(Main.mouseX) + cameraX, Main.reverseUnit(Main.mouseY) + cameraY, this, Main.reverseUnit(Main.mouseX) + cameraX + 100,Main.reverseUnit(Main.mouseY) + cameraY);
+                    toolDisplay = lastPortal;
                     break;
                 case "plate":
-                    toolDisplay = new Plate(Main.reverseUnit(Main.mouseX) + cameraX, applyGrid(Main.reverseUnit(Main.mouseY)) + cameraY, this, 1, currentCode);
+                    toolDisplay = new Plate(Main.reverseUnit(Main.mouseX) + cameraX, Main.reverseUnit(Main.mouseY) + cameraY, this, 1, currentCode);
                     break;
                 case "flag":
-                    toolDisplay = new Flag(Main.reverseUnit(Main.mouseX) + cameraX, applyGrid(Main.reverseUnit(Main.mouseY)) + cameraY, this);
-                    break;
-                case "candle":
-                    toolDisplay = new Candle(Main.reverseUnit(Main.mouseX) + cameraX, applyGrid(Main.reverseUnit(Main.mouseY)) + cameraY, this);
+                    toolDisplay = new Flag(Main.reverseUnit(Main.mouseX) + cameraX, Main.reverseUnit(Main.mouseY) + cameraY, this);
                     break;
                 case "eraser":
                     erase();
+                    break;
+                case "portalLocation":
+                    if (lastPortal != null) {
+                        lastPortal.setTpX(Main.reverseUnit(Main.mouseX) + cameraX);
+                    }
+                    if (lastPortal != null) {
+                        lastPortal.setTpY(Main.reverseUnit(Main.mouseY) + cameraY);
+                    }
                     break;
                 case "player":
                     playerX = Main.reverseUnit(Main.mouseX) + cameraX;
@@ -645,6 +671,8 @@ public class Map {
 
 
 
+
+
     private GameEntity placeTile() {
 
 
@@ -664,6 +692,8 @@ public class Map {
             case "lava" -> MapLoader.getLava(mouseOriginX, mouseOriginY, this, sizeX, sizeY);
             case "gear" -> new Gear(mouseOriginX, mouseOriginY, sizeX, sizeX, this, 0, currentCode);
             case "gearSpeed" -> new Gear(mouseOriginX, mouseOriginY, sizeX, sizeX, this, 1.5, currentCode);
+            case "candle" -> new Candle(mouseOriginX, mouseOriginY,sizeX, sizeX, this);
+            case "candleNot" -> new Light(mouseOriginX, mouseOriginY,sizeX, sizeX, this);
             default -> new Wall(mouseOriginX, mouseOriginY, this, sizeX, sizeY, InputAction.Default, FillType.Tile, 1);
 
         };
@@ -671,6 +701,9 @@ public class Map {
         if (tool.equals("sandTile")) {
             ((Wall)tile).setType("sand");
             ((Wall)tile).setImage(ImageLoader.sandTile);
+        } if (tool.equals("pink")) {
+            ((Wall)tile).setType("pink");
+            ((Wall)tile).setImage(ImageLoader.pinkWall);
         }
 
 
@@ -832,10 +865,29 @@ public class Map {
         }
     }
 
+    private void eraserLighting() {
+        Square mouseIntesect = new Square(Main.reverseUnit(Main.mouseX) + cameraX, Main.reverseUnit(Main.mouseY) + cameraY, 1, 1, 1, InputAction.Default);
+
+        ArrayList<GameEntity> removeObjects = new ArrayList<>();
+
+        for (GameEntity entity : lighting) {
+            if (mouseIntesect.intersect(entity.getMainShape())) {
+                removeObjects.add(entity);
+            }
+
+        }
+
+        for (GameEntity entity: removeObjects) {
+            placeSound.play(SoundLoader.suck, 0.5, 1);
+            lighting.remove(entity);
+
+        }
+    }
 
     private void erase() {
     eraserWall();
     eraserEntities();
+   eraserLighting();
     }
 
     private int applyGrid(double input) {
@@ -886,7 +938,19 @@ public class Map {
                     reset();
                 }
                 if (frames.size() < MAX_FRAMES) {
-                    frames.add(new Integer[]{(int) player.getNonRenderX(), (int) player.getNonRenderY(), (int) player.getNonRenderSizeY()});
+                    if (((int)(currentTick) % countingFactor == 0)) {
+                        frames.add(new Integer[]{(int) player.getNonRenderX(), (int) player.getNonRenderY(), (int) player.getNonRenderSizeY()});
+                    }
+                } else {
+                    for (int i = (frames.size()&~1)-1; i>=0; i-=2) {
+                        if (i != 0) {
+                            frames.remove(i);
+                        }
+
+                    }
+                    countingFactor = countingFactor*2;
+                    frames.set(0,new Integer[]{Settings.get("fps")/countingFactor, 0});
+
                 }
 
             }
@@ -899,7 +963,9 @@ public class Map {
             for (GameEntity entity : particles) {
                 entity.tick();
             }
-
+            for (GameEntity entity : lighting) {
+                entity.tick();
+            }
 
             entities.addAll(nextEntities);
             nextEntities = new ArrayList<>();
@@ -907,6 +973,8 @@ public class Map {
             particles.addAll(nextParticles);
             nextParticles = new ArrayList<>();
 
+            lighting.addAll(nextLighting);
+            nextLighting = new ArrayList<>();
 
             if (isReplay || Menu.currentlyMenu) {
 
@@ -958,6 +1026,8 @@ public class Map {
             if (screenInersect(backgroundObject.getMainShape())) {
                 backgroundObject.render(g);
             }
+
+
         }
 
 
@@ -969,9 +1039,15 @@ public class Map {
                 entity.render(g);
             }
 
+
+
         }
 
         for (GameEntity entity : overlayEntites) {
+            entity.render(g);
+        }
+
+        for (GameEntity entity : lighting) {
             entity.render(g);
         }
 
@@ -1027,6 +1103,10 @@ public class Map {
             g.setFill(Color.WHITE);
             g.setFont(new Font(Settings.FONT, Main.correctUnit(40)));
             g.fillText("x" + String.format("%.2f", actualSpeed), correctUnit(225), correctUnit(825));
+        } else {
+            for (int i = 0; i < ((Player)player).getShurikans(); i++) {
+                g.drawImage(ImageLoader.shurikan, Main.correctUnit(25)+i*Main.correctUnit(25), Main.correctUnit(60), Main.correctUnit(55), Main.correctUnit(55));
+            }
         }
 
 
@@ -1073,7 +1153,9 @@ public class Map {
         for (GameEntity entity : entities) {
             lines = lines + "\n" + entity.toString() + ";";
         }
-
+        for (GameEntity entity : lighting) {
+            lines = lines + "\n" + entity.toString() + ";";
+        }
         return lines;
     }
 

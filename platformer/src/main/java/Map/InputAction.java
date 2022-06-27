@@ -1,5 +1,7 @@
 package Map;
 
+import java.util.ArrayList;
+
 public enum InputAction {
     Default() {
       public String toString() {
@@ -98,8 +100,26 @@ public enum InputAction {
         public String toString() {
             return "Gear";
         }
-
+    },
+        Shurikan() {
+            public String toString() {
+                return "Shurikan";
+            }
     };
+
+
+
+    public static boolean containsWall(ArrayList<InputAction> actions) {
+        return (actions.contains(InputAction.Down)
+                || actions.contains(InputAction.Right)
+                || actions.contains(InputAction.Left)
+                || actions.contains(InputAction.Up)
+                || actions.contains(InputAction.StickyDown)
+                || actions.contains(InputAction.StickyLeft)
+                || actions.contains(InputAction.StickyRight)
+                || actions.contains(InputAction.StickyUp)
+                || actions.contains(InputAction.Corner));
+    }
 
 
     public static boolean isUnactionable(InputAction action) {

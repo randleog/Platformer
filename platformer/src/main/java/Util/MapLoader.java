@@ -187,7 +187,20 @@ public class MapLoader {
                         int x = Integer.parseInt(line[1]);
                         int y = Integer.parseInt(line[2]);
 
-                        map.addEntity(new Candle(x, y, map));
+                        int wallWidth = Integer.parseInt(line[3]);
+                        int wallHeight = Integer.parseInt(line[4]);
+
+                        map.addEntity(new Candle(x, y, wallWidth, wallHeight, map));
+                        break;
+                    }
+                    case "candleNot" -> {
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
+
+                        int wallWidth = Integer.parseInt(line[3]);
+                        int wallHeight = Integer.parseInt(line[4]);
+
+                        map.addEntity(new Light(x, y, wallWidth, wallHeight, map));
                         break;
                     }
                     case "gear" -> {
@@ -210,6 +223,12 @@ public class MapLoader {
                         map.addEntity(new Plate(x, y, map, 1, code));
                         break;
                     }
+                    case "shurikan" -> {
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
+                        map.addEntity(new Shurikan(x, y, map));
+                        break;
+                    }
                     default -> {
                         String wallType = line[1];
                         int x = Integer.parseInt(line[2]);
@@ -220,7 +239,8 @@ public class MapLoader {
                         Wall wall = new Wall(x, y, map, wallWidth, wallHeight, InputAction.Default, FillType.Tile, 1);
 
                         wall.setType(wallType);
-                        wall.setImage(ImageLoader.getImage(name + "Tile"));
+                        wall.setImage(ImageLoader.getImage(wallType+ "Tile"));
+
 
                         map.addEntity(wall);
                         break;

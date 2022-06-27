@@ -35,6 +35,7 @@ public class Fabric {
 
         for (int i = 0; i < POLY_COUNT; i++) {
             points.add(new Double[]{entity.getX(), entity.getY()});
+
         }
 
 
@@ -43,9 +44,11 @@ public class Fabric {
 
     }
 
+
+
     public void tick() {
 
-        points.set(0, new Double[]{entity.getX(),entity.getY()+12,0.0});
+        points.set(0, new Double[]{entity.getX(),entity.getY()+11,0.0});
 
         for (int i = 1; i < points.size(); i++) {
 
@@ -70,7 +73,10 @@ public class Fabric {
         return (length * 1.0) / points.size();
     }
 
-    public void render(GraphicsContext g, boolean facingRight, double offset) {
+    public void render(GraphicsContext g, boolean facingRight, double x, double y) {
+
+        double xOffset = x-Main.correctUnit(points.get(0)[0]-entity.getMap().cameraX);
+        double yOffset = y-Main.correctUnit(points.get(0)[1]-entity.getMap().cameraY);
 
 
 
@@ -81,11 +87,11 @@ public class Fabric {
         if (facingRight) {
 
             for (int i = 1; i < points.size(); i++) {
-                double x1= Main.correctUnit(entity.getVelStretchX())+ Main.correctUnit(points.get(i-1)[0]-entity.getMap().cameraX)-offset;
-                double x2= Main.correctUnit(entity.getVelStretchX())+ Main.correctUnit(points.get(i)[0]-entity.getMap().cameraX)-offset;
+                double x1=  Main.correctUnit(points.get(i-1)[0]-entity.getMap().cameraX)+xOffset;
+                double x2= Main.correctUnit(points.get(i)[0]-entity.getMap().cameraX)+xOffset;
 
-                double y1= Main.correctUnit(points.get(i-1)[1]-entity.getMap().cameraY);
-                double y2 =  Main.correctUnit(points.get(i)[1]-entity.getMap().cameraY);
+                double y1= Main.correctUnit(points.get(i-1)[1]-entity.getMap().cameraY)+yOffset;
+                double y2 =  Main.correctUnit(points.get(i)[1]-entity.getMap().cameraY)+yOffset;
 
                 g.setLineWidth(Main.correctUnit(3));
                 g.strokeLine(x1, y1, x2, y2);
@@ -96,12 +102,12 @@ public class Fabric {
 
             for (int i = 1; i < points.size(); i++) {
 
-                double x1=entity.getRenderSizeX() + Main.correctUnit(points.get(i-1)[0]-entity.getMap().cameraX);
-                double x2=entity.getRenderSizeX() + Main.correctUnit(points.get(i)[0]-entity.getMap().cameraX);
+                double x1=Main.correctUnit(points.get(i-1)[0]-entity.getMap().cameraX)+xOffset;
+                double x2=Main.correctUnit(points.get(i)[0]-entity.getMap().cameraX)+xOffset;
 
 
-                double y1 =Main.correctUnit(points.get(i-1)[1]-entity.getMap().cameraY);
-                double y2 =Main.correctUnit(points.get(i)[1]-entity.getMap().cameraY);
+                double y1 =Main.correctUnit(points.get(i-1)[1]-entity.getMap().cameraY)+yOffset;
+                double y2 =Main.correctUnit(points.get(i)[1]-entity.getMap().cameraY)+yOffset;
 
                 g.setLineWidth(Main.correctUnit(thickness));
                 g.strokeLine(x1, y1, x2, y2);

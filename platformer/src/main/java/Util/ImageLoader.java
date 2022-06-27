@@ -65,11 +65,15 @@ public class ImageLoader {
 
     public static Image lava = loadImage("lava.png", 64);
 
+    public static Image shurikan = loadImage("shurikan.png", 64);
+
     public static Image gear = loadImage("gear.png", 64);
     public static Image plate = loadImage("plate.png", 64);
     public static Image ninjaRight = loadImage("ninjaRight.png", 64);
     public static Image ninjaMid = loadImage("ninjaMid.png", 64);
     public static Image ninjaLeft = loadImage("ninjaLeft.png", 64);
+    public static Image candle = loadImage("candle.png", 64);
+    public static Image candleNot = loadImage("candleNot.png", 64);
 
     public static Image torso1 = loadImage("torso1.png", 64);
     public static Image legs1 = loadImage("legs1.png", 64);
@@ -141,11 +145,13 @@ public class ImageLoader {
             case "corner" -> corner;
             case "lava" -> lava;
             case "sandTile" -> sandTile;
-            case "gear" -> gear;
-            case "gearSpeed" -> gear;
-            case "gearLarge" -> gear;
-            case "pink" -> pinkWall;
+            case "gear", "gearSpeed", "gearLarge" -> gear;
+            case "pink", "pinkTile" -> pinkWall;
             case "plate" -> plate;
+            case "portal" -> dimension;
+            case "shurikan" -> shurikan;
+            case "candle" -> candle;
+            case "candleNot" -> candleNot;
             default -> wallTile;
 
         };

@@ -7,6 +7,8 @@ import javafx.scene.text.Font;
 import Util.ImageLoader;
 import Menu.Menu;
 
+import java.util.ArrayList;
+
 public class Plate extends GameEntity {
 
     private int code;
@@ -37,7 +39,10 @@ public class Plate extends GameEntity {
         if (map.player == null) {
             return;
         }
-        if(this.getMainShape().intersect(map.player.getMainShape())) {
+
+        ArrayList<InputAction> actions = map.getActions(this);
+
+        if(this.getMainShape().intersect(map.player.getMainShape()) || actions.contains(InputAction.Shurikan)) {
             pressed = true;
             map.keys.put(code, true);
         } else {

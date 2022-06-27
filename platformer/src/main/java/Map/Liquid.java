@@ -213,6 +213,15 @@ public class Liquid extends GameEntity {
     public void splash(double x, GameEntity entity) {
 
 
+        if (!(entity instanceof  Player)) {
+            splash.play(SoundLoader.largeSplash, entity.getVelY() * 0.5, SoundLoader.getRandomSpeed());
+            int pos = (int)((entity.getX()-this.x)/grid)+1;
+            if (pos > 0 && pos < waves.length-1) {
+                waves[pos].addVelY(entity.getVelY() * 7);
+
+            }
+
+        }
 
      metaballFrame.splash(x,entity);
 

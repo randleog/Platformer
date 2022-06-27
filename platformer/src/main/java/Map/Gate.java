@@ -31,7 +31,8 @@ public class Gate extends GameEntity {
 
         lock = ImageLoader.lock;
         map.keys.put(code, false);
-        loadWallHitbox();
+        loadHitbox();
+
     }
 
     @Override
@@ -47,7 +48,9 @@ public class Gate extends GameEntity {
         }
 
     }
-    protected void loadWallHitbox() {
+
+    @Override
+    protected void loadHitbox() {
         hitbox = new ArrayList<>();
         hitbox.add(new Square(x + WALL_CORNER_SIZE, y, sizeX - WALL_CORNER_SIZE * 2, 1, parallax, InputAction.Up));
         hitbox.add(new Square(x + sizeX - 1, y + WALL_CORNER_SIZE, 1, sizeY - WALL_CORNER_SIZE * 2, parallax, InputAction.Right));

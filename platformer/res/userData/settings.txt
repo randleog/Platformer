@@ -29,13 +29,13 @@ volume 100
 music_volume 0
 editor_tool nothing
 item_scroll_Y 0
-item_scroll_X 950
+item_scroll_X 399
 back exit
 save save
 main_level_scroll_Y 0
 main_level_scroll_X 0
 level main
-level_scroll_Y 382
+level_scroll_Y 540
 main\full_leaderboard_scroll_X 3
 main\4_leaderboard_scroll_X 0
 main\2_leaderboard_scroll_Y 200
@@ -47,9 +47,10 @@ graphics 5
 map_choice preset\empty
 custom\17 map_choice
 editor_cutstom_options_X 0
-editor_cutstom_options_Y 432
+editor_cutstom_options_Y 0
 custom_replay_scroll_Y 80
 main_replay_scroll_Y 108
 main\4_leaderboard_scroll_Y 0
 main\3_leaderboard_scroll_Y 0
 image_smoothing -1
+wall_scroll_X 1063

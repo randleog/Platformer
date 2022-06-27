@@ -278,6 +278,10 @@ public class Main extends Application {
     }
 
 
+    public static double getVector(double x, double y) {
+        return (Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)));
+    }
+
     public static String getWorld(String name) {
 
         return name.split("\\\\")[0];

@@ -20,7 +20,7 @@ public class Menu {
     private static final int BUTTON_WIDTH = 230;
     private static final int BUTTON_HEIGHT = 100;
 
-
+    private static final int BUTTON_SMALL_GAP = 29;
     private static final int BUTTON_GAP = 58;
 
 
@@ -733,39 +733,39 @@ int nonIntLevels = 0;
     private static void loadEditorMenu() {
         ArrayList<MenuElement> elements = new ArrayList<>();
 
+        ArrayList<MenuElement> walls = new ArrayList<>();
+        walls.add(new SettingButton(0, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "stickyWall", MenuElement.TextType.hide));
+        walls.add(new SettingButton(BUTTON_SMALL_GAP + BUTTON_HEIGHT, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "wall", MenuElement.TextType.hide));
+        walls.add(new SettingButton(BUTTON_SMALL_GAP * 2 + BUTTON_HEIGHT * 2, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "pink", MenuElement.TextType.hide));
+        walls.add(new SettingButton(BUTTON_SMALL_GAP * 3 + BUTTON_HEIGHT * 3, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "gate", MenuElement.TextType.hide));
+        walls.add(new SettingButton(BUTTON_SMALL_GAP * 4 + BUTTON_HEIGHT * 4, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "water", MenuElement.TextType.hide));
+        walls.add(new SettingButton(BUTTON_SMALL_GAP * 5 + BUTTON_HEIGHT * 5, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "lava", MenuElement.TextType.hide));
+        walls.add(new SettingButton(BUTTON_SMALL_GAP * 6 + BUTTON_HEIGHT * 6, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "corner", MenuElement.TextType.hide));
+        walls.add(new SettingButton(BUTTON_SMALL_GAP * 7 + BUTTON_HEIGHT * 7, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "background wall", MenuElement.TextType.hide));
+        walls.add(new SettingButton(BUTTON_SMALL_GAP * 8 + BUTTON_HEIGHT * 8, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "sandTile", MenuElement.TextType.hide));
+        walls.add(new SettingButton(BUTTON_SMALL_GAP * 9 + BUTTON_HEIGHT * 9, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "candle", MenuElement.TextType.hide));
+        walls.add(new SettingButton(BUTTON_SMALL_GAP * 10 + BUTTON_HEIGHT * 10, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "candleNot", MenuElement.TextType.hide));
+        elements.add(new ScrollMenu(BUTTON_SMALL_GAP + BUTTON_WIDTH, 800, (int)(BUTTON_WIDTH * 1.5), BUTTON_HEIGHT, new Menu(walls, "editor"), "wall scroll"));
+
+
         ArrayList<MenuElement> items = new ArrayList<>();
 
+        items.add(new SettingButton(0, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "flag", MenuElement.TextType.hide));
+        items.add(new SettingButton(BUTTON_SMALL_GAP + BUTTON_HEIGHT, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "key", MenuElement.TextType.hide));
+        items.add(new SettingButton(BUTTON_SMALL_GAP * 2 + BUTTON_HEIGHT * 2, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "gear", MenuElement.TextType.hide));
+        items.add(new SettingButton(BUTTON_SMALL_GAP * 3 + BUTTON_HEIGHT * 3, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "gearSpeed", MenuElement.TextType.hide));
+        items.add(new SettingButton(BUTTON_SMALL_GAP * 4 + BUTTON_HEIGHT * 4, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "plate", MenuElement.TextType.hide));
+        items.add(new SettingButton(BUTTON_SMALL_GAP * 5 + BUTTON_HEIGHT * 5, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "portal", MenuElement.TextType.hide));
+        items.add(new SettingButton(BUTTON_SMALL_GAP * 6 + BUTTON_HEIGHT * 6, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "shurikan", MenuElement.TextType.hide));
+        elements.add(new ScrollMenu(BUTTON_SMALL_GAP * 2 + BUTTON_WIDTH*3, 800, (int)(BUTTON_WIDTH * 1.5), BUTTON_HEIGHT, new Menu(items, "editor"), "item scroll"));
 
-        items.add(new SettingButton(0, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "stickyWall", MenuElement.TextType.hide));
-        items.add(new SettingButton(BUTTON_GAP + BUTTON_HEIGHT, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "wall", MenuElement.TextType.hide));
+        elements.add(new SettingButton(BUTTON_SMALL_GAP * 2 + BUTTON_WIDTH * 5, 800, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "portalLocation", MenuElement.TextType.hide));
+        elements.add(new SettingButton(BUTTON_SMALL_GAP * 3 + BUTTON_WIDTH * 5+BUTTON_HEIGHT, 800, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "player", MenuElement.TextType.hide));
+        elements.add(new SettingButton(BUTTON_SMALL_GAP * 4 + BUTTON_WIDTH * 5 + BUTTON_HEIGHT*2, 800, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "cursor", MenuElement.TextType.hide));
+        elements.add(new SettingButton(BUTTON_SMALL_GAP * 5 + BUTTON_WIDTH * 5 + BUTTON_HEIGHT * 3, 800, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "eraser", MenuElement.TextType.hide));
 
-
-        items.add(new SettingButton(BUTTON_GAP * 2 + BUTTON_HEIGHT * 2, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "flag", MenuElement.TextType.hide));
-
-        items.add(new SettingButton(BUTTON_GAP * 3 + BUTTON_HEIGHT * 3, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "key", MenuElement.TextType.hide));
-        items.add(new SettingButton(BUTTON_GAP * 4 + BUTTON_HEIGHT * 4, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "gate", MenuElement.TextType.hide));
-
-        items.add(new SettingButton(BUTTON_GAP * 5 + BUTTON_HEIGHT * 5, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "water", MenuElement.TextType.hide));
-        items.add(new SettingButton(BUTTON_GAP * 6 + BUTTON_HEIGHT * 6, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "lava", MenuElement.TextType.hide));
-        items.add(new SettingButton(BUTTON_GAP * 7 + BUTTON_HEIGHT * 7, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "corner", MenuElement.TextType.hide));
-        items.add(new SettingButton(BUTTON_GAP * 8 + BUTTON_HEIGHT * 8, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "background wall", MenuElement.TextType.hide));
-        items.add(new SettingButton(BUTTON_GAP * 9 + BUTTON_HEIGHT * 9, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "sandTile", MenuElement.TextType.hide));
-        items.add(new SettingButton(BUTTON_GAP * 10 + BUTTON_HEIGHT * 10, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "candle", MenuElement.TextType.hide));
-
-        items.add(new SettingButton(BUTTON_GAP * 11 + BUTTON_HEIGHT * 11, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "gear", MenuElement.TextType.hide));
-        items.add(new SettingButton(BUTTON_GAP * 12 + BUTTON_HEIGHT * 12, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "gearSpeed", MenuElement.TextType.hide));
-
-        items.add(new SettingButton(BUTTON_GAP * 13 + BUTTON_HEIGHT * 13, 0, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "plate", MenuElement.TextType.hide));
-
-        elements.add(new ScrollMenu(BUTTON_GAP * 3 + BUTTON_WIDTH, 800, BUTTON_WIDTH * 3, BUTTON_HEIGHT, new Menu(items, "editor"), "item scroll"));
-
-
-        elements.add(new SettingButton(BUTTON_GAP * 3 + BUTTON_WIDTH * 5, 800, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "player", MenuElement.TextType.hide));
-        elements.add(new SettingButton(BUTTON_GAP * 4 + BUTTON_WIDTH * 5 + BUTTON_HEIGHT, 800, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "cursor", MenuElement.TextType.hide));
-        elements.add(new SettingButton(BUTTON_GAP * 5 + BUTTON_WIDTH * 5 + BUTTON_HEIGHT * 2, 800, BUTTON_HEIGHT, BUTTON_HEIGHT, "editor tool", "eraser", MenuElement.TextType.hide));
-
-        elements.add(new SettingButtonSwitchMenu(BUTTON_GAP, 800, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "exit", "main", MenuElement.TextType.choice));
-        elements.add(new SettingButtonSwitchMenu(BUTTON_GAP, 900, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "save+exit", "main", MenuElement.TextType.choice));
+        elements.add(new SettingButtonSwitchMenu(BUTTON_SMALL_GAP, 800, BUTTON_WIDTH/2, BUTTON_HEIGHT/2, "back", "exit", "main", MenuElement.TextType.choice));
+        elements.add(new SettingButtonSwitchMenu(BUTTON_SMALL_GAP, 875, BUTTON_WIDTH/2, BUTTON_HEIGHT/2, "back", "save+exit", "main", MenuElement.TextType.choice));
 
 
         menus.put("editor", new Menu(elements, "main"));

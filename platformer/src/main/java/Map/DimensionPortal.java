@@ -1,6 +1,7 @@
 package Map;
 
 import Map.Map;
+import Menu.Menu;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import Util.ImageLoader;
@@ -26,6 +27,14 @@ public class DimensionPortal extends GameEntity {
 
     }
 
+    public void setTpX(double x) {
+        this.tpX = x;
+    }
+
+    public void setTpY(double y) {
+        this.tpY = y;
+    }
+
 
     public void tick() {
         if (map.player == null) {
@@ -33,7 +42,6 @@ public class DimensionPortal extends GameEntity {
         }
 
         if (this.getMainShape().intersect(map.player.getMainShape())) {
-            map.removeEntity(this);
             map.trance();
             map.movePlayer(tpX, tpY);
 
@@ -43,6 +51,15 @@ public class DimensionPortal extends GameEntity {
     }
 
     public void render(GraphicsContext g) {
+
         renderSquare(g);
+
+        if (Menu.currentMenu.equals("editor")) {
+            g.fillText("Destination", Main.Main.correctUnit(tpX-map.cameraX), Main.Main.correctUnit(tpY-map.cameraY));
+        }
+    }
+
+    public String toString() {
+        return "dimension " + (int)this.x + " " + (int)this.y + " " + (int)tpX + " " + (int)tpY;
     }
 }

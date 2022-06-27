@@ -1,0 +1,29 @@
+11400 8400 2145 -38
+/
+empty  ;
+900 -550 1800 650;
+/
+wall wall 700 -500 250 700;
+wall wall 650 -850 2150 350;
+wall wall 2700 -800 50 50;
+wall wall 2700 -800 200 1050;
+wall wall 2600 100 250 150;
+wall wall 700 50 2200 200;
+candle 1050 -200 100 100;
+candle 1500 -150 100 100;
+candle 1950 -250 100 100;
+candle 2450 -250 150 150;
+candleNot 1400 -400 500 250;
+candleNot 2050 -700 250 700;
+candleNot 2400 -400 500 500;
+candleNot 1300 0 950 100;
+candleNot 1000 -300 350 350;
+candleNot 1000 -500 300 300;
+candleNot 1300 -550 350 350;
+candleNot 1750 -550 350 350;
+candleNot 2300 -300 200 200;
+candleNot 2100 -100 150 150;
+candleNot 1800 -150 150 150;
+candleNot 1450 -150 150 150;
+candleNot 1250 0 400 400;
+candleNot 1800 -150 400 400;

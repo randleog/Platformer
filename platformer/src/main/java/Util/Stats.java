@@ -57,6 +57,8 @@ public class Stats {
         expectedStats.add("total Resets");
         expectedStats.add("total Jumps");
         expectedStats.add("total Time");
+
+        expectedStats.add("fastest movement speed");
         doubleStats.add("total Time");
 
 
@@ -70,7 +72,7 @@ public class Stats {
 
     private static void loadStat(String name) {
         String result = UserFileHandler.getStat("stats", name);
-        if (result.equals("")) {
+        if (result.equals("-") || result.equals("")) {
             put(name, 0);
         } else {
             int data = Integer.parseInt(result);

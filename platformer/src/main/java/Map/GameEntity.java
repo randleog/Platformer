@@ -2,9 +2,9 @@ package Map;
 
 import GameControl.Square;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.*;
 
 import java.util.ArrayList;
 
@@ -17,7 +17,7 @@ import Util.Settings;
 
 public abstract class GameEntity {
 
-    private static final int LAVA_DAMAGE = 10;
+    private static final int LAVA_DAMAGE = 30;
 
 
     private static final double CRASH_SPEED = 8;
@@ -38,7 +38,7 @@ public abstract class GameEntity {
 
     private final int MAX_COLLISIONS = 500;
 
-    private final int SPEED_FACTOR = 144;
+    public final int SPEED_FACTOR = 144;
 
     public final double ROTATE_TIME = 0.75;
 
@@ -785,6 +785,28 @@ public abstract class GameEntity {
 
     public double getCornerRotation() {
         return cornerRotation;
+    }
+
+
+
+    protected void renderShadow(GraphicsContext g) {
+        //    renderSquare(g);
+
+        g.save();
+
+        g.setGlobalBlendMode(BlendMode.MULTIPLY);
+        Color light = Color.color(0.3,0.2,0.6, 1);
+        Color fade = Color.color(0,0,0, 0);
+
+
+        //  Stop[] stops = new Stop[] { new Stop(0, fade),new Stop(0.5, light),new Stop(1, fade)};
+        Stop[] stops = new Stop[] {new Stop(0, light),new Stop(1, fade)};
+        RadialGradient fadeLight = new RadialGradient(0, 0, 0.5, 0.5, 0.5, true, CycleMethod.NO_CYCLE, stops);
+        g.setFill(fadeLight);
+
+        g.fillRect(getRenderX(), getRenderY(), getRenderSizeX(), getRenderSizeY());
+
+        g.restore();
     }
 
 
