@@ -108,6 +108,7 @@ public class Settings {
         loadSetting("music volume");
         loadSetting("image smoothing");
         loadSetting("graphics");
+        loadSetting("resolution");
     }
 
     private static void loadSetting(String name) {
@@ -164,6 +165,7 @@ public class Settings {
         put("focus", BEST_REPLAY);
 
         put("image smoothing", -1);
+        put("resolution", 64);
 
         put("show " + AUTHOR_REPLAY, 1);
         put("show " + GOLD_REPLAY, 1);
@@ -174,9 +176,7 @@ public class Settings {
         put("map choice", "preset\\empty");
         put("leaderboard scroll", 0);
 
-
         load();
-
 
     }
 }

@@ -1,0 +1,7 @@
+11400 8400 0 0
+/
+empty ;
+/
+spider 1 0 true true;
+wall wall 1350 300 1050 150;
+wall wall -400 150 1150 150;

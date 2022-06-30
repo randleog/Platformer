@@ -35,13 +35,20 @@ public class Key extends GameEntity {
     }
 
 
+
+    private boolean stuck = false;
     public void tick() {
 
 
 
-        if (!map.getActions(this).contains(InputAction.Up)) {
-            gravity();
-            physics();
+        if (!stuck) {
+            if (map.getActions(this).contains(InputAction.Up)) {
+                stuck = true;
+            } else {
+                gravity();
+                physics();
+            }
+
         } else {
             this.velY = 0;
             this.velX = 0;

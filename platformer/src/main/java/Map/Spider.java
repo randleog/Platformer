@@ -1,8 +1,11 @@
 package Map;
 
+import Main.Main;
+import Util.Settings;
 import javafx.scene.canvas.GraphicsContext;
 import Util.SoundLoader;
 import Util.ImageLoader;
+import javafx.scene.paint.Color;
 
 public class Spider extends GameEntity {
 
@@ -28,25 +31,79 @@ public class Spider extends GameEntity {
 
     private boolean jumper;
 
+    private double rotation;
+
+    private Costume costume;
+
+    private MetaballFrame metaballFrame;
+
     public Spider(double x, double y, Map map, boolean runner, boolean jumper) {
         super(x, y, map, InputAction.Default, FillType.Image, 1);
+         metaballFrame = new MetaballFrame(x, y, map, 1, 1);
         this.runner = runner;
         this.jumper = jumper;
-        this.sizeX = 50;
-        this.sizeY = 50;
+        rotation = 0;
+        this.sizeX = 30;
+        this.sizeY = 30;
         running = true;
         this.image = ImageLoader.enemy;
 
         canJump = false;
+
+
+        costume = new Costume(this);
+
+        costume.addFabric(new SpiderLeg(40, this, Color.color(0,0,0), 1, 50, 50, 600));
+
+        costume.addFabric(new SpiderLeg(40, this, Color.color(0,0,0), 1, 50, 0, 600));
+
+        costume.addFabric(new SpiderLeg(40, this, Color.color(0,0,0), 1, 50, -50, 600));
+
+
+        costume.addFabric(new SpiderLeg(40, this, Color.color(0,0,0), 1, -50, 50, 600));
+
+        costume.addFabric(new SpiderLeg(40, this, Color.color(0,0,0), 1, -50, 0, 600));
+
+        costume.addFabric(new SpiderLeg(40, this, Color.color(0,0,0), 1, -50, -50, 600));
+
+
+        costume.addFabric(new SpiderLeg(25, this, Color.color(0,0,0), 2, 50, 50, 400));
+
+        costume.addFabric(new SpiderLeg(25, this, Color.color(0,0,0), 2, 50, 0, 400));
+
+        costume.addFabric(new SpiderLeg(25, this, Color.color(0,0,0), 2, 50, -50, 400));
+
+
+        costume.addFabric(new SpiderLeg(25, this, Color.color(0,0,0), 2, -50, 50, 400));
+
+        costume.addFabric(new SpiderLeg(25, this, Color.color(0,0,0), 2, -50, 0, 400));
+
+        costume.addFabric(new SpiderLeg(25, this, Color.color(0,0,0), 2, -50, -50, 400));
+
+
+        //costume.addFabric(new SpiderEye(20, this, Color.color(0,0,0), 2, 0, 50));
+
     }
 
 
 
 
+    private double lastSmoke = 0;
+    private static final double SMOKE_TIME = 50;
 
 
     public void tick() {
+        if (System.currentTimeMillis()-lastSmoke > SMOKE_TIME) {
+            metaballFrame.smoke(this.x, this.y, this);
+            lastSmoke = System.currentTimeMillis();
+        }
+        metaballFrame.tick();
+        if (running) {
+            rotation+= 144/Settings.getD("fps");
+        }
 
+      //  costume.alignLegs(map);
+        costume.tick();
         if (map.player == null) {
             return;
         }
@@ -68,13 +125,6 @@ public class Spider extends GameEntity {
 
 
 
-        if (running) {
-            map.addParticleLive(new Particle(x - getVelStretchX()
-                    , y - getVelStretchY(), map, sizeX + getVelStretchX() * 2
-                    , getSizeY() + getVelStretchY() * 2, image, false
-                    , 0.04, 0.2));
-
-        }
 
     }
 
@@ -126,12 +176,30 @@ public class Spider extends GameEntity {
 
 
     public void render(GraphicsContext g) {
+        metaballFrame.render(g);
+
+        double x = getRenderX();
+        double y = getRenderY();
+        double sizeX = getRenderSizeX();
+        double sizeY = getRenderSizeY();
 
 
 
+        g.save();
+        g.translate(getRenderX()+map.correctUnit(this.sizeX/2),getRenderY()+map.correctUnit(this.sizeY/2));
+        costume.renderStill(g, true);
+        g.rotate(180);
+        costume.renderStill(g, true);
+        g.restore();
+
+        if (running) {
+            g.drawImage(ImageLoader.eye, x, y, sizeX, sizeY);
+        } else {
+            g.drawImage(ImageLoader.eyeClosed, x, y, sizeX, sizeY);
+        }
 
 
-        renderSquare(g);
+
 
     }
 

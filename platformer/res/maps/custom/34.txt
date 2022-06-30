@@ -1,0 +1,15 @@
+11400 8400 1814 147
+/
+empty ;
+/
+wall wall 1350 300 1050 150;
+shurikan 1497 287;
+shurikan 1663 289;
+shurikan 1729 289;
+shurikan 1927 289;
+shurikan 1976 289;
+shurikan 2028 289;
+shurikan 2077 289;
+shurikan 2125 289;
+shurikan 2181 289;
+shurikan 2236 289;

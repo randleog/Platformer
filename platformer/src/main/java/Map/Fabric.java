@@ -10,25 +10,28 @@ import javafx.scene.paint.Color;
 
 public class Fabric {
 
-    private ArrayList<Double[]> points;
+    protected ArrayList<Double[]> points;
 
-    private int length;
+    protected int length;
 
-    private GameEntity entity;
+    protected GameEntity entity;
 
-    private Color color;
+    protected Color color;
 
-    private double thickness;
+    protected double thickness;
 
-    private double gravity;
+    protected double gravity;
+
+    protected double xGravity;
 
 
-    private static final int POLY_COUNT = 7;
+    public static final int POLY_COUNT = 7;
 
-    public Fabric(int length, GameEntity entity, Color color, double thickness, double gravity) {
+    public Fabric(int length, GameEntity entity, Color color, double thickness, double gravity, double xGravity) {
         this.thickness = thickness;
         this.entity = entity;
         this.length = length;
+        this.xGravity = xGravity;
         points = new ArrayList<>();
 
         this.gravity = gravity;
@@ -43,6 +46,11 @@ public class Fabric {
 
 
     }
+
+    public ArrayList<Double[]> getPoints() {
+        return points;
+    }
+
 
 
 
@@ -62,14 +70,14 @@ public class Fabric {
                 points.set(i, new Double[]{magX + points.get(i-1)[0], magY + points.get(i-1)[1]});
             }
 
-            points.set(i, new Double[]{points.get(i)[0], points.get(i)[1]+gravity/Settings.getD("fps")});
+            points.set(i, new Double[]{points.get(i)[0]+xGravity/Settings.getD("fps"), points.get(i)[1]+gravity/Settings.getD("fps")});
         }
 
 
 
     }
 
-    private double getSectionLength() {
+    protected double getSectionLength() {
         return (length * 1.0) / points.size();
     }
 
@@ -93,7 +101,7 @@ public class Fabric {
                 double y1= Main.correctUnit(points.get(i-1)[1]-entity.getMap().cameraY)+yOffset;
                 double y2 =  Main.correctUnit(points.get(i)[1]-entity.getMap().cameraY)+yOffset;
 
-                g.setLineWidth(Main.correctUnit(3));
+                g.setLineWidth(Main.correctUnit(thickness));
                 g.strokeLine(x1, y1, x2, y2);
 
             }

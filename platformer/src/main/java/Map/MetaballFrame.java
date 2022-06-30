@@ -46,6 +46,7 @@ public class MetaballFrame extends GameEntity {
 
 
 
+        color = Color.color(0,0,0,0.3);
 
     }
 
@@ -68,8 +69,10 @@ public class MetaballFrame extends GameEntity {
         for (ControlledParticle particle : particles) {
             particle.tick();
 
-            if (particle.getY() > liquid.getY()+SPLASH_HEIGHT_EXTRA) {
-                particle.setRemove();
+            if (isLiquid) {
+                if (particle.getY() > liquid.getY() + SPLASH_HEIGHT_EXTRA) {
+                    particle.setRemove();
+                }
             }
 
             if (particle.isFinished()) {
@@ -79,8 +82,11 @@ public class MetaballFrame extends GameEntity {
 
         }
 
+
         for (ControlledParticle particle : removeParticles) {
-            bubbles.play(SoundLoader.bubble, SoundLoader.getRandomVolume()-0.5, SoundLoader.getRandomSpeed());
+            if (isLiquid) {
+                bubbles.play(SoundLoader.bubble, SoundLoader.getRandomVolume() - 0.5, SoundLoader.getRandomSpeed());
+            }
             particles.remove(particle);
 
 
@@ -104,6 +110,50 @@ public class MetaballFrame extends GameEntity {
 
             particle.setVelX(Main.random.nextDouble(PARTICLE_SPEED*0.15) - (PARTICLE_SPEED / 4)*0.15);
             particle.setVelY(Main.random.nextDouble(PARTICLE_SPEED*Math.abs(entity.getVelY())*0.04) - PARTICLE_SPEED*Math.abs(entity.getVelY())*0.08);
+
+            particles.add(particle);
+        }
+
+
+    }
+
+    public void smoke(double x,double y, GameEntity entity) {
+        this.y = y;
+        this.x = x;
+
+
+
+
+
+            double size = 6+Main.random.nextInt(9);
+            ControlledParticle particle = new ControlledParticle(x+Main.random.nextInt((int)entity.getSizeX()), y+Main.random.nextInt((int)entity.getSizeY()), size, size, ImageLoader.splash, (int)(1.5*Settings.get("fps")), 0.3, false);
+
+            particle.setVelX(Main.random.nextDouble(PARTICLE_SPEED*0.05) - (PARTICLE_SPEED / 4)*0.05);
+            particle.setVelY(-Main.random.nextDouble(PARTICLE_SPEED/10));
+
+            particles.add(particle);
+
+
+
+    }
+
+
+    public void smokePlayer(double x,double y, GameEntity entity) {
+        this.y = y;
+        this.x = x;
+
+        particles = new ArrayList<>();
+
+
+        color = Color.color(0.2, 0, 0.4, 1);
+        for (int i = 0; i < 50; i++) {
+
+
+            double size = 6 + Main.random.nextInt(9);
+            ControlledParticle particle = new ControlledParticle(x + Main.random.nextInt((int) entity.getSizeX()), y + Main.random.nextInt((int) entity.getSizeY()), size, size, ImageLoader.splash, (int) (4 * Settings.get("fps")), 0.3, false);
+
+            particle.setVelX(Main.random.nextDouble(PARTICLE_SPEED * 0.05) - (PARTICLE_SPEED / 4) * 0.05);
+            particle.setVelY(-Main.random.nextDouble(PARTICLE_SPEED / 10));
 
             particles.add(particle);
         }
@@ -158,19 +208,52 @@ public class MetaballFrame extends GameEntity {
 
     public double getSurfaceY(double x) {
 
+        if (!isLiquid) {
+            return this.y+1000;
+        }
 
         if (x > liquid.getX() && liquid.getX() < liquid.getX()+liquid.getSizeX()) {
-            x = x+liquid.getGrid()/2.0;
+
+            x = x + liquid.getGrid();
             double pos = (x-liquid.getX())/liquid.getGrid();
 
-            if (pos > liquid.getWaves().length-1 || pos < 0) {
+            if (pos > liquid.getWaves().length-2 || pos < 1) {
                 return liquid.getSizeY();
             }
 
-            if (pos > liquid.getWaves().length-1 && pos > 0) {
+            if (pos > liquid.getWaves().length-2 && pos > 1) {
                 return liquid.getWaves()[(int)pos-1].getAmplitude()+liquid.getY();
             }
-            return Main.interpolate(liquid.getWaves()[(int)pos].getAmplitude(), liquid.getWaves()[(int)pos+1].getAmplitude(), 1, pos-(int)pos)+liquid.getY();
+
+            double subPos = pos-(int)pos;
+
+
+            if (subPos < 1.0/3) {
+                double value1 = (liquid.getWaves()[(int)pos-1].getAmplitude()
+                        + liquid.getWaves()[(int)pos].getAmplitude())/2;
+
+                double value2 = liquid.getWaves()[(int)pos-1].getAmplitude() / 6 + liquid.getWaves()[(int)pos].getAmplitude() * 5 / 6;
+
+
+                return Main.interpolate(value1, value2, 1.0/3, pos-(int)pos)+liquid.getY();
+            } else if (subPos < 2.0/3) {
+
+                double value1 = liquid.getWaves()[(int)pos-1].getAmplitude() / 6 + liquid.getWaves()[(int)pos].getAmplitude() * 5 / 6;
+
+                double value2 = liquid.getWaves()[(int)pos].getAmplitude() *5.0/ 6 + liquid.getWaves()[(int)pos+1].getAmplitude() / 6;
+
+
+                return Main.interpolate(value1, value2, 1.0/3, pos-(int)pos-1.0/3)+liquid.getY();
+            }else if (subPos < 3.0/3) {
+
+                double value1 = liquid.getWaves()[(int)pos].getAmplitude() *5.0/ 6 + liquid.getWaves()[(int)pos+1].getAmplitude() / 6;
+
+                double value2 = liquid.getWaves()[(int)pos].getAmplitude() *3.0/ 6 + liquid.getWaves()[(int)pos+1].getAmplitude() *3.0/ 6;
+
+
+                return Main.interpolate(value1, value2, 1.0/3, pos-(int)pos-2.0/3)+liquid.getY();
+            }
+
         }
         return this.sizeY;
     }

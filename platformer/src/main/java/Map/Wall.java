@@ -1,9 +1,11 @@
 package Map;
 
 import GameControl.Square;
+import Main.Main;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import Util.ImageLoader;
+import javafx.scene.paint.ImagePattern;
 
 import java.util.ArrayList;
 
@@ -128,7 +130,37 @@ public class Wall extends GameEntity {
     }
 
     public void render(GraphicsContext g) {
-        renderSquare(g);
+        double x = getRenderX();
+        double y = getRenderY();
+        double sizeX = getRenderSizeX();
+        double sizeY = getRenderSizeY();
+
+        g.setFill(new ImagePattern(image, x, y, map.correctUnit(tileSize) * parallax, map.correctUnit(tileSize) * parallax, false));
+
+        ImagePattern sideBricksRight = new ImagePattern(ImageLoader.wallTileRight, x, y, map.correctUnit(tileSize) * parallax, map.correctUnit(tileSize) * parallax, false);
+        ImagePattern sideBricksLeft = new ImagePattern(ImageLoader.wallTileLeft, x, y, map.correctUnit(tileSize) * parallax, map.correctUnit(tileSize) * parallax, false);
+        if (x < 0) {
+            sizeX = sizeX+x;
+            x = 0;
+        }
+        if (x + sizeX > Main.correctUnit(Main.DEFAULT_WIDTH_MAP)) {
+            sizeX = Main.correctUnit(Main.DEFAULT_WIDTH_MAP)-x;
+        }
+
+        g.fillRect(x, y, (int)sizeX+1, (int)sizeY+1);
+
+/*
+        if (type.equals("wall")) {
+            g.setFill(sideBricksRight);
+            g.fillRect(x - Main.correctUnit(tileSize), y, Main.correctUnit(tileSize), (int) sizeY + 1);
+
+            g.setFill(sideBricksLeft);
+            g.fillRect(x + sizeX, y, Main.correctUnit(tileSize), (int) sizeY + 1);
+        }
+
+ */
+
+
 
         boolean hasDrawn = false;
 
@@ -166,7 +198,9 @@ public class Wall extends GameEntity {
                     ,  getRenderY()+map.correctUnit(center[1]*150)+map.correctUnit(50), map.correctUnit(50), map.correctUnit(50));
         }
 
-
+        for (Square shape : hitbox) {
+            shape.render(g, map.cameraX, map.cameraY, (Player) map.player);
+        }
 
 
     }

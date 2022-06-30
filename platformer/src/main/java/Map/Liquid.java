@@ -70,6 +70,10 @@ public class Liquid extends GameEntity {
     private ArrayList<Double[]> splashes = new ArrayList<>();
 
 
+    private double lastLogic = 0;
+    private static final int LOGIC_TIME= 25;
+
+
 
 
 
@@ -131,46 +135,9 @@ public class Liquid extends GameEntity {
 
 
 
-        loadDrip();
-    }
-
-    private void drip() {
-
-            if ((int) (sizeX / grid) + 2 < 1) {
-                return;
-            }
-
-            for (int i = 0; i < waves.length; i++) {
-
-                int actualX = i-1;
-                double currentY = 0;
-                boolean loop = true;
-                while (loop) {
-
-
-
-                    if (map.getActions(new Wall(this.x + actualX * grid, this.y+currentY, map, grid
-                            , this.sizeY+DRIP_SCAN, InputAction.Default, FillType.Image
-                            , 1)).contains(InputAction.Up)) {
-
-                        loop = false;
-                    } else if (currentY > DRIP_LENGTH+Math.random()*50) {
-                        loop = false;
-                    } else{
-                        currentY+=DRIP_SCAN/Settings.getD("fps");
-                    }
-                    if (waves[i].getDripLength() < currentY) {
-                        loop = false;
-
-                    }
-
-                }
-                waves[i].setDripLength(currentY);
-
-            }
-
 
     }
+
 
     private void loadDrip() {
         if ((int) (sizeX / grid) + 2 < 1) {
@@ -180,26 +147,7 @@ public class Liquid extends GameEntity {
         waves = new Wave[(int) (sizeX / grid) + 2];
         for (int i = 0; i < waves.length; i++) {
 
-            int actualX = i-1;
-            double currentY = 0;
-            boolean loop = true;
-            while (loop) {
-
-
-                if (map.getActions(new Wall(this.x + actualX * grid, this.y+currentY, map, grid
-                        , this.sizeY+DRIP_SCAN, InputAction.Default, FillType.Image
-                        , 1)).contains(InputAction.Up)) {
-
-                    loop = false;
-                } else if (currentY > DRIP_LENGTH) {
-                    loop = false;
-                } else {
-                    currentY+=DRIP_SCAN;
-                }
-
-
-            }
-            waves[i] = new Wave(spring, dampening, currentY);
+            waves[i] = new Wave(spring, dampening, 0);
         }
     }
 
@@ -228,28 +176,41 @@ public class Liquid extends GameEntity {
 
     }
 
-    private boolean hasStuck = false;
 
 
 
 
 
         public void tick() {
-
             metaballFrame.tick();
 
-
-            drip();
-
-
-        if (Settings.get("graphics") ==0) {
-            return;
-        }
-
-        tickWaves();
-        tickSplashes();
+            if (System.currentTimeMillis() -lastLogic > LOGIC_TIME) {
+                lastLogic = System.currentTimeMillis();
 
 
+
+
+
+
+
+                if (Settings.get("graphics") == 0) {
+                    return;
+                }
+
+                tickWaves();
+                tickSplashes();
+            }
+
+
+    }
+
+    public static double getFps() {
+        return 1000.0/LOGIC_TIME;
+    }
+
+
+    public static double correctFps(double val) {
+        return (val / getFps()) * Main.BASE_FPS;
     }
 
     private void tickSplashes() {
@@ -258,7 +219,7 @@ public class Liquid extends GameEntity {
 
         for (Double[] splash : splashes) {
             splash[2]++;
-            if (splash[2] / Settings.getD("fps") > SPLASH_TIME) {
+            if (splash[2] / getFps() > SPLASH_TIME) {
 
                 removeSplashes.add(splash);
             }
@@ -274,7 +235,7 @@ public class Liquid extends GameEntity {
         }
 
 
-        for (int j = 0; j < 8; j++) {
+        for (int j = 0; j < 3; j++) {
             for (int i = 0; i < waves.length; i++) {
                 if (i > 0) {
                     leftDeltas[i] = (float) (SPREAD * (waves[i].getAmplitude() - waves[i - 1].getAmplitude()));
@@ -299,22 +260,28 @@ public class Liquid extends GameEntity {
 
 
         if (this.getMainShape().intersect(map.player.getMainShape())) {
+
             if (Math.abs(map.player.getVelX()) > 1 || Math.abs(map.player.getVelY()) > 1) {
 
 
                 if (new Square(this.x, this.y - grid, this.sizeX, WAVE_DEPTH, 2, InputAction.Default).intersect(map.player.getMainShape())) {
 
+                    double grids = (((map.playerX+map.player.getSizeX()) - this.x + 1))/grid - (int)((map.playerX - this.x + 1)/grid);
+                    splash.play(SoundLoader.largeSplash, map.player.getVelY() * 0.5, SoundLoader.getRandomSpeed());
+
                     Wave wave = waves[(int) (((map.playerX - this.x) + 1) / grid) + 1];
 
-                    splash.play(SoundLoader.largeSplash, map.player.getVelY() * 0.5, SoundLoader.getRandomSpeed());
-                    wave.addVelY(map.player.getVelY() * 0.5);
-                    wave.addVelY(Math.abs(map.player.getVelX()) * 0.025);
+
+                    wave.addVelY((map.player.getVelY() * 1));
+                    wave.addVelY((Math.abs(map.player.getVelX()) * 0.5));
+
+
 
                 }
 
                 if (Math.sqrt(Math.pow(map.player.getVelX(), 2) + Math.pow(map.player.getVelY(), 2)) > 1) {
 
-                    if (((System.currentTimeMillis() - lastSplashTime) / Settings.get("fps") > SPLASH_INTERVAL)) {
+                    if (((System.currentTimeMillis() - lastSplashTime) / getFps() > SPLASH_INTERVAL)) {
                         lastSplashTime = System.currentTimeMillis();
 
                         splashes.add(new Double[]{map.playerX + Main.random.nextDouble(map.player.getSizeX()), map.playerY + Main.random.nextDouble(map.player.getSizeY()), 0.0});
@@ -373,7 +340,7 @@ public class Liquid extends GameEntity {
         double y = getRenderY();
 
         for (Double[] splash : splashes) {
-            double currentAnimate = Main.correctUnit(Main.interpolate(0, BUBBLE_WIDTH, SPLASH_TIME * Settings.get("fps"), splash[2]));
+            double currentAnimate = Main.correctUnit(Main.interpolate(0, BUBBLE_WIDTH, SPLASH_TIME * getFps(), splash[2]));
             currentAnimate = Math.min(BUBBLE_WIDTH, currentAnimate);
             g.setLineWidth(Main.correctUnit(1));
             g.setStroke(Color.color(1, 1, 1, 1 - ((currentAnimate) / BUBBLE_WIDTH)));
@@ -417,6 +384,8 @@ public class Liquid extends GameEntity {
                         , x + actualPos * Main.correctUnit(grid) + Main.correctUnit(grid) * 2.0 / 3
                         , (int) (x + actualPos * Main.correctUnit(grid) + Main.correctUnit(grid))
                         , (int) (x + actualPos * Main.correctUnit(grid) + Main.correctUnit(grid))};
+
+
 
 
                 g.fillPolygon(xs, ys, 6);

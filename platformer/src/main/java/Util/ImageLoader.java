@@ -19,65 +19,66 @@ import java.io.IOException;
  */
 public class ImageLoader {
     public static Image sky1 = loadImage("sky1.png", 1920,1080);
-    public static Image stickyWall = loadImage("stickyWall.png", 64);
+    public static Image stickyWall = loadImage("stickyWall.png", Settings.get("resolution"));
 
-    public static Image sandTile = loadImage("sandTile.png", 64);
+    public static Image sandTile = loadImage("sandTile.png", Settings.get("resolution"));
 
+    public static Image wallTileRight = loadImage("wallTileRight.png", Settings.get("resolution")*2);
+    public static Image wallTileLeft = loadImage("wallTileLeft.png", Settings.get("resolution")*2);
+    public static Image wallTile = loadImage("wallTile.png", Settings.get("resolution")*2);
+    public static Image wallTile2 = loadImage("wallTile2.png", Settings.get("resolution"));
+    public static Image wallTile3 = loadImage("wallTile3.png", Settings.get("resolution"));
+    public static Image wallTile4 = loadImage("wallTile4.png", Settings.get("resolution"));
 
-    public static Image wallTile = loadImage("wallTile.png", 64);
-    public static Image wallTile2 = loadImage("wallTile2.png", 64);
-    public static Image wallTile3 = loadImage("wallTile3.png", 64);
-    public static Image wallTile4 = loadImage("wallTile4.png", 64);
+    public static Image pinkWall = loadImage("pinkWall.png", Settings.get("resolution"));
+    public static Image pinkwallTile2 = loadImage("pinkwallTile2.png", Settings.get("resolution"));
+    public static Image pinkwallTile3 = loadImage("pinkwallTile3.png", Settings.get("resolution"));
+    public static Image pinkwallTile4 = loadImage("pinkwallTile4.png", Settings.get("resolution"));
 
-    public static Image pinkWall = loadImage("pinkWall.png", 64);
-    public static Image pinkwallTile2 = loadImage("pinkwallTile2.png", 64);
-    public static Image pinkwallTile3 = loadImage("pinkwallTile3.png", 64);
-    public static Image pinkwallTile4 = loadImage("pinkwallTile4.png", 64);
+    public static Image eye = loadImage("eye.png", Settings.get("resolution"));
+    public static Image eyeClosed = loadImage("eyeClosed.png", Settings.get("resolution"));
+    public static Image player = loadImage("default.png", Settings.get("resolution"));
+    public static Image particle = loadImage("particle.png", Settings.get("resolution"));
 
+    public static Image water = loadImage("water.png", Settings.get("resolution"));
 
+    public static Image speed = loadImage("speed.png", Settings.get("resolution"));
+    public static Image enemy = loadImage("enemy.png", Settings.get("resolution"));
 
-    public static Image player = loadImage("default.png", 64);
-    public static Image particle = loadImage("particle.png", 64);
-
-    public static Image water = loadImage("water.png", 64);
-
-    public static Image speed = loadImage("speed.png", 64);
-    public static Image enemy = loadImage("enemy.png", 64);
-
-    public static Image key = loadImage("key.png", 64);
-    public static Image gate = loadImage("gateTile.png", 64);
-    public static Image lock = loadImage("lock.png", 64);
-
-
-    public static Image trophy = loadImage("trophy.png", 64);
-    public static Image flag = loadImage("flag.png", 64);
-    public static Image checkpoint = loadImage("checkpoint.png", 64);
-
-    public static Image eraser = loadImage("eraser.png", 64);
-    public static Image dimension = loadImage("dimension.png", 64);
-
-    public static Image cursor = loadImage("cursor.png", 64);
+    public static Image key = loadImage("key.png", Settings.get("resolution"));
+    public static Image gate = loadImage("gateTile.png", Settings.get("resolution"));
+    public static Image lock = loadImage("lock.png", Settings.get("resolution"));
 
 
-    public static Image corner = loadImage("corner.png", 64);
+    public static Image trophy = loadImage("trophy.png", Settings.get("resolution"));
+    public static Image flag = loadImage("flag.png", Settings.get("resolution"));
+    public static Image checkpoint = loadImage("checkpoint.png", Settings.get("resolution"));
 
-    public static Image splash = loadImage("splash.png", 64);
+    public static Image eraser = loadImage("eraser.png", Settings.get("resolution"));
+    public static Image dimension = loadImage("dimension.png", Settings.get("resolution"));
 
-    public static Image lava = loadImage("lava.png", 64);
+    public static Image cursor = loadImage("cursor.png", Settings.get("resolution"));
 
-    public static Image shurikan = loadImage("shurikan.png", 64);
 
-    public static Image gear = loadImage("gear.png", 64);
-    public static Image plate = loadImage("plate.png", 64);
-    public static Image ninjaRight = loadImage("ninjaRight.png", 64);
-    public static Image ninjaMid = loadImage("ninjaMid.png", 64);
-    public static Image ninjaLeft = loadImage("ninjaLeft.png", 64);
-    public static Image candle = loadImage("candle.png", 64);
-    public static Image candleNot = loadImage("candleNot.png", 64);
+    public static Image corner = loadImage("corner.png", Settings.get("resolution"));
 
-    public static Image torso1 = loadImage("torso1.png", 64);
-    public static Image legs1 = loadImage("legs1.png", 64);
-    public static Image head1 = loadImage("head1.png", 64);
+    public static Image splash = loadImage("splash.png", Settings.get("resolution"));
+
+    public static Image lava = loadImage("lava.png", Settings.get("resolution"));
+
+    public static Image shurikan = loadImage("shurikan.png", Settings.get("resolution"));
+
+    public static Image gear = loadImage("gear.png", Settings.get("resolution"));
+    public static Image plate = loadImage("plate.png", Settings.get("resolution"));
+    public static Image ninjaRight = loadImage("ninjaRight.png", Settings.get("resolution"));
+    public static Image ninjaMid = loadImage("ninjaMid.png", Settings.get("resolution"));
+    public static Image ninjaLeft = loadImage("ninjaLeft.png", Settings.get("resolution"));
+    public static Image candle = loadImage("candle.png", Settings.get("resolution"));
+    public static Image candleNot = loadImage("candleNot.png", Settings.get("resolution"));
+
+    public static Image torso1 = loadImage("torso1.png", Settings.get("resolution"));
+    public static Image legs1 = loadImage("legs1.png", Settings.get("resolution"));
+    public static Image head1 = loadImage("head1.png", Settings.get("resolution"));
     /**
      * Create an input stream to read images.
      * @param fileName File name.

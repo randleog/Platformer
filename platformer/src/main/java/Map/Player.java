@@ -43,11 +43,11 @@ public class Player extends GameEntity {
     private int shurikans;
 
 
-
     private boolean hooking = false;
 
     private double lastTurn = 0;
 
+    private MetaballFrame metaballFrame;
 
 
     public Player(double x, double y, Map map) {
@@ -57,7 +57,7 @@ public class Player extends GameEntity {
         this.sizeY = 50;
 
 
-
+        metaballFrame = new MetaballFrame(x, y, map, 1, 1);
 
         map.player = this;
         canJump = false;
@@ -71,11 +71,10 @@ public class Player extends GameEntity {
 
         costume = new Costume(ImageLoader.ninjaLeft, ImageLoader.ninjaRight, this);
 
-        costume.addFabric(new Fabric(25, this, Color.color(0.75,0,1), 2, 150));
-        costume.addFabric(new Fabric(40, this,Color.color(0.5,0,1),2, 75));
+        costume.addFabric(new Fabric(25, this, Color.color(0.75, 0, 1), 3, 150, 0));
+        costume.addFabric(new Fabric(40, this, Color.color(0.5, 0, 1), 3, 75, 0));
 
     }
-
 
 
     @Override
@@ -89,7 +88,7 @@ public class Player extends GameEntity {
         double force = map.getGravity();
 
         if (Main.isKeyDown(InputAction.Down)) {
-            force = force*CROUCH_GRAVITY  ;
+            force = force * CROUCH_GRAVITY;
         }
 
         if (clinging) {
@@ -97,16 +96,18 @@ public class Player extends GameEntity {
         }
 
         if (swimming) {
-            force = force*SWIMMING_GRAVITY;
+            force = force * SWIMMING_GRAVITY;
         }
 
-        velY+=force/ Settings.getD("fps");
+        velY += force / Settings.getD("fps");
 
 
     }
 
 
     public void tick() {
+
+        metaballFrame.tick();
         costume.tick();
         if (map.isOutOfBounds(this.x, this.y, this.sizeX, this.sizeY)) {
             die();
@@ -121,8 +122,8 @@ public class Player extends GameEntity {
         jumpCollision();
 
 
-        map.cameraX = x-700;
-        map.cameraY = y-500;
+        map.cameraX = x - 700;
+        map.cameraY = y - 500;
         //  x = startX;
 
         if (running) {
@@ -137,13 +138,7 @@ public class Player extends GameEntity {
         map.playerY = y;
 
 
-
-
-
-
-
     }
-
 
 
     @Override
@@ -170,7 +165,7 @@ public class Player extends GameEntity {
     public double getVelStretchX() {
 
         if (clinging) {
-            return (Math.sqrt(Math.abs(velX)) - Math.sqrt(Math.abs(velY))) * SQUASH_FACTOR-Math.sqrt(wallCling)*SQUASH_FACTOR;
+            return (Math.sqrt(Math.abs(velX)) - Math.sqrt(Math.abs(velY))) * SQUASH_FACTOR - Math.sqrt(wallCling) * SQUASH_FACTOR;
         } else {
             return super.getVelStretchX();
         }
@@ -191,7 +186,7 @@ public class Player extends GameEntity {
     public double getRenderY() {
 
         if (clinging) {
-            return map.correctUnit(wallHeight)- map.correctUnit(map.cameraY * parallax);
+            return map.correctUnit(wallHeight) - map.correctUnit(map.cameraY * parallax);
         }
 
         double y = map.correctUnit(this.y - getVelStretchY()) - map.correctUnit(map.cameraY * parallax);
@@ -206,7 +201,7 @@ public class Player extends GameEntity {
         double sizeY = map.correctUnit(getSizeY() + getVelStretchY() * 2);
 
         if (clinging) {
-            sizeY = sizeY+map.correctUnit(wallCling);
+            sizeY = sizeY + map.correctUnit(wallCling);
         }
         return sizeY;
     }
@@ -217,6 +212,12 @@ public class Player extends GameEntity {
 
 
     private static final double SHURIKAN_SPEED = 12;
+
+
+    public void smoke() {
+
+        metaballFrame.smokePlayer(this.x, this.y, this);
+    }
 
     private void inputActions() {
 
@@ -245,7 +246,6 @@ public class Player extends GameEntity {
         running = Main.isKeyDown(InputAction.Sprint);
 
 
-
         double baseAccel = 1;
         if (running) {
             baseAccel = baseAccel * RUNNING_BOOST;
@@ -272,7 +272,6 @@ public class Player extends GameEntity {
                 velY = -JUMP_SPEED;
 
 
-
             }
         } else if (canLeftJump) {
             if (Main.isKeyDown(InputAction.Up)) {
@@ -285,12 +284,12 @@ public class Player extends GameEntity {
         } else if (canRightJump) {
             if (Main.isKeyDown(InputAction.Up)) {
                 velX = JUMP_SPEED * SIDE_BOOST * baseAccel;
-                velY = -JUMP_SPEED ;
+                velY = -JUMP_SPEED;
 
                 hasJumped = true;
 
             }
-        }else if (canCornerJump) {
+        } else if (canCornerJump) {
             if (!Main.isKeyDown(InputAction.Down)) {
                 currentDrag = Map.GROUND_DRAG;
             }
@@ -298,8 +297,8 @@ public class Player extends GameEntity {
 
 
                 if (Main.isKeyDown(InputAction.Down)) {
-                    velX = -Math.cos(cornerRotation) *JUMP_SPEED * SIDE_BOOST * baseAccel;
-                    velY = Math.sin(cornerRotation) *JUMP_SPEED * SIDE_BOOST * baseAccel;
+                    velX = -Math.cos(cornerRotation) * JUMP_SPEED * SIDE_BOOST * baseAccel;
+                    velY = Math.sin(cornerRotation) * JUMP_SPEED * SIDE_BOOST * baseAccel;
                 } else {
                     velY = -JUMP_SPEED;
                 }
@@ -311,14 +310,13 @@ public class Player extends GameEntity {
         }
 
         if (stuck) {
-            currentDrag = currentDrag*STUCK_FACTOR;
+            currentDrag = currentDrag * STUCK_FACTOR;
         }
-
 
 
         if (hasJumped) {
             Main.deactivateKey(InputAction.Up);
-       //     Util.SoundLoader.playSound(Util.SoundLoader.fall, 1, 0, Util.SoundLoader.getRandomSpeed()*1.1);
+            //     Util.SoundLoader.playSound(Util.SoundLoader.fall, 1, 0, Util.SoundLoader.getRandomSpeed()*1.1);
 
 
             Stats.add("total Jumps", 1);
@@ -366,9 +364,10 @@ public class Player extends GameEntity {
     public void render(GraphicsContext g) {
 
 
-      //  if (System.currentTimeMillis()-lastTurn < ANIMATION_TIME) {
+
+        //  if (System.currentTimeMillis()-lastTurn < ANIMATION_TIME) {
         //    image = ImageLoader.ninjaMid;
-         if (facingRight) {
+        if (facingRight) {
             image = ImageLoader.ninjaRight;
         } else {
             image = ImageLoader.ninjaLeft;
@@ -376,52 +375,50 @@ public class Player extends GameEntity {
         if (cornerRotation != 0) {
 
             g.save();
-            g.translate(getRenderX()+map.correctUnit(sizeX/2),getRenderY()+map.correctUnit(sizeY/2));
+            g.translate(getRenderX() + map.correctUnit(sizeX / 2), getRenderY() + map.correctUnit(sizeY / 2));
             g.rotate(Math.toDegrees(getRenderRotation()));
             costume.renderStill(g, facingRight);
 
-          //  renderStill(g);
+            //  renderStill(g);
             g.restore();
 
         } else {
 
-          //  renderSquare(g);
+            //  renderSquare(g);
 
             if (facingRight) {
-                costume.render(g, facingRight, getRenderX(), getRenderY()+Main.correctUnit(11));
+                costume.render(g, facingRight, getRenderX(), getRenderY() + Main.correctUnit(11));
             } else {
-                costume.render(g, facingRight, getRenderX()+getRenderSizeX(), getRenderY()+Main.correctUnit(11));
+                costume.render(g, facingRight, getRenderX() + getRenderSizeX(), getRenderY() + Main.correctUnit(11));
             }
 
 
         }
 
         if (health < maxHealth) {
-            g.setFill(Color.color(0.8,0.2,0.2));
-            g.fillRect(getRenderX(),getRenderY()-Main.correctUnit(10), (Main.correctUnit(sizeX*getHealthPercentage())), Main.correctUnit(5));
+            g.setFill(Color.color(0.8, 0.2, 0.2));
+            g.fillRect(getRenderX(), getRenderY() - Main.correctUnit(10), (Main.correctUnit(sizeX * getHealthPercentage())), Main.correctUnit(5));
         }
 
-      //  body[0].render(g, getRenderX(), getRenderY(), Main.Main.correctUnit(this.sizeX));
-      //  g.drawImage(Util.ImageLoader.legs1, getRenderX(), getRenderY()+Main.Main.correctUnit(25), Main.Main.correctUnit(this.sizeX*2), Main.Main.correctUnit(this.sizeY*2));
-       // g.drawImage(Util.ImageLoader.torso1, getRenderX(), getRenderY(), Main.Main.correctUnit(this.sizeX*2), Main.Main.correctUnit(this.sizeY*2));
-     //   g.drawImage(Util.ImageLoader.head1, getRenderX(), getRenderY()-Main.Main.correctUnit(25), Main.Main.correctUnit(this.sizeX*2), Main.Main.correctUnit(this.sizeY*2));
+        //  body[0].render(g, getRenderX(), getRenderY(), Main.Main.correctUnit(this.sizeX));
+        //  g.drawImage(Util.ImageLoader.legs1, getRenderX(), getRenderY()+Main.Main.correctUnit(25), Main.Main.correctUnit(this.sizeX*2), Main.Main.correctUnit(this.sizeY*2));
+        // g.drawImage(Util.ImageLoader.torso1, getRenderX(), getRenderY(), Main.Main.correctUnit(this.sizeX*2), Main.Main.correctUnit(this.sizeY*2));
+        //   g.drawImage(Util.ImageLoader.head1, getRenderX(), getRenderY()-Main.Main.correctUnit(25), Main.Main.correctUnit(this.sizeX*2), Main.Main.correctUnit(this.sizeY*2));
 
 
         getMainShape().render(g, map.cameraX, map.cameraY, this);
 
 
         if (Settings.get("debug") > 0) {
-            double velocity =Main.getVector(this.velX, this.velY);
+            double velocity = Main.getVector(this.velX, this.velY);
             if (velocity > Stats.get("fastest movement speed")) {
                 Stats.put("fastest movement speed", (int) velocity);
             }
-            g.fillText((int)velocity + " mps", getRenderX(), getRenderY());
+            g.fillText((int) velocity + " mps", getRenderX(), getRenderY());
         }
 
-
-
+        metaballFrame.render(g);
     }
-
 
 
 }

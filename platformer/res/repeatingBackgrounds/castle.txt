@@ -1,0 +1,5 @@
+castle5 0.04
+castle4 0.05
+castle3 0.07
+castle2 0.12
+castle1 0.2

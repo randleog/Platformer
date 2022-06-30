@@ -44,6 +44,9 @@ public class DimensionPortal extends GameEntity {
         if (this.getMainShape().intersect(map.player.getMainShape())) {
             map.trance();
             map.movePlayer(tpX, tpY);
+            if (map.player instanceof  Player) {
+                ((Player) map.player).smoke();
+            }
 
 
 

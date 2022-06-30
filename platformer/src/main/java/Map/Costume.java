@@ -15,8 +15,22 @@ public class Costume {
 
     private GameEntity entity;
 
+    private boolean noImage = false;
+
     public Costume(Image left, Image right, GameEntity entity) {
 
+        this.entity = entity;
+
+        this.right = right;
+        this.left = left;
+
+        fabrics = new ArrayList<>();
+
+    }
+
+    public Costume(GameEntity entity) {
+
+        noImage = true;
         this.entity = entity;
 
         this.right = right;
@@ -47,27 +61,33 @@ public class Costume {
         double sizeX = entity.getRenderSizeX();
         double sizeY = entity.getRenderSizeY();
 
-        if (facingRight) {
-            g.drawImage(right, x, y, sizeX, sizeY);
-        } else {
-            g.drawImage(left, x, y, sizeX, sizeY);
+        if (!noImage) {
+            if (facingRight) {
+                g.drawImage(right, x, y, sizeX, sizeY);
+            } else {
+                g.drawImage(left, x, y, sizeX, sizeY);
+            }
         }
 
-
-        for (Fabric fabric :fabrics) {
+        for (Fabric fabric : fabrics) {
             fabric.render(g, facingRight, xs, ys);
         }
     }
+
 
     public void renderStill(GraphicsContext g, boolean facingRight) {
 
 
         double sizeX = entity.getRenderSizeX();
         double sizeY = entity.getRenderSizeY();
-        if (facingRight) {
-            g.drawImage(right, -sizeX / 2, -sizeY / 2, sizeX, sizeY);
-        } else {
-            g.drawImage(left, -sizeX / 2, -sizeY / 2, sizeX, sizeY);
+
+
+        if (!noImage) {
+            if (facingRight) {
+                g.drawImage(right, -sizeX / 2, -sizeY / 2, sizeX, sizeY);
+            } else {
+                g.drawImage(left, -sizeX / 2, -sizeY / 2, sizeX, sizeY);
+            }
         }
 
 

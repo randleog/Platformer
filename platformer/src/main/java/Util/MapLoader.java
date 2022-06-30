@@ -142,6 +142,14 @@ public class MapLoader {
                         map.addEntity(new BasicEnemy(x, y, map, runner, jumper));
                         break;
                     }
+                    case "spider" -> {
+                        int x = Integer.parseInt(line[1]);
+                        int y = Integer.parseInt(line[2]);
+                        boolean runner = Boolean.parseBoolean(line[3]);
+                        boolean jumper = Boolean.parseBoolean(line[4]);
+                        map.addEntity(new Spider(x, y, map, runner, jumper));
+                        break;
+                    }
                     case "hookable" -> {
                         int x = Integer.parseInt(line[1]);
                         int y = Integer.parseInt(line[2]);
@@ -322,12 +330,12 @@ public class MapLoader {
 
 
     public static final Liquid getWater(double x, double y, Map map, double sizeX, double sizeY) {
-        return new Liquid(x, y, map, sizeX, sizeY, InputAction.Swim, Color.color(0.4, 0.8, 1, 0.3), 50, 0.0015, 0.01, 0.03, "water");
+        return new Liquid(x, y, map, sizeX, sizeY, InputAction.Swim, Color.color(0.4, 0.8, 1, 0.3), 50, 0.02, 0.015, 0.07, "water");
     }
 
 
     public static final Liquid getLava(double x, double y, Map map, double sizeX, double sizeY) {
-        return new Liquid(x, y, map, sizeX, sizeY, InputAction.Lava, Color.color(1, 0.3, 0, 0.8), 50, 0.003, 0.05, 0.15, "lava");
+        return new Liquid(x, y, map, sizeX, sizeY, InputAction.Lava, Color.color(1, 0.3, 0, 0.8), 50, 0.01, 0.01, 0.1, "lava");
     }
 
 

@@ -155,7 +155,7 @@ public class Main extends Application {
     public static boolean hasFinished = true;
 
 
-    private static final double BASE_FPS = 144;
+    public static final double BASE_FPS = 144;
 
     private static final double zoom = 1;
 
@@ -404,7 +404,7 @@ public class Main extends Application {
     private static int count = 0;
 
     public static void resetTimeline() {
-     //   canvas.getGraphicsContext2D().setImageSmoothing(Settings.get("image smoothing") > 0);
+        canvas.getGraphicsContext2D().setImageSmoothing(Settings.get("image smoothing") > 0);
         loop.stop();
 
 

@@ -1,6 +1,6 @@
-total_Deaths 262
+total_Deaths 1435
 total_Resets 0
-total_Time 1024055
-total_Jumps 33091
-total_Finishes 273
+total_Time 1563438
+total_Jumps 41217
+total_Finishes 319
 fastest_movement_speed 35

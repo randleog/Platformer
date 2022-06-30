@@ -123,7 +123,7 @@ public class Map {
 
     private static final int DAY_LENGTH = 5;//300;
 
-    private int countingFactor = 1;
+    private int countingFactor = 2;
 
     private ArrayList<Integer[]> frames = new ArrayList<>();
 
@@ -169,6 +169,8 @@ public class Map {
         frames.add(new Integer[]{Settings.get("fps")/countingFactor, 0});
 
         initialiseButtons();
+
+
     }
 
 
@@ -468,6 +470,9 @@ public class Map {
 
     private DimensionPortal lastPortal;
 
+
+    private HashMap<InputAction, ArrayList<Square>> actions;
+
     private void editorControls() {
 
 
@@ -524,7 +529,7 @@ public class Map {
                     break;
                 case "shurikan":
                     Shurikan shurikan = new Shurikan(Main.reverseUnit(Main.mouseX) + cameraX, Main.reverseUnit(Main.mouseY) + cameraY, this);
-                    shurikan.setVelY(1);
+                    shurikan.setVelY(7);
                     toolDisplay = shurikan;
                     break;
                 case "portal":
@@ -884,6 +889,9 @@ public class Map {
         }
     }
 
+
+
+
     private void erase() {
     eraserWall();
     eraserEntities();
@@ -898,6 +906,10 @@ public class Map {
 
 
     public void tick() {
+
+
+
+
 
         if (Menu.currentMenu.equals("editor")) {
             editorControls();
@@ -1032,7 +1044,9 @@ public class Map {
 
 
         for (GameEntity entity : particles) {
-            entity.render(g);
+            if (screenInersect(entity.getMainShape())) {
+                entity.render(g);
+            }
         }
         for (GameEntity entity : entities) {
             if (screenInersect(entity.getMainShape())) {
@@ -1048,7 +1062,9 @@ public class Map {
         }
 
         for (GameEntity entity : lighting) {
-            entity.render(g);
+            if (screenInersect(entity.getMainShape())) {
+                entity.render(g);
+            }
         }
 
 
@@ -1246,6 +1262,7 @@ public class Map {
 
 
     public ArrayList<InputAction> getActions(GameEntity entity) {
+       // System.out.println(entity);
         ArrayList<InputAction> actions = new ArrayList<>();
 
         for (GameEntity currentEntity : entities) {

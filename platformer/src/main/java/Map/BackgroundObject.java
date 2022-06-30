@@ -4,8 +4,7 @@ import GameControl.Square;
 import Util.ImageLoader;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.*;
 import Main.Main;
 
 
@@ -74,13 +73,41 @@ public class BackgroundObject {
         double x = Main.correctUnit(this.x-map.cameraX* parallax);
         double y = Main.correctUnit(this.y-map.cameraY* parallax);
 
-        g.setFill(new ImagePattern(image, x, y, Main.correctUnit(50) * parallax
-                , map.correctUnit(50) * parallax, false));
+        double sizeX = Main.correctUnit(this.sizeX);
+        double sizeY = Main.correctUnit(this.sizeY);
 
-        g.fillRect(x, y, Main.correctUnit(sizeX), Main.correctUnit(sizeY));
+
+
+
+        g.setFill(new ImagePattern(image, x, y, Main.correctUnit(40) * parallax
+                , map.correctUnit(40) * parallax, false));
+
+
+
+
+
+        g.fillRect(x, y, (int)sizeX+1, (int)sizeY+1);
 
         g.setFill(Color.color(0,0,0,0.5));
-        g.fillRect(x, y, Main.correctUnit(sizeX), Main.correctUnit(sizeY));
+
+
+
+
+        g.fillRect(x, y, (int)sizeX+1, (int)sizeY+1);
+
+
+        Color light = Color.color(0, 0, 0, 0.5);
+        Color fade = Color.color(0, 0, 0, 0);
+
+
+        //  Stop[] stops = new Stop[] { new Stop(0, fade),new Stop(0.5, light),new Stop(1, fade)};
+        Stop[] stops = new Stop[]{new Stop(0, light), new Stop(1, fade)};
+        LinearGradient fadeup = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops);
+        g.setFill(fadeup);
+        g.fillRect(x, y , sizeX, Main.correctUnit(20));
+
+
+
     }
 
     public String toString() {

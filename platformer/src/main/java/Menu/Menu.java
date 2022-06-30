@@ -93,6 +93,7 @@ public class Menu {
 
         Main.lastMap = null;
         loadMenu(newMenu);
+        System.out.println("loading lmao");
 
         currentlyMenu = true;
         setCurrentMenu(newMenu);
@@ -121,7 +122,7 @@ public class Menu {
     public static void switchMenu(String newMenu) {
 
 
-
+        loadMenu(newMenu);
         if (currentMenu.equals("editor") && Settings.getStr("back").equals("save+exit")) {
             MapLoader.saveMap(Main.currentMap, false);
         }
@@ -319,6 +320,8 @@ int nonIntLevels = 0;
         loadStatsMenu();
         loadSettingsMenu();
         loadVictoryMenu();
+
+        loadVideoSettingsMenu();
         loadName();
         loadReplaySettingsMenu();
 
@@ -346,6 +349,7 @@ int nonIntLevels = 0;
 
         switch (name) {
             case "main":
+                System.out.println("yes load main");
                 loadMain();
                 break;
             case "name":
@@ -372,6 +376,9 @@ int nonIntLevels = 0;
             case "sound settings":
                 loadSoundSettingsMenu();
                 break;
+            case "video settings":
+                loadVideoSettingsMenu();
+                break;
             case "pre editor":
                 loadPreEditor();
                 break;
@@ -391,8 +398,7 @@ int nonIntLevels = 0;
         ArrayList<MenuElement> elements = new ArrayList<>();
         elements.add(new MenuMap("main\\3"));
 
-        elements.add(new MenuSlider(BUTTON_GAP, 100, 500, 100, "fps", "fps", 300, 60, false, Main.monitorFPS));
-
+        elements.add(new SwitchMenuButton(BUTTON_GAP, 100, BUTTON_WIDTH, BUTTON_HEIGHT, "video settings", "video settings"));
 
         elements.add(new SwitchMenuButton(BUTTON_GAP, 550, BUTTON_WIDTH, BUTTON_HEIGHT, "replay settings", "replay settings"));
         elements.add(new SwitchMenuButton(BUTTON_GAP * 2 + BUTTON_WIDTH, 550, BUTTON_WIDTH, BUTTON_HEIGHT
@@ -400,19 +406,33 @@ int nonIntLevels = 0;
 
         elements.add(new ToggleButton(BUTTON_GAP, 250, BUTTON_WIDTH, BUTTON_HEIGHT, "enable debug", "disable debug", "debug"));
 
-        elements.add(new ToggleButton(BUTTON_GAP * 2 + BUTTON_WIDTH, 250, BUTTON_WIDTH, BUTTON_HEIGHT, "enable reduced motion", "disable reduced motion", "reduced motion").getAnimateRight(true));
-
         elements.add(new ToggleButton(BUTTON_GAP, 400, BUTTON_WIDTH, BUTTON_HEIGHT, "enable full speedrun", "disable full speedrun", "full speedrun"));
 
-        elements.add(new ToggleButton(BUTTON_GAP*2+BUTTON_WIDTH, 400, BUTTON_WIDTH, BUTTON_HEIGHT, "enable image smoothing", "disable image smoothing", "image smoothing"));
-
-        elements.add(new MenuSlider(BUTTON_GAP+550, 100, 500, 100, "graphics", "graphics", GRAPHICS_MAX, 0, false, Main.monitorFPS));
 
         elements.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "main"));
         elements.add(new MenuText(900, 100, "settings: ", 55, "Title"));
         elements.add(new MenuTransition(NORMAL_TRANSITION_TIME));
 
         menus.put("settings", new Menu(elements, "main"));
+    }
+
+    private static void loadVideoSettingsMenu() {
+        ArrayList<MenuElement> elements = new ArrayList<>();
+        elements.add(new MenuMap("main\\3"));
+
+        elements.add(new MenuSlider(BUTTON_GAP, 100, 500, 100, "fps", "fps", 300, 60, false, Main.monitorFPS));
+        elements.add(new MenuSlider(BUTTON_GAP+550, 100, 500, 100, "graphics", "graphics", GRAPHICS_MAX, 0, false, Main.monitorFPS));
+
+        elements.add(new MenuSlider(BUTTON_GAP+550, 200, 500, 100, "resolution", "resolution", 128, 2, false, 64));
+
+        elements.add(new ToggleButton(BUTTON_GAP*2+BUTTON_WIDTH, 400, BUTTON_WIDTH, BUTTON_HEIGHT, "enable image smoothing", "disable image smoothing", "image smoothing"));
+        elements.add(new ToggleButton(BUTTON_GAP * 2 + BUTTON_WIDTH, 250, BUTTON_WIDTH, BUTTON_HEIGHT, "enable reduced motion", "disable reduced motion", "reduced motion").getAnimateRight(true));
+
+        elements.add(new SwitchMenuButton(BUTTON_GAP, 800, BUTTON_WIDTH, BUTTON_HEIGHT, "back", "settings"));
+        elements.add(new MenuText(900, 100, "video settings: ", 55, "Title"));
+        elements.add(new MenuTransition(NORMAL_TRANSITION_TIME));
+
+        menus.put("video settings", new Menu(elements, "settings"));
     }
 
     private static void loadSoundSettingsMenu() {

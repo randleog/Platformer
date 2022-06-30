@@ -216,6 +216,7 @@ public abstract class GameEntity {
     public void setImage(Image image) {
         this.image = image;
     }
+
     public boolean isPlayer() {
         return false;
     }
@@ -326,6 +327,11 @@ public abstract class GameEntity {
     public Square getShape(Square entity) {
         Square lastShape = null;
 
+
+        if (!(entity.intersect(this.getMainShape()))) {
+            return lastShape;
+        }
+
         for (Square shape : hitbox) {
             if (InputAction.isUnactionable((shape.getAction()))) {
                 lastShape = shape;
@@ -381,8 +387,14 @@ public abstract class GameEntity {
         return map;
     }
 
+
     protected void jumpCollision() {
 
+
+        this.x = this.x - WALL_CLING_RADIUS;
+        this.y = this.y - WALL_CLING_RADIUS;
+        this.sizeX = this.sizeX + WALL_CLING_RADIUS * 2;
+        this.sizeY = this.sizeY + WALL_CLING_RADIUS * 2;
 
 
         ArrayList<InputAction> actions = map.getActions(this);
@@ -398,7 +410,6 @@ public abstract class GameEntity {
                 health -= (LAVA_DAMAGE * 1.0) / Settings.get("fps");
                 // System.out.println("what in the fuck do you mean");
             }
-
         } else {
             if (swimming) {
                 map.splash(this);
@@ -406,48 +417,41 @@ public abstract class GameEntity {
             swimming = false;
         }
 
-
-        x += WALL_CLING_RADIUS;
-        if (map.getActions(this).contains(InputAction.Left)) {
+        if (actions.contains(InputAction.Left)) {
             canLeftJump = true;
             velX += WALL_CLING_FORCE / Settings.getD("fps");
-        } else if (map.getActions(this).contains(InputAction.StickyLeft)) {
+        } else if (actions.contains(InputAction.StickyLeft)) {
             stuck = true;
 
 
         }
 
-        x -= WALL_CLING_RADIUS * 2;
 
-        if (map.getActions(this).contains(InputAction.Right)) {
+        if (actions.contains(InputAction.Right)) {
             canRightJump = true;
             velX += -WALL_CLING_FORCE / Settings.getD("fps");
-        } else if (map.getActions(this).contains(InputAction.StickyRight)) {
+        } else if (actions.contains(InputAction.StickyRight)) {
             stuck = true;
-
-
         }
 
 
-        x += WALL_CLING_RADIUS;
-
-
-        y += WALL_CLING_RADIUS;
-        if (map.getActions(this).contains(InputAction.Up)) {
+        if (actions.contains(InputAction.Up)) {
             canJump = true;
 
 
-        } else if (map.getActions(this).contains(InputAction.StickyUp)) {
+        } else if (actions.contains(InputAction.StickyUp)) {
             canJump = true;
             stuck = true;
 
         }
-
-
-        y -= WALL_CLING_RADIUS;
-
 
         checkDeath();
+
+
+        this.x = this.x + WALL_CLING_RADIUS;
+        this.y = this.y + WALL_CLING_RADIUS;
+        this.sizeX = this.sizeX - WALL_CLING_RADIUS * 2;
+        this.sizeY = this.sizeY - WALL_CLING_RADIUS * 2;
 
     }
 
@@ -517,7 +521,7 @@ public abstract class GameEntity {
                     if (hasGoneRight) {
 
                         loop = false;
-                       // intersectSquareUp(entity);
+                        // intersectSquareUp(entity);
                     } else {
                         canLeftJump = true;
 
@@ -754,10 +758,12 @@ public abstract class GameEntity {
     protected void renderSquare(GraphicsContext g) {
         if (!(fillType == FillType.Nothing)) {
 
+
             double x = getRenderX();
             double y = getRenderY();
             double sizeX = getRenderSizeX();
             double sizeY = getRenderSizeY();
+
 
 
             if (fillType == FillType.Image) {
@@ -768,7 +774,25 @@ public abstract class GameEntity {
                 } else if (fillType == FillType.Tile) {
                     g.setFill(new ImagePattern(image, x, y, map.correctUnit(tileSize) * parallax, map.correctUnit(tileSize) * parallax, false));
                 }
-                g.fillRect(x, y, sizeX, sizeY);
+
+                if (x < 0) {
+                    sizeX = sizeX+x;
+                    x = 0;
+                }
+                if (x + sizeX > Main.correctUnit(Main.DEFAULT_WIDTH_MAP)) {
+                    sizeX = Main.correctUnit(Main.DEFAULT_WIDTH_MAP)-x;
+                }
+
+                g.fillRect(x, y, (int)sizeX+1, (int)sizeY+1);
+
+
+
+
+
+
+
+
+
             }
         }
         for (Square shape : hitbox) {
@@ -788,19 +812,18 @@ public abstract class GameEntity {
     }
 
 
-
     protected void renderShadow(GraphicsContext g) {
         //    renderSquare(g);
 
         g.save();
 
         g.setGlobalBlendMode(BlendMode.MULTIPLY);
-        Color light = Color.color(0.3,0.2,0.6, 1);
-        Color fade = Color.color(0,0,0, 0);
+        Color light = Color.color(0.3, 0.2, 0.6, 1);
+        Color fade = Color.color(0, 0, 0, 0);
 
 
         //  Stop[] stops = new Stop[] { new Stop(0, fade),new Stop(0.5, light),new Stop(1, fade)};
-        Stop[] stops = new Stop[] {new Stop(0, light),new Stop(1, fade)};
+        Stop[] stops = new Stop[]{new Stop(0, light), new Stop(1, fade)};
         RadialGradient fadeLight = new RadialGradient(0, 0, 0.5, 0.5, 0.5, true, CycleMethod.NO_CYCLE, stops);
         g.setFill(fadeLight);
 

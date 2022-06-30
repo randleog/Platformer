@@ -229,6 +229,7 @@ public class ReplayPlayer extends GameEntity {
 
         if (Settings.getStr("focus").equals(type)) {
 
+            System.out.println("weay");
             alignMap();
         }
 
@@ -255,10 +256,11 @@ public class ReplayPlayer extends GameEntity {
             g.save();
             g.setGlobalAlpha(focus);
             renderSquare(g);
+            g.restore();
 
 
             if (Menu.currentlyMenu) {
-                g.restore();
+               // g.restore();
                 return;
             }
 
@@ -279,7 +281,7 @@ public class ReplayPlayer extends GameEntity {
             g.setFill(Color.WHITE);
             g.setFont(new Font(Settings.FONT, Main.correctUnit(20)));
             g.fillText(type, getRenderX(), getRenderY());
-            g.restore();
+       //     g.restore();
 
         }
 

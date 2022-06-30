@@ -54,6 +54,10 @@ public class Light extends GameEntity {
         RadialGradient fadeLight = new RadialGradient(0, 0, 0.5, 0.5, 0.5, true, CycleMethod.NO_CYCLE, stops);
         g.setFill(fadeLight);
 
+
+
+
+
         g.fillRect(getRenderX(), getRenderY(), getRenderSizeX(), getRenderSizeY());
 
 

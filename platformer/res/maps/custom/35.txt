@@ -1,0 +1,11 @@
+11400 8400 1971 172
+/
+empty ;
+/
+wall wall 1350 300 1050 150;
+shurikan 1635 287;
+shurikan 1990 287;
+shurikan 2124 287;
+shurikan 2218 287;
+dimension 1586 60 1686 60;
+dimension 2103 30 1915 -386;

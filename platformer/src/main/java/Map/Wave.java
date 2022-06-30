@@ -60,8 +60,9 @@ public class Wave {
 
      //   velY = velY+Main.Main.random.nextDouble(0.1)-0.025;
 
-        amplitude+= Main.correctFPS(velY);
-        velY+= Main.correctFPS(accel);
+
+        amplitude+= Liquid.correctFps(velY);
+        velY+= Liquid.correctFps(accel);
 
 
 
